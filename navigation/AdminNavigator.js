@@ -6,6 +6,7 @@ const Stack = createStackNavigator();
 
 const AdminNavigator = () => {
   return (
+    // stack navigator contiene las pantallas accesibles para el admin
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="AdminDashboard" component={AdminDashboard} />
     </Stack.Navigator>

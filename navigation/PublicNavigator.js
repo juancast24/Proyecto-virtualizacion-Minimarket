@@ -14,7 +14,7 @@ const PublicNavigator = () => {
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {/* Rutas públicas */}
+      {/* Rutas públicas: accesibles sin necesidad de iniciar sesión*/}
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="ProductDetails" component={ProductDetailsScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />

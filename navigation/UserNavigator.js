@@ -6,6 +6,7 @@ const Stack = createStackNavigator();
 
 const UserNavigator = () => {
   return (
+    // stack navigator contiene las pantallas accesibles para el user
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="UserDashboard" component={UserDashboard} />
     </Stack.Navigator>
