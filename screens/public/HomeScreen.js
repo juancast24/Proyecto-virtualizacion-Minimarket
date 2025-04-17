@@ -1,20 +1,22 @@
 import React from 'react';
 import { View, Text, Button } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Header from '../../components/Header';
 
 const HomeScreen = () => {
-    const navigation = useNavigation();
-    const insets= useSafeAreaInsets();
+    const handleMenuPress = () => {
+        alert('Menu');
+    };
+    const handleProfilePress = () => {
+        alert('Perfil');
+    };
 
     return (
-        <View style={{paddingTop: insets.top, paddingBottom: insets.bottom}}>
-            <Icon name="home" size={30} color="black" />
-            <Text>Bienvenido a la Tienda</Text>
-            {/* Botón para ir a Login */}
-            <Button title="Ir a Login" onPress={() => navigation.navigate('Login')} />
-        </View>
+        <Header onMenuPress={handleMenuPress} onProfilePress={handleProfilePress}>
+            <View>
+                <Text>Bienvenidos a la tienda</Text>
+            </View>
+        </Header>
     );
 };
 
