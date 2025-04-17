@@ -1,14 +1,25 @@
 import React from 'react';
-import { View, Text } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, Image } from 'react-native';
+import TablaEjemplo from '../../components/ProductsAdmin';
 import Header from '../../components/Header';
 
 const AdminDashboard = () => {
+
+  const handleMenuPress = () => {
+    alert('Menu');
+};
+const handleProfilePress = () => {
+    alert('Perfil');
+};
   return (
-    <View>
-      <Header />
-      <Text>Pantalla de inicio de admin</Text>
-    </View>
+
+    
+    <Header onMenuPress={handleMenuPress} onProfilePress={handleProfilePress}>
+            <View>
+                <Text>Bienvenido administrador</Text>
+            </View>
+            <TablaEjemplo />
+        </Header>
   );
 };
 
