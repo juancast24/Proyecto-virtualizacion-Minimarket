@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
  // Función para manejar el registro de un usuario
  const onRegister = (username, password,phone) => {
   if (username && password && phone) {
-    // Aquí normalmente registrarías al usuario en la base de datos, pero para este ejemplo vamos a simularlo
+    // Aquí normalmente registrarías al usuario en la base de datos, pero por ahora se simula
     setAuthState({ authenticated: true, username: username, role: Role.USER });
     alert('¡Usuario registrado con éxito!');
     return true; // Indica que el registro fue exitoso

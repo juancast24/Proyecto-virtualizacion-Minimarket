@@ -1,15 +1,31 @@
 import React from 'react';
+import { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, FlatList, Pressable } from 'react-native';
 import Header from '../../components/Header';
 import ProductCard from '../../components/ProductCard';
 import { StatusBar } from 'expo-status-bar';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { products } from '../../data/products';
 
-const categories = ['Aseo hogar', 'Despensa', 'Frutas Verduras', 'Carnes', 'Lacteos', 'Aseo personal'];
+const categories = ['Todas', 'Aseo hogar', 'Despensa', 'Frutas Verduras', 'Carnes', 'Lacteos', 'Higiene Personal'];
 
 const HomeScreen = () => {
     const navigation = useNavigation();
+    const [selectedCategory, setSelectedCategory] = useState(null);
+    const handleCategoryPress = (category) => {
+        if (category === 'Todas') {
+            setSelectedCategory(null);
+        }
+        else {
+            setSelectedCategory(category);
+        }
+    };
+    const filteredProducts = selectedCategory
+        ? products.filter(product => product.category === selectedCategory)
+        : products;
+
+
     const handleMenuPress = () => {
         alert('Menu');
     };
@@ -27,7 +43,7 @@ const HomeScreen = () => {
             <View style={styles.content}>
                 <Text style={styles.title}>
                     <Text >Empieza{"\n"}</Text>
-                    <Text style={ {color: '#4A90E2'} }>Elije, </Text>
+                    <Text style={{ color: '#4A90E2' }}>Elije, </Text>
                     <Text >lleva</Text>
                 </Text>
 
@@ -47,7 +63,10 @@ const HomeScreen = () => {
                         showsHorizontalScrollIndicator={false}
                         keyExtractor={(item) => item}
                         renderItem={({ item }) => (
-                            <Pressable style={styles.categoryButton}>
+                            <Pressable
+                                style={styles.categoryButton}
+                                onPress={() => handleCategoryPress(item)} // Manejar clic en categoría
+                            >
                                 <Text style={styles.categoryText}>{item}</Text>
                             </Pressable>
                         )}
@@ -56,7 +75,7 @@ const HomeScreen = () => {
             </View>
 
             {/* Lista de productos */}
-            <ProductCard />
+            <ProductCard products={filteredProducts} />
         </View>
     );
 };
@@ -72,7 +91,7 @@ const styles = StyleSheet.create({
         fontSize: 60,
         paddingTop: 30,
         paddingBottom: 30,
-        fontWeight : '900',
+        fontWeight: '900',
     },
     searchContainer: {
         flexDirection: 'row',

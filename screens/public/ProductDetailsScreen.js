@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Image, StyleSheet, Text, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRoute, useNavigation } from '@react-navigation/native';
@@ -12,6 +12,18 @@ const ProductDetails = () => {
 
   const handlePressBack = () => {
     navigation.goBack();
+  };
+
+  const [quantity,setQuantity] = useState(1);
+  
+  const increaseQuantity = () => {
+    setQuantity(prev=>prev + 1);
+  };
+
+  const decreaseQuantity = () => {
+    if (quantity > 1) {
+      setQuantity(prev => prev - 1);
+    }
   };
 
   return (
@@ -33,10 +45,15 @@ const ProductDetails = () => {
               <Image source={{ uri: product.image }} style={styles.image} />
             </View>
             <Text style={styles.name}>{product.name}</Text>
+            {/* Botones para agregar y quitar cantidad al carrito */}
             <View style={styles.quantity} >
-              <Ionicons name="remove-outline" size={24} color="black" style={styles.minusQuantity} />
-              <Text style={{ fontSize: 18, fontWeight: 'bold' }}>1</Text>
-              <Ionicons name="add-outline" size={24} color="black" style={styles.plusQuantity} />
+              <Pressable onPress={decreaseQuantity} style={styles.minusQuantity}>
+                <Ionicons name="remove-outline" size={24} color="black" />
+              </Pressable>
+              <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{quantity}</Text>
+              <Pressable onPress={increaseQuantity} style={styles.plusQuantity}>
+                <Ionicons name="add-outline" size={24} color="black" />
+              </Pressable>
             </View>
           </View>
         </View>
