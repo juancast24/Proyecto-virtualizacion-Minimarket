@@ -9,7 +9,7 @@ const Header = ({ oneMenuPress, onProfilePress, children }) => {
     const navigation = useNavigation();
     
     return (
-        <View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom }}>
+        <View style={{ paddingTop: insets.top }}>
             <View style={styles.headerContainer}>
                 {/* Botón de menu */}
                 <Pressable onPress={oneMenuPress}>
@@ -19,9 +19,6 @@ const Header = ({ oneMenuPress, onProfilePress, children }) => {
                 <Pressable onPress={onProfilePress}>
                     <Ionicons name="person" size={30} color="black" onPress={() => navigation.navigate('Login')}/>
                 </Pressable>
-            </View>
-            <View style={{ flex: 1, padding: 10 }}>
-                {children} {/* Aquí se renderizarán los hijos del componente Header */}
             </View>
         </View>
     );
