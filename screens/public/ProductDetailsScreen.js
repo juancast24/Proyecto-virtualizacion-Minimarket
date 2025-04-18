@@ -25,6 +25,7 @@ const ProductDetails = () => {
       setQuantity(prev => prev - 1);
     }
   };
+  const totalPrice= quantity * product.price;
 
   return (
     <View style={styles.container}>
@@ -64,7 +65,7 @@ const ProductDetails = () => {
         <Text style={styles.descriptionProduct}>{product.description}</Text>
       </View>
       <View style={styles.addToCart}>
-        <Text style={styles.price}>${product.price}</Text>
+        <Text style={styles.price}>${totalPrice}</Text>
         <Pressable style={styles.buttonAddToCart}>
           <Text style={{ fontSize: 20, fontWeight: '900', color: 'white' }}>Agregar al carrito</Text>
         </Pressable>

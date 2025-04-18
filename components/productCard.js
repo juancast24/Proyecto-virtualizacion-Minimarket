@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, Image, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { products } from '../data/products';
 
 const ProductCard = ({products}) => {
     const navigation = useNavigation();
