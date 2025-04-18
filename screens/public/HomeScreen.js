@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TextInput, FlatList, Pressable } from 'react-native';
 import Header from '../../components/Header';
-import ProductCard from '../../components/ProductCard';
+import ProductCard from '../../components/productCard';
 import { StatusBar } from 'expo-status-bar';
 import { useNavigation } from '@react-navigation/native';
 

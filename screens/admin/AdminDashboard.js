@@ -17,6 +17,11 @@ const AdminDashboard = () => {
   const handleCreateProductPress = () => {
     navigation.navigate('CreateProduct'); // Asegúrate de que 'CreateProduct' esté registrado en AdminNavigator
   };
+
+  const handleOrdersPress = () => {
+    navigation.navigate('OrdersScreen'); // Asegúrate de que 'OrdersScreen' esté registrado en AdminNavigator
+  };
+
   return (
 
     <View style={{ flex: 1, backgroundColor: '#F7FAFC' }}>
@@ -25,6 +30,9 @@ const AdminDashboard = () => {
         <Pressable style={styles.button} onPress={handleCreateProductPress}>
           <Text style={styles.buttonText}>Crear Nuevo Producto</Text>
         </Pressable>
+        <Pressable style={styles.button} onPress={handleOrdersPress}>
+          <Text style={styles.buttonText}>Ver Pedidos</Text>
+      </Pressable>
       </View>
       <TablaEjemplo />
     </View>
