@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { View, Pressable, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet, } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -8,6 +8,8 @@ import { useNavigation } from '@react-navigation/native';
 const Header = ({ oneMenuPress, onProfilePress, children }) => {
     const insets = useSafeAreaInsets();
     const navigation = useNavigation();
+
+    
     
     return (
         <View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom }}>
