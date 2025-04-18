@@ -3,24 +3,19 @@ import React from 'react';
 import { View, Pressable, StyleSheet, } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
 
-const Header = ({ oneMenuPress, onProfilePress, children }) => {
+const Header = ({ onMenuPress, onProfilePress, }) => {
     const insets = useSafeAreaInsets();
-    const navigation = useNavigation();
-
-    
-    
     return (
         <View style={{ paddingTop: insets.top }}>
             <View style={styles.headerContainer}>
                 {/* Botón de menu */}
-                <Pressable onPress={oneMenuPress}>
+                <Pressable onPress={onMenuPress}>
                     <Ionicons name="menu" size={30} color="black" />
                 </Pressable>
                 {/* Botón de perfil */}
                 <Pressable onPress={onProfilePress}>
-                    <Ionicons name="person" size={30} color="black" onPress={() => navigation.navigate('Login')}/>
+                    <Ionicons name="person" size={30} color="black" />
                 </Pressable>
             </View>
         </View>
