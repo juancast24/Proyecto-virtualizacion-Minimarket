@@ -11,20 +11,28 @@ import { products } from '../../data/products';
 const categories = ['Todas', 'Aseo hogar', 'Despensa', 'Frutas Verduras', 'Carnes', 'Lacteos', 'Higiene Personal'];
 
 const HomeScreen = () => {
-    const navigation = useNavigation();
-    const [selectedCategory, setSelectedCategory] = useState(null);
+    const navigation = useNavigation();//hook para la navegacion
+    const [selectedCategory, setSelectedCategory] = useState(null);//estado para la categoria seleccionada
+    const [searchQuery, setSearchQuery] = useState(''); // Estado para la búsqueda
+
+    //funcion para manejar cuando el usuario selecciona una categoría
     const handleCategoryPress = (category) => {
         if (category === 'Todas') {
-            setSelectedCategory(null);
-        }
-        else {
-            setSelectedCategory(category);
+            setSelectedCategory(null); // Si se selecciona todas, se limpia la categoría seleccionada
+        } else {
+            setSelectedCategory(category);// Si se selecciona una categoría, se establece la categoría seleccionada
         }
     };
-    const filteredProducts = selectedCategory
-        ? products.filter(product => product.category === selectedCategory)
-        : products;
 
+    // Filtrar productos según la categoría seleccionada
+    const filteredProductsByCategory = selectedCategory
+        ? products.filter(product => product.category === selectedCategory)// Si hay una categoría seleccionada, se filtra por ella
+        : products; // Si no hay categoría seleccionada, no se filtra
+
+    // Filtrar productos por nombre según la búsqueda
+    const filteredProducts = filteredProductsByCategory.filter(product => 
+        product.name.toLowerCase().includes(searchQuery.toLowerCase())// Filtra productos cuyo nombre incluya el término de búsqueda
+    );
 
     const handleMenuPress = () => {
         alert('Menu');
@@ -53,6 +61,8 @@ const HomeScreen = () => {
                         placeholder="Buscar productos"
                         style={styles.searchInput}
                         placeholderTextColor="gray"
+                        value={searchQuery} // Valor del input que está vinculado al estado `searchQuery`
+                        onChangeText={setSearchQuery} // Actualiza el estado `searchQuery` cada vez que el usuario escribe algo
                     />
                 </View>
 
@@ -65,7 +75,7 @@ const HomeScreen = () => {
                         renderItem={({ item }) => (
                             <Pressable
                                 style={styles.categoryButton}
-                                onPress={() => handleCategoryPress(item)} // Manejar clic en categoría
+                                onPress={() => handleCategoryPress(item)} //Llama a la función cuando se selecciona una categoría
                             >
                                 <Text style={styles.categoryText}>{item}</Text>
                             </Pressable>
@@ -75,7 +85,7 @@ const HomeScreen = () => {
             </View>
 
             {/* Lista de productos */}
-            <ProductCard products={filteredProducts} />
+            <ProductCard products={filteredProducts} /> {/* Pasa los productos filtrados a `ProductCard */}
         </View>
     );
 };
