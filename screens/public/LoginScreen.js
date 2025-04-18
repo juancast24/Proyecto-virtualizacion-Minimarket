@@ -1,53 +1,71 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  Alert,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
 
 const LoginScreen = () => {
-  // Estado para almacenar el nombre de usuario y la contraseña ingresados por el usuario
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-
-  // Extraemos la función onLogin desde el contexto de autenticación
   const { onLogin } = useAuth();
-
-  // Usamos el hook de navegación para manejar las transiciones de pantalla
   const navigation = useNavigation();
 
-  // Función que maneja el inicio de sesión según el rol especificado
-  const handleLogin = (role) => {
-    // Llamamos a la función onLogin del contexto para autenticar al usuario
-    onLogin(username, password);
-
-    // Si el rol es 'admin', navegamos al dashboard de admin
-    if (role === 'admin') {
-      navigation.navigate('AdminDashboard');
+  const handleLogin = async () => {
+    console.log('▶ handleLogin fired', { username, password });
+    const user = await onLogin(username.trim(), password);
+    if (!user || !password) {
+      return Alert.alert('Error', 'Usuario o contraseña incorrectos');
     }
-    // Si el rol es 'user', navegamos al dashboard de usuario
-    else {
+
+    if (user.role === 'admin') {
+      navigation.navigate('AdminDashboard');
+    } else {
       navigation.navigate('UserDashboard');
     }
   };
-
   return (
-    <View>
-      <Text>Login</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Login</Text>
+
+      {/* Inputs */}
       <TextInput
         placeholder="Usuario"
+        autoCapitalize="none"
         value={username}
         onChangeText={setUsername}
+        style={styles.input}
       />
       <TextInput
         placeholder="Contraseña"
         secureTextEntry
         value={password}
         onChangeText={setPassword}
+        style={styles.input}
       />
-      {/* Botones de login para admin o user */}
-      <Button title="Login como Admin" onPress={() => handleLogin('admin')} />
-      <Button title="Login como Usuario" onPress={() => handleLogin('user')} />
+
+      {/* Botón real de Login */}
+      <Button title="Iniciar Sesión" onPress={handleLogin} />
+       <View style={styles.space} />
+      <Button title="Registrarse" onPress={() => navigation.navigate('RegisterScreen')}/>
+
+      
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: 'center', padding: 20 },
+  title: { fontSize: 24, marginBottom: 20, textAlign: 'center' },
+  input: { borderWidth: 1, marginBottom: 15, padding: 10, borderRadius: 5 },
+  space: {
+    marginBottom: 20, // Ajusta el espacio entre los botones
+  },
+});
 
 export default LoginScreen;
