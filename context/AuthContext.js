@@ -1,51 +1,64 @@
 import { createContext, useContext, useState } from 'react';
 
-//los roles disponibles en la aplicación
+// Roles disponibles
 const Role = {
-    ADMIN: 'admin',
-    USER: 'user',
+  ADMIN: 'admin',
+  USER: 'user',
 };
-// Contexto para la autenticación
+
 export const AuthContext = createContext({});
-// El proveedor del contexto, que envuelve la aplicación para compartir el estado de autenticación
+
 export const AuthProvider = ({ children }) => {
-    // Estado que mantiene la información de autenticación del usuario
-    const [authState, setAuthState] = useState({
-        authenticated: null, // Estado de autenticación: null indica que no está autenticado
-        username: null, // Nombre de usuario del usuario autenticado
-        role: null, // Rol del usuario: 'admin' o 'user'
-    });
+  const [authState, setAuthState] = useState({
+    authenticated: false,
+    username: null,
+    role: null,
+  });
 
-    // Función para manejar el inicio de sesión
-    const onLogin = (username, password) => {
-        // Si el nombre de usuario y la contraseña coinciden con los de admin, se establece el estado de autenticación para admin
-        if (username === 'admin' && password === 'admin') {
-            setAuthState({ authenticated: true, username: username, role: Role.ADMIN });
-        }
-        // Si el nombre de usuario y la contraseña coinciden con los de user, se establece el estado de autenticación para user
-        else if (username === 'user' && password === 'user') {
-            setAuthState({ authenticated: true, username: username, role: Role.USER });
-        }
-        else {
-            alert('Usuario o contraseña incorrectos');
-        }
-    };
+  // onLogin SÓLO valida y devuelve user o null
+  // NUNCA dispara alert aquí
+  const onLogin = async (username, password) => {
+    if (username === 'admin' && password === 'admin') {
+      const user = { username, role: Role.ADMIN };
+      setAuthState({ authenticated: true, ...user });
+      return user;
+    }
+    if (username === 'user' && password === 'user') {
+      const user = { username, role: Role.USER };
+      setAuthState({ authenticated: true, ...user });
+      return user;
+    }
+    if (username.trim() === '' || password.trim() === '') {
+        alert('hay campos sin rellenar')
+      }
+    else {
+        alert('Usuario o contraseña incorrectos');
+    }
+  };
 
-    // Función para manejar el cierre de sesión
-    const onLogout = () => {
-        console.log('onLogout'); // Mensaje en la consola cuando el usuario cierra sesión
-        setAuthState({ authenticated: false, username: null, role: null }); // Restablece el estado de autenticación
-    };
+ // Función para manejar el registro de un usuario
+ const onRegister = (username, password,phone) => {
+  if (username && password && phone) {
+    // Aquí normalmente registrarías al usuario en la base de datos, pero para este ejemplo vamos a simularlo
+    setAuthState({ authenticated: true, username: username, role: Role.USER });
+    alert('¡Usuario registrado con éxito!');
+    return true; // Indica que el registro fue exitoso
+  } else {
+    alert('Por favor, complete todos los campos.');
+    return false; // Si faltan campos
+  }
+};
 
-    // Valor que será proporcionado a los consumidores del contexto
-    const value = {
-        authState, // El estado de autenticación
-        onLogin, // Función para iniciar sesión
-        onLogout, // Función para cerrar sesión
-    };
 
-    // Proveedor que envuelve la aplicación y permite que otros componentes accedan al contexto
-    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  const onLogout = () => {
+    setAuthState({ authenticated: false, username: null, role: null });
+  };
+
+  return (
+    <AuthContext.Provider value={{ authState, onLogin, onLogout, onRegister }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => useContext(AuthContext);
