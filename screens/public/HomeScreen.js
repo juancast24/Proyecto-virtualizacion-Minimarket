@@ -3,21 +3,22 @@ import { View, Text, StyleSheet, TextInput, FlatList, Pressable } from 'react-na
 import Header from '../../components/Header';
 import ProductCard from '../../components/productCard';
 import { StatusBar } from 'expo-status-bar';
+import { useNavigation } from '@react-navigation/native';
 
 const categories = ['Aseo hogar', 'Despensa', 'Frutas Verduras', 'Carnes', 'Lacteos', 'Aseo personal'];
 
 const HomeScreen = () => {
+    const navigation = useNavigation();
     const handleMenuPress = () => {
         alert('Menu');
     };
     const handleProfilePress = () => {
-
+        navigation.navigate('Login');
     };
 
     return (
         <View style={styles.container}>
             <StatusBar style="dark" />
-
             {/* Header estático */}
             <Header onMenuPress={handleMenuPress} onProfilePress={handleProfilePress} />
 

@@ -81,7 +81,7 @@ const ProductCard = () => {
             showsVerticalScrollIndicator={false}
             numColumns={2}
             columnWrapperStyle={{ justifyContent: 'space-between' }}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) => item.id()}
             renderItem={({ item }) => (
                 <View style={styles.card}>
                     <View style={styles.imageContainer}>
