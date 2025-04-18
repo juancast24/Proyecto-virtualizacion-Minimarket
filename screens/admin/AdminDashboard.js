@@ -9,26 +9,25 @@ const AdminDashboard = () => {
 
   const handleMenuPress = () => {
     alert('Menu');
-};
-const handleProfilePress = () => {
+  };
+  const handleProfilePress = () => {
     alert('Perfil');
-};
+  };
 
-const handleCreateProductPress = () => {
-  navigation.navigate('CreateProduct'); // Asegúrate de que 'CreateProduct' esté registrado en AdminNavigator
-};
+  const handleCreateProductPress = () => {
+    navigation.navigate('CreateProduct'); // Asegúrate de que 'CreateProduct' esté registrado en AdminNavigator
+  };
   return (
 
-    
-    <Header onMenuPress={handleMenuPress} onProfilePress={handleProfilePress}>
-      
+    <View style={{ flex: 1, backgroundColor: '#F7FAFC' }}>
+      <Header onMenuPress={handleMenuPress} onProfilePress={handleProfilePress} />
       <View>
-          <Pressable style={styles.button} onPress={handleCreateProductPress}>
-            <Text style={styles.buttonText}>Crear Nuevo Producto</Text>
-          </Pressable>
+        <Pressable style={styles.button} onPress={handleCreateProductPress}>
+          <Text style={styles.buttonText}>Crear Nuevo Producto</Text>
+        </Pressable>
       </View>
       <TablaEjemplo />
-    </Header>
+    </View>
   );
 };
 const styles = StyleSheet.create({
