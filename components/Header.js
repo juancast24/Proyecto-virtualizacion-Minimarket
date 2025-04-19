@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { View, Pressable, StyleSheet, } from 'react-native';
+import { View, Pressable, StyleSheet, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -9,41 +8,98 @@ const Header = ({ oneMenuPress, onProfilePress, children }) => {
     const insets = useSafeAreaInsets();
     const navigation = useNavigation();
 
-    
-    
     return (
-        <View style={{ paddingTop: insets.top }}>
+        <View style={[styles.headerWrapper, { paddingTop: insets.top }]}>
             <View style={styles.headerContainer}>
-                {/* Botón de menu */}
-                <Pressable onPress={oneMenuPress}>
-                    <Ionicons name="menu" size={30} color="black" />
+
+                {/* Botón de menú */}
+                <Pressable
+                    onPress={oneMenuPress}
+                    style={({ pressed }) => [
+                        styles.iconButton,
+                        pressed && styles.iconButtonPressed,
+                    ]}
+                >
+                    <Ionicons name="menu" size={30} color="#333" />
                 </Pressable>
-                {/* Botón de perfil */}
-                <Pressable onPress={onProfilePress}>
-                    <Ionicons name="person" size={30} color="black" onPress={() => navigation.navigate('Login')}/>
-                </Pressable>
+
+                {/* Título central opcional */}
+                {children ? (
+                    <Text style={styles.headerTitle}>{children}</Text>
+                ) : (
+                    <View style={{ flex: 1 }} />
+                )}
+
+                <View style={styles.rightButtons}>
+                    {/* Botón carrito */}
+                    <Pressable
+                        onPress={() => navigation.navigate('Cart')}
+                        style={({ pressed }) => [
+                            styles.iconButton,
+                            pressed && styles.iconButtonPressed,
+                        ]}
+                    >
+                        <Ionicons name="cart-outline" size={28} color="#333" />
+                    </Pressable>
+
+                    {/* Botón de perfil */}
+                    <Pressable
+                        onPress={onProfilePress}
+                        style={({ pressed }) => [
+                            styles.iconButton,
+                            pressed && styles.iconButtonPressed,
+                        ]}
+                    >
+                        <Ionicons
+                            name="person-circle-outline"
+                            size={30}
+                            color="#333"
+                            onPress={() => navigation.navigate('Login')}
+                        />
+                    </Pressable>
+                </View>
             </View>
         </View>
     );
 };
+
 const styles = StyleSheet.create({
+    headerWrapper: {
+        backgroundColor: '#f7f7f7',
+        borderBottomWidth: 1,
+        borderBottomColor: '#ddd',
+    },
     headerContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: 10,
-        backgroundColor: '#fff',
-        borderBottomWidth: 1,
-        borderBottomColor: '#ddd',
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        elevation: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 3,
     },
-    headerText: {
-        fontSize: 20,
-        fontWeight: 'bold',
+    rightButtons: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
-    profileText: {
+    iconButton: {
+        padding: 8,
+        borderRadius: 50,
+        marginLeft: 8,
+    },
+    iconButtonPressed: {
+        backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    },
+    headerTitle: {
+        flex: 1,
+        textAlign: 'center',
         fontSize: 20,
-        fontWeight: 'bold',
-        color: '#007AFF',
+        fontWeight: '600',
+        color: '#333',
     },
 });
+
 export default Header;
