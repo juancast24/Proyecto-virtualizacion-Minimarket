@@ -14,10 +14,14 @@ const ProductDetails = () => {
     navigation.goBack();
   };
 
-  const [quantity,setQuantity] = useState(1);
-  
+  const handleCartPress = () => {
+    navigation.navigate('CartScreen');  // ✅ Esto llevará al carrito
+  };
+
+  const [quantity, setQuantity] = useState(1);
+
   const increaseQuantity = () => {
-    setQuantity(prev=>prev + 1);
+    setQuantity(prev => prev + 1);
   };
 
   const decreaseQuantity = () => {
@@ -25,29 +29,29 @@ const ProductDetails = () => {
       setQuantity(prev => prev - 1);
     }
   };
-  const totalPrice= quantity * product.price;
+
+  const totalPrice = quantity * product.price;
 
   return (
     <View style={styles.container}>
       <View style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
-        {/* Header + Product juntos con sombra */}
         <View style={styles.headerProductWrapper}>
           <View style={styles.header}>
             <Pressable onPress={handlePressBack} style={styles.backButton}>
               <Ionicons name="chevron-back-outline" size={24} color="black" />
             </Pressable>
-            <Pressable onPress={() => navigation.goCart?.()} style={styles.cartButton}>
+            <Pressable onPress={handleCartPress} style={styles.cartButton}>
               <Ionicons name="cart" size={24} color="black" />
             </Pressable>
           </View>
-          {/* Conteneder del producto */}
+
           <View style={styles.productContainer}>
             <View>
               <Image source={{ uri: product.image }} style={styles.image} />
             </View>
             <Text style={styles.name}>{product.name}</Text>
-            {/* Botones para agregar y quitar cantidad al carrito */}
-            <View style={styles.quantity} >
+
+            <View style={styles.quantity}>
               <Pressable onPress={decreaseQuantity} style={styles.minusQuantity}>
                 <Ionicons name="remove-outline" size={24} color="black" />
               </Pressable>
@@ -59,15 +63,18 @@ const ProductDetails = () => {
           </View>
         </View>
       </View>
-      {/* Contenedor de la información del producto */}
+
       <View style={styles.infoContainer}>
         <Text style={styles.description}>Descripcion</Text>
         <Text style={styles.descriptionProduct}>{product.description}</Text>
       </View>
+
       <View style={styles.addToCart}>
         <Text style={styles.price}>${totalPrice}</Text>
         <Pressable style={styles.buttonAddToCart}>
-          <Text style={{ fontSize: 20, fontWeight: '900', color: 'white' }}>Agregar al carrito</Text>
+          <Text style={{ fontSize: 20, fontWeight: '900', color: 'white' }}>
+            Agregar al carrito
+          </Text>
         </Pressable>
       </View>
     </View>
@@ -77,7 +84,7 @@ const ProductDetails = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#grey',
+    backgroundColor: 'grey',
   },
   headerProductWrapper: {
     backgroundColor: '#fff',
@@ -142,16 +149,13 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingHorizontal: 20,
   },
-  price: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#4A90E2',
-    marginBottom: 10,
-  },
   description: {
     paddingBottom: 10,
     fontSize: 28,
     fontWeight: 'bold',
+  },
+  descriptionProduct: {
+    fontSize: 16,
   },
   addToCart: {
     position: 'absolute',

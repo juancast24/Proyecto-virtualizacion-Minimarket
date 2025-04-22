@@ -1,17 +1,21 @@
-
 import React from 'react';
-import { View, Pressable, StyleSheet, } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const Header = ({ onMenuPress, onProfilePress, }) => {
+const Header = ({ onMenuPress, onProfilePress, onCartPress }) => {
     const insets = useSafeAreaInsets();
+
     return (
         <View style={{ paddingTop: insets.top }}>
             <View style={styles.headerContainer}>
-                {/* Botón de menu */}
+                {/* Botón de menú */}
                 <Pressable onPress={onMenuPress}>
                     <Ionicons name="menu" size={30} color="black" />
+                </Pressable>
+                {/* Botón de carrito */}
+                <Pressable onPress={onCartPress}>
+                    <Ionicons name="cart" size={30} color="black" />
                 </Pressable>
                 {/* Botón de perfil */}
                 <Pressable onPress={onProfilePress}>
@@ -21,6 +25,7 @@ const Header = ({ onMenuPress, onProfilePress, }) => {
         </View>
     );
 };
+
 const styles = StyleSheet.create({
     headerContainer: {
         flexDirection: 'row',
@@ -41,4 +46,5 @@ const styles = StyleSheet.create({
         color: '#007AFF',
     },
 });
+
 export default Header;

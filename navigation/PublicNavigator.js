@@ -5,6 +5,7 @@ import HomeScreen from '../screens/public/HomeScreen';
 import LoginScreen from '../screens/public/LoginScreen';
 import RegisterScreen from '../screens/public/RegisterScreen';
 import ProductDetailsScreen from '../screens/public/ProductDetailsScreen';
+import CartScreen from '../screens/user/CartScreen';   // <-- Asegúrate que la ruta sea correcta
 import AdminNavigator from './AdminNavigator';
 import UserNavigator from './UserNavigator';
 
@@ -15,13 +16,14 @@ const PublicNavigator = () => {
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {/* Rutas públicas: accesibles sin necesidad de iniciar sesión*/}
+      {/* Rutas públicas accesibles siempre */}
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="ProductDetails" component={ProductDetailsScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
+      <Stack.Screen name="CartScreen" component={CartScreen} />
 
-      {/* Rutas protegidas según rol */}
+      {/* Rutas protegidas */}
       {authState?.role === 'admin' && (
         <Stack.Screen name="AdminDashboard" component={AdminNavigator} />
       )}
@@ -30,7 +32,6 @@ const PublicNavigator = () => {
       )}
     </Stack.Navigator>
   );
-  
 };
 
 export default PublicNavigator;
