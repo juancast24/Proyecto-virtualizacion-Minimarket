@@ -15,7 +15,7 @@ const ProductDetails = () => {
   };
 
   const handleCartPress = () => {
-    navigation.navigate('CartScreen');  // ✅ Esto llevará al carrito
+    navigation.navigate('CartScreen');  
   };
 
   const [quantity, setQuantity] = useState(1);
@@ -84,7 +84,7 @@ const ProductDetails = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'grey',
+    backgroundColor: '#grey',
   },
   headerProductWrapper: {
     backgroundColor: '#fff',

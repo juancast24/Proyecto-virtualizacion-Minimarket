@@ -12,7 +12,7 @@ const UserNavigator = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="UserDashboard" component={UserDashboard} />
       <Stack.Screen name="AccountScreen" component={AccountScreen} />
-      <Stack.Screen name="CartScreen" component={CartScreen} />  {/* Asegúrate que esta pantalla esté registrada */}
+      <Stack.Screen name="CartScreen" component={CartScreen} />  
       <Stack.Screen name="OrdersScreen" component={OrdersScreen} />
     </Stack.Navigator>
   );

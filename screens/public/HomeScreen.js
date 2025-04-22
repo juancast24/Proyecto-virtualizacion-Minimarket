@@ -7,11 +7,13 @@ import { StatusBar } from 'expo-status-bar';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { products } from '../../data/products';
+import { useAuth } from '../../context/AuthContext';
 
 const categories = ['Todas', 'Aseo hogar', 'Despensa', 'Frutas Verduras', 'Carnes', 'Lacteos', 'Higiene Personal'];
 
 const HomeScreen = () => {
-    const navigation = useNavigation();//hook para la navegacion
+    const { authState } = useAuth();
+    const navigation = useNavigation();
     const [selectedCategory, setSelectedCategory] = useState(null);//estado para la categoria seleccionada
     const [searchQuery, setSearchQuery] = useState(''); // Estado para la búsqueda
 
@@ -30,7 +32,7 @@ const HomeScreen = () => {
         : products; // Si no hay categoría seleccionada, no se filtra
 
     // Filtrar productos por nombre según la búsqueda
-    const filteredProducts = filteredProductsByCategory.filter(product => 
+    const filteredProducts = filteredProductsByCategory.filter(product =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase())// Filtra productos cuyo nombre incluya el término de búsqueda
     );
 
@@ -38,7 +40,11 @@ const HomeScreen = () => {
         alert('Menu');
     };
     const handleProfilePress = () => {
-        navigation.navigate('Login');
+        if (authState.authenticated) {
+            navigation.navigate('AccountScreen'); // si ya está logueado, ve al perfil
+        } else {
+            navigation.navigate('Login');// si no está logueado, ve al login
+        }
     };
 
     return (
@@ -72,14 +78,25 @@ const HomeScreen = () => {
                         horizontal
                         showsHorizontalScrollIndicator={false}
                         keyExtractor={(item) => item}
-                        renderItem={({ item }) => (
-                            <Pressable
-                                style={styles.categoryButton}
-                                onPress={() => handleCategoryPress(item)} //Llama a la función cuando se selecciona una categoría
-                            >
-                                <Text style={styles.categoryText}>{item}</Text>
-                            </Pressable>
-                        )}
+                        renderItem={({ item }) => {
+                            const isSelected = selectedCategory === item || (item === 'Todas' && selectedCategory === null);
+                            return (
+                                <Pressable
+                                    style={[
+                                        styles.categoryButton,
+                                        isSelected && styles.selectedCategoryButton // estilo especial si está seleccionada
+                                    ]}
+                                    onPress={() => handleCategoryPress(item)}
+                                >
+                                    <Text style={[
+                                        styles.categoryText,
+                                        isSelected && styles.selectedCategoryText // estilo especial si está seleccionada
+                                    ]}>
+                                        {item}
+                                    </Text>
+                                </Pressable>
+                            );
+                        }}
                     />
                 </View>
             </View>
@@ -137,6 +154,13 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
         color: '#374151',
+    },
+    selectedCategoryButton: {
+        backgroundColor: '#4A90E2', 
+    },
+    
+    selectedCategoryText: {
+        color: '#fff', 
     },
 });
 

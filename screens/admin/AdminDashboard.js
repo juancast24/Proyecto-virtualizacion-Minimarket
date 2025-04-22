@@ -1,18 +1,24 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import {useAuth} from '../../context/AuthContext';
 import TablaEjemplo from '../../components/ProductsAdmin';
 import Header from '../../components/Header';
 import { useNavigation } from '@react-navigation/native';
 
 const AdminDashboard = () => {
+  const { authState } = useAuth();
   const navigation = useNavigation();
 
   const handleMenuPress = () => {
     alert('Menu');
   };
   const handleProfilePress = () => {
-    alert('Perfil');
-  };
+    if (authState.authenticated) {
+        navigation.navigate('AccountScreenAdmin'); // si ya está logueado, ve al perfil
+    }else{  
+        navigation.navigate('Login');// si no está logueado, ve al login
+    }
+};
 
   const handleCreateProductPress = () => {
     navigation.navigate('CreateProduct'); // Asegúrate de que 'CreateProduct' esté registrado en AdminNavigator

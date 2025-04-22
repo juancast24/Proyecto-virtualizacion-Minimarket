@@ -13,10 +13,6 @@ const Header = ({ onMenuPress, onProfilePress, onCartPress }) => {
                 <Pressable onPress={onMenuPress}>
                     <Ionicons name="menu" size={30} color="black" />
                 </Pressable>
-                {/* Botón de carrito */}
-                <Pressable onPress={onCartPress}>
-                    <Ionicons name="cart" size={30} color="black" />
-                </Pressable>
                 {/* Botón de perfil */}
                 <Pressable onPress={onProfilePress}>
                     <Ionicons name="person" size={30} color="black" />
