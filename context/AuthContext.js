@@ -19,9 +19,9 @@ export const AuthProvider = ({ children }) => {
   // NUNCA dispara alert aquí
   const onLogin = async (username, password) => {
     if (username === 'admin' && password === 'admin') {
-      const user = { username, role: Role.ADMIN };
-      setAuthState({ authenticated: true, ...user });
-      return user;
+      const admin = { username, role: Role.ADMIN };
+      setAuthState({ authenticated: true, ...admin });
+      return admin;
     }
     if (username === 'user' && password === 'user') {
       const user = { username, role: Role.USER };
