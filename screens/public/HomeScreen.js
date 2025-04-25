@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, FlatList, Pressable } from 'react-native';
+import { View, Text, StyleSheet, TextInput, FlatList, Pressable, Image } from 'react-native';
 import Header from '../../components/Header';
 import ProductCard from '../../components/productCard';
 import { StatusBar } from 'expo-status-bar';
@@ -55,11 +55,16 @@ const HomeScreen = () => {
 
             {/* Contenido encima de la lista */}
             <View style={styles.content}>
-                <Text style={styles.title}>
-                    <Text >Empieza{"\n"}</Text>
-                    <Text style={{ color: '#4A90E2' }}>Elije, </Text>
-                    <Text >lleva</Text>
-                </Text>
+                <View style={styles.containerTitle}>
+                    <Text style={styles.title}>
+                        <Text >Empieza{"\n"}</Text>
+                        <Text style={{ color: '#4A90E2' }}>Elije, </Text>
+                        <Text >lleva</Text>
+                    </Text>
+                    <View style={styles.imageContainer}>
+                        <Image source={require('../../assets/logo-market.png')} style={styles.logo} />
+                    </View>
+                </View>
 
                 <View style={styles.searchContainer}>
                     <Ionicons name="search" size={24} color="gray" style={styles.searchIcon} />
@@ -103,7 +108,7 @@ const HomeScreen = () => {
 
             {/* Lista de productos */}
             <ProductCard products={filteredProducts} /> {/* Pasa los productos filtrados a `ProductCard */}
-        </View>
+        </View >
     );
 };
 const styles = StyleSheet.create({
@@ -114,10 +119,27 @@ const styles = StyleSheet.create({
     content: {
         paddingHorizontal: 10,
     },
+    containerTitle: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    imageContainer: {
+        backgroundColor: 'white',
+        borderRadius: 80,
+        width: 130,
+        height: 130,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    logo: {
+        width: 110,
+        height: 110,
+    },
     title: {
-        fontSize: 60,
-        paddingTop: 30,
-        paddingBottom: 30,
+        fontSize: 50,
+        paddingTop: 20,
+        paddingBottom: 20,
         fontWeight: '900',
     },
     searchContainer: {
@@ -126,7 +148,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderRadius: 10,
         paddingHorizontal: 10,
-        paddingVertical: 8,
+        paddingVertical: 6,
         shadowColor: '#000',
         shadowOpacity: 0.1,
         shadowOffset: { width: 0, height: 2 },
@@ -141,14 +163,14 @@ const styles = StyleSheet.create({
         color: '#000',
     },
     categoryList: {
-        marginTop: 30,
-        marginBottom: 30,
+        marginTop: 15,
+        marginBottom: 15,
     },
     categoryButton: {
         backgroundColor: '#E0E7FF',
         borderRadius: 20,
         marginRight: 10,
-        padding: 10,
+        padding: 8,
     },
     categoryText: {
         fontSize: 16,
@@ -156,11 +178,11 @@ const styles = StyleSheet.create({
         color: '#374151',
     },
     selectedCategoryButton: {
-        backgroundColor: '#4A90E2', 
+        backgroundColor: '#4A90E2',
     },
-    
+
     selectedCategoryText: {
-        color: '#fff', 
+        color: '#fff',
     },
 });
 
