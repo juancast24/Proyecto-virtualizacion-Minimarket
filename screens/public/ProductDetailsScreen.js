@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState,useContext } from 'react';
 import { View, Image, StyleSheet, Text, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { CartContext } from '../../context/CartContext'; 
 
 const ProductDetails = () => {
   const insets = useSafeAreaInsets();
   const route = useRoute();
   const { product } = route.params;
   const navigation = useNavigation();
+  const { addToCart } = useContext(CartContext); 
 
   const handlePressBack = () => {
     navigation.goBack();
@@ -29,8 +31,12 @@ const ProductDetails = () => {
       setQuantity(prev => prev - 1);
     }
   };
-
   const totalPrice = quantity * product.price;
+  const handleAddToCart = () => {
+    addToCart(product,quantity,totalPrice);
+    navigation.navigate('CartScreen');
+  };
+
 
   return (
     <View style={styles.container}>
@@ -38,10 +44,10 @@ const ProductDetails = () => {
         <View style={styles.headerProductWrapper}>
           <View style={styles.header}>
             <Pressable onPress={handlePressBack} style={styles.backButton}>
-              <Ionicons name="chevron-back-outline" size={24} color="black" />
+              <Ionicons name="chevron-back-outline" size={28} color="black" />
             </Pressable>
             <Pressable onPress={handleCartPress} style={styles.cartButton}>
-              <Ionicons name="cart" size={24} color="black" />
+              <Ionicons name="cart-outline" size={28} color="black" />
             </Pressable>
           </View>
 
@@ -71,7 +77,7 @@ const ProductDetails = () => {
 
       <View style={styles.addToCart}>
         <Text style={styles.price}>${totalPrice}</Text>
-        <Pressable style={styles.buttonAddToCart}>
+        <Pressable onPress={handleAddToCart} style={styles.buttonAddToCart}>
           <Text style={{ fontSize: 20, fontWeight: '900', color: 'white' }}>
             Agregar al carrito
           </Text>
@@ -84,34 +90,39 @@ const ProductDetails = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#grey',
+    backgroundColor: '#F6FDFF',
   },
   headerProductWrapper: {
-    backgroundColor: '#fff',
+    backgroundColor: 'white',
     borderBottomLeftRadius: 70,
     borderBottomRightRadius: 70,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 4,
+    elevation: 10,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 20,
-    paddingHorizontal: 20,
-  },
-  backButton: {
-    padding: 10,
-    borderRadius: 10,
-    backgroundColor: '#E0E7FF',
-  },
-  cartButton: {
-    padding: 10,
-    borderRadius: 10,
-    backgroundColor: '#E0E7FF',
-  },
+    padding: 20,
+  },  
+  // backButton: {
+  //   padding: 10,
+  //   // borderRadius: 10,
+  //   // backgroundColor: '#E0E7FF',
+  // },
+  // cartButton: {
+  //   padding: 10,
+  //   // borderRadius: 10,
+  //   // backgroundColor: '#E0E7FF',
+  // },
   productContainer: {
     paddingTop: 5,
     alignItems: 'center',
     paddingBottom: 60,
+    
   },
   image: {
     marginBottom: 10,
@@ -119,7 +130,7 @@ const styles = StyleSheet.create({
     height: 220,
   },
   name: {
-    fontSize: 30,
+    fontSize: 32,
     fontWeight: '900',
   },
   quantity: {
@@ -129,20 +140,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderColor: 'black',
-    borderRadius: 15,
+    borderRadius: 30,
     backgroundColor: 'white',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 4,
+    elevation: 10,
   },
   plusQuantity: {
     padding: 10,
     marginLeft: 10,
-    backgroundColor: '#E0E7FF',
-    borderRadius: 15,
+    borderRadius: 30,
   },
   minusQuantity: {
     padding: 10,
     marginRight: 10,
-    backgroundColor: '#E0E7FF',
-    borderRadius: 15,
+    borderRadius: 30,
   },
   infoContainer: {
     marginTop: 30,
@@ -159,12 +173,12 @@ const styles = StyleSheet.create({
   },
   addToCart: {
     position: 'absolute',
-    bottom: 30,
-    left: 0,
-    right: 0,
+    bottom: 0,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
+    paddingBottom: 15,
+    paddingTop: 15,
   },
   price: {
     flex: 1,
@@ -177,7 +191,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingHorizontal: 30,
     paddingBottom: 10,
-    borderRadius: 10,
+    borderRadius: 30,
     alignItems: 'center',
     marginLeft: 'auto',
   },

@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         width: '48%',
         backgroundColor: '#fff',
-        borderRadius: 20,
+        borderRadius: 25,
         marginRight: 15,
         padding: 15,
         shadowColor: '#000',
@@ -59,18 +59,18 @@ const styles = StyleSheet.create({
     cardName: {
         fontSize: 19,
         alignItems: 'center',
-        fontWeight: 'bold',
+        fontWeight: '900',
         textAlign: 'center',
     },
     cardPrice: {
         fontSize: 20,
         color: '#4A90E2',
         marginTop: 10,
-        fontWeight: 'bold',
+        fontWeight: '800',
+
     },
     cardDescription: {
         fontSize: 12,
-        color: 'grey',
     },
 });
 export default ProductCard;

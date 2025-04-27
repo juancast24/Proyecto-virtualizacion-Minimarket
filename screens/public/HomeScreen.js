@@ -114,7 +114,7 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#grey',
+        backgroundColor: '#F6FDFF',
     },
     content: {
         paddingHorizontal: 10,
@@ -124,20 +124,12 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
     },
-    imageContainer: {
-        backgroundColor: 'white',
-        borderRadius: 80,
-        width: 130,
-        height: 130,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
     logo: {
-        width: 110,
-        height: 110,
+        width: 120,
+        height: 120,
     },
     title: {
-        fontSize: 50,
+        fontSize: 45,
         paddingTop: 20,
         paddingBottom: 20,
         fontWeight: '900',
@@ -167,7 +159,7 @@ const styles = StyleSheet.create({
         marginBottom: 15,
     },
     categoryButton: {
-        backgroundColor: '#E0E7FF',
+        backgroundColor: '#E4F0FF',
         borderRadius: 20,
         marginRight: 10,
         padding: 8,

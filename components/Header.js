@@ -11,11 +11,11 @@ const Header = ({ onMenuPress, onProfilePress, onCartPress }) => {
             <View style={styles.headerContainer}>
                 {/* Botón de menú */}
                 <Pressable onPress={onMenuPress}>
-                    <Ionicons name="menu" size={30} color="black" />
+                    <Ionicons name="menu-outline" size={30} color="black" />
                 </Pressable>
                 {/* Botón de perfil */}
                 <Pressable onPress={onProfilePress}>
-                    <Ionicons name="person" size={30} color="black" />
+                    <Ionicons name="person-outline" size={30} color="black" />
                 </Pressable>
             </View>
         </View>
