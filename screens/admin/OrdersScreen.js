@@ -1,16 +1,22 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable, Modal } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Pressable, Modal, TextInput } from 'react-native';
 import Header from '../../components/Header';
 
 const OrdersScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [searchText, setSearchText] = useState('');
 
   const orders = [
     { id: '1', name: 'Juan Pérez', date: '2025-04-17', status: 'Pendiente', items: ['Manzana', 'Pan'], total: 4500, address: 'Calle Falsa 123' },
     { id: '2', name: 'Ana López', date: '2025-04-16', status: 'Enviado', items: ['Leche', 'Huevos'], total: 18000, address: 'Calle Falsa 12143' },
     // Agrega más pedidos aquí
   ];
+
+   // Filtrar pedidos según el texto de búsqueda
+   const filteredOrders = orders.filter(order =>
+    order.name.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   const handlePressOrder = (order) => {
     setSelectedOrder(order);
@@ -41,9 +47,18 @@ const OrdersScreen = () => {
   );
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F7FAFC', padding: 10 }}>
+    <View style={{ flex: 1, backgroundColor: '#grey', padding: 10 }}>
         <Header onMenuPress={handleMenuPress} onProfilePress={handleProfilePress} />
       <Text style={styles.title}>Pedidos</Text>
+
+      {/* Buscador */}
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Buscar por nombre"
+        value={searchText}
+        onChangeText={setSearchText}
+      />
+
       <View style={styles.tableHeader}>
         <Text style={styles.headerCell}>ID</Text>
         <Text style={styles.headerCell}>Nombre</Text>
@@ -53,7 +68,7 @@ const OrdersScreen = () => {
         <Text style={styles.headerCell}>Acción</Text>
       </View>
       <FlatList
-        data={orders}
+        data={filteredOrders}
         renderItem={renderOrder}
         keyExtractor={(item) => item.id}
       />
@@ -93,6 +108,15 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
+    textAlign: 'center',
+  },
+  searchInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 15,
+    backgroundColor: '#fff',
   },
   tableHeader: {
     flexDirection: 'row',
