@@ -12,6 +12,17 @@ const TablaEjemplo = () => {
     { nombre: 'Pan', categoria: 'Arinas', precio: '$2.000', cantidad: '1', imagen: 'https://definicion.de/wp-content/uploads/2019/05/pan-2.jpg'  },
   ];
 
+  const handleMenuPress = () => {
+    alert('Menu');
+  };
+  const handleProfilePress = () => {
+    if (authState.authenticated) {
+        navigation.navigate('AccountScreenAdmin'); // si ya está logueado, ve al perfil
+    }else{  
+        navigation.navigate('Login');// si no está logueado, ve al login
+    }
+};
+
   // Filtrar los datos según el texto de búsqueda
   const filteredData = datos.filter((item) =>
     item.nombre.toLowerCase().includes(searchText.toLowerCase())
@@ -20,7 +31,6 @@ const TablaEjemplo = () => {
   return (
     
     <ScrollView>
-
       {/* Buscador */}
       <View style={styles.searchContainer}>
         <TextInput
