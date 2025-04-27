@@ -4,6 +4,7 @@ import AdminDashboard from '../screens/admin/AdminDashboard';
 import CreateProduct from '../screens/admin/CreateProduct';
 import OrdersScreen from '../screens/admin/OrdersScreen';
 import AccountScreenAdmin from '../screens/admin/AccountScreenAdmin';
+import UserManagementScreen from '../screens/admin/UserManagementScreen';
 
 const Stack = createStackNavigator();
 
@@ -15,6 +16,7 @@ const AdminNavigator = () => {
       <Stack.Screen name="CreateProduct" component={CreateProduct} /> 
       <Stack.Screen name="OrdersScreen" component={OrdersScreen} />
       <Stack.Screen name="AccountScreenAdmin" component={AccountScreenAdmin} />
+      <Stack.Screen name="UserManagement" component={UserManagementScreen} />
     </Stack.Navigator>
   );
 };
