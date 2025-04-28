@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, Pressable, Modal, TextInput } from 'react-native';
 import Header from '../../components/Header';
+import {useAuth} from '../../context/AuthContext';
+import { useNavigation } from '@react-navigation/native';
 
 const OrdersScreen = () => {
+
+  const { authState } = useAuth();
+  const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [searchText, setSearchText] = useState('');
@@ -27,9 +32,12 @@ const OrdersScreen = () => {
     alert('Menu');
   };
   const handleProfilePress = () => {
-    alert('Perfil');
-  };
-
+    if (authState.authenticated) {
+        navigation.navigate('AccountScreenAdmin'); // si ya está logueado, ve al perfil
+    }else{  
+        navigation.navigate('Login');// si no está logueado, ve al login
+    }
+};
   
   const renderOrder = ({ item }) => (
     

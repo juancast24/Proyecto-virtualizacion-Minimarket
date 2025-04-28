@@ -2,34 +2,19 @@ import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
+import { products } from '../data/products';
 import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput } from 'react-native';
+
 
 const TablaEjemplo = () => {
   const [searchText, setSearchText] = useState(''); // Estado para el texto de búsqueda
-  const datos = [
-    { nombre: 'Arroz', categoria: 'Grano', precio: '$2.190', cantidad: '1', imagen: 'https://supermercadolaestacion.com/50709-large_default/arroz-diana-x-500-gramos.jpg' },
-    { nombre: 'Frijoles', categoria: 'Grano', precio: '$4.600', cantidad: '1', imagen: 'https://lovimarket.com/store/wp-content/uploads/2020/08/frijol_seda.jpg'  },
-    { nombre: 'Pan', categoria: 'Arinas', precio: '$2.000', cantidad: '1', imagen: 'https://definicion.de/wp-content/uploads/2019/05/pan-2.jpg'  },
-  ];
-
-  const handleMenuPress = () => {
-    alert('Menu');
-  };
-  const handleProfilePress = () => {
-    if (authState.authenticated) {
-        navigation.navigate('AccountScreenAdmin'); // si ya está logueado, ve al perfil
-    }else{  
-        navigation.navigate('Login');// si no está logueado, ve al login
-    }
-};
 
   // Filtrar los datos según el texto de búsqueda
-  const filteredData = datos.filter((item) =>
-    item.nombre.toLowerCase().includes(searchText.toLowerCase())
+  const filteredData = products.filter((item) =>
+    item.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
   return (
-    
     <ScrollView>
       {/* Buscador */}
       <View style={styles.searchContainer}>
@@ -46,6 +31,7 @@ const TablaEjemplo = () => {
             <Text style={styles.columna}>Producto</Text>
             <Text style={styles.columna}>Categoria</Text>
             <Text style={styles.columna}>Precio</Text>
+            <Text style={styles.columna}>Descripcion</Text>
             <Text style={styles.columna}>Stock</Text>
             <Text style={styles.columna}>Imagen</Text>
             <Text style={styles.columna}>Aciones</Text>
@@ -54,12 +40,13 @@ const TablaEjemplo = () => {
             {/* Filas de datos */}
         {filteredData.map((item, index) => (
           <View key={index} style={styles.fila}>
-            <Text style={styles.columna}>{item.nombre}</Text>
-            <Text style={styles.columna}>{item.categoria}</Text>
-            <Text style={styles.columna}>{item.precio}</Text>
-            <Text style={styles.columna}>{item.cantidad}</Text>
+            <Text style={styles.columna}>{item.name}</Text>
+            <Text style={styles.columna}>{item.category}</Text>
+            <Text style={styles.columna}>{item.price}</Text>
+            <Text style={styles.columna}>{item.description}</Text>
+            <Text style={styles.columna}>{item.stock}</Text>
             <View style={styles.columna}>
-              <Image source={{ uri: item.imagen }} style={{ width: 50, height: 50 }} />
+              <Image source={{ uri: item.image }} style={{ width: 50, height: 50 }} />
             </View>
             <View style={styles.columna}>
               <Pressable onPress={() => console.log('Editar')}>

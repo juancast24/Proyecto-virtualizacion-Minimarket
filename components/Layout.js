@@ -2,16 +2,25 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import Header from './Header';
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../context/AuthContext';
 
-const Layout = ({ children }) => {
+const Layout = ({ children}) => {
     const navigation = useNavigation();
+    const { authState } = useAuth(); // Obtén el estado global
+    const userRole = authState.role; // Obtén el rol del usuario
 
     const handleMenuPress = () => {
         navigation.toggleDrawer?.(); // si usas Drawer
     };
 
     const handleProfilePress = () => {
-        navigation.navigate('Account'); // o la screen que uses para perfil
+        if (userRole === 'admin') {
+            navigation.navigate('AccountScreenAdmin'); // Navega a la pantalla de admin
+        } else if (userRole === 'user') {
+            navigation.navigate('AccountScreen'); // Navega a la pantalla de usuario
+        } else {
+            navigation.navigate('Login'); // Navega a la pantalla de login si no está logueado
+        }
     };
 
     const handleCartPress = () => {

@@ -41,9 +41,15 @@ const HomeScreen = () => {
     };
     const handleProfilePress = () => {
         if (authState.authenticated) {
-            navigation.navigate('AccountScreen'); // si ya está logueado, ve al perfil
+            if (authState.role === 'admin') {
+                navigation.navigate('AccountScreenAdmin'); // Si el rol es admin, redirige a AccountScreenAdmin
+            } else if (authState.role === 'user') {
+                navigation.navigate('AccountScreen'); // Si el rol es user, redirige a AccountScreen
+            } else {
+                navigation.navigate('Login'); // Si no tiene rol, redirige a Login
+            }
         } else {
-            navigation.navigate('Login');// si no está logueado, ve al login
+            navigation.navigate('Login'); // Si no está autenticado, redirige a Login
         }
     };
 

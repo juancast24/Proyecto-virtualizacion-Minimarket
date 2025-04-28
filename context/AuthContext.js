@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from 'react';
 
+
 // Roles disponibles
 const Role = {
   ADMIN: 'admin',
