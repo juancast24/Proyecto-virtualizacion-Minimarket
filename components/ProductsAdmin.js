@@ -1,18 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
-import { products } from '../data/products';
-import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput } from 'react-native';
+import { products, deleteProduct, loadProducts } from '../data/products';
+import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput, Alert } from 'react-native';
 
 
-const TablaEjemplo = () => {
+const ProductsAdmin = () => {
+
+  const navigation = useNavigation();
+  
   const [searchText, setSearchText] = useState(''); // Estado para el texto de búsqueda
+
+  useEffect(() => {
+    // Cargar productos al inicio
+    loadProducts();
+  }, []);
+
+  const handleEdit = (productName)=> {
+    navigation.navigate('EditProduct', {productName}); // Navega a EditProduct con el name del producto
+  };
 
   // Filtrar los datos según el texto de búsqueda
   const filteredData = products.filter((item) =>
     item.name.toLowerCase().includes(searchText.toLowerCase())
   );
+
+  const handleDelete = (productName) => {
+    Alert.alert(
+      'Confirmar eliminación',
+      `¿Estás seguro de que deseas eliminar el producto "${productName}"?`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Eliminar',
+          style: 'destructive',
+          onPress: () => {
+            deleteProduct(productName); // Llama a la función para eliminar el producto
+            Alert.alert('Éxito', `El producto "${productName}" ha sido eliminado.`);
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <ScrollView>
@@ -49,10 +79,10 @@ const TablaEjemplo = () => {
               <Image source={{ uri: item.image }} style={{ width: 50, height: 50 }} />
             </View>
             <View style={styles.columna}>
-              <Pressable onPress={() => console.log('Editar')}>
+            <Pressable onPress={() => handleEdit(item.name)}>
                 <Feather name="edit" size={24} color="#2980b9" />
-              </Pressable>
-              <Pressable onPress={() => console.log('Eliminar')}>
+            </Pressable>
+              <Pressable onPress={() => handleDelete(item.name)}>
                 <Ionicons name="trash-outline" size={24} color="#e74c3c" />
               </Pressable>
             </View>
@@ -109,4 +139,4 @@ const styles = StyleSheet.create({
   
 });
 
-export default TablaEjemplo;
+export default ProductsAdmin;

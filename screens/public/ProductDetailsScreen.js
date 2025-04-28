@@ -23,7 +23,11 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
 
   const increaseQuantity = () => {
-    setQuantity(prev => prev + 1);
+    if (quantity < product.stock) {
+      setQuantity(prev => prev + 1);
+    } else {
+      alert('No hay más stock disponible.');
+    }
   };
 
   const decreaseQuantity = () => {

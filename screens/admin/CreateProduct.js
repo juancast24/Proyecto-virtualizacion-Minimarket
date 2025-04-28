@@ -1,18 +1,47 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Pressable, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, StyleSheet, Pressable, Image, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker'; 
+import { addProduct } from '../../data/products';
 import { useNavigation } from '@react-navigation/native';
 
 const CreateProduct = () => {
-  const [productName, setProductName] = useState('');
+  const navigation = useNavigation();
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
   const [price, setPrice] = useState('');
   const [stock, setStock] = useState('');
-  const [imagen, setImagen] = useState('');
+  const [image, setImage] = useState('');
 
   const handleCreateProduct = () => {
-    console.log('Producto creado:', { productName, category, price, stock, imagen });
-    // Aquí agregar la lógica para guardar el producto
+    if (!name || !description || !category || !price || !stock || !image) {
+      Alert.alert('Error', 'Por favor, completa todos los campos.');
+      return;
+    }
+
+    const newProduct = {
+      name,
+      description,
+      category,
+      price: parseFloat(price),
+      stock: parseInt(stock, 10),
+      image,
+    };
+
+    try {
+      addProduct(newProduct); // Llama a la función para agregar el producto
+      Alert.alert('Éxito', 'Producto creado exitosamente.');
+      // Limpia los campos después de crear el producto
+      setName('');
+      setDescription('');
+      setCategory('');
+      setPrice('');
+      setStock('');
+      setImage('');
+    } catch (error) {
+      Alert.alert('Error', 'Hubo un problema al crear el producto.');
+      console.error(error);
+    }
   };
 
   const categories = ['Aseo hogar', 'Despensa', 'Frutas Verduras', 'Carnes', 'Lacteos', 'Higiene Personal'];
@@ -23,8 +52,14 @@ const CreateProduct = () => {
       <TextInput
         style={styles.input}
         placeholder="Nombre del producto"
-        value={productName}
-        onChangeText={setProductName}
+        value={name}
+        onChangeText={setName}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Descripción del producto"
+        value={description}
+        onChangeText={setDescription}
       />
       <Picker
         selectedValue={category}
@@ -53,12 +88,12 @@ const CreateProduct = () => {
       <TextInput
         style={styles.input}
         placeholder="URL de la Imagen"
-        value={imagen}
-        onChangeText={setImagen}
+        value={image}
+        onChangeText={setImage}
       />
-      {imagen ? (
+      {image ? (
   <Image
-  source={{ uri: `${imagen}?timestamp=${new Date().getTime()}` }}
+  source={{ uri: `${image}?timestamp=${new Date().getTime()}` }}
   style={styles.imagePreview}
 />
 ) : (
@@ -66,6 +101,13 @@ const CreateProduct = () => {
 )}
       <Pressable style={styles.button} onPress={handleCreateProduct}>
         <Text style={styles.buttonText}>Crear Producto</Text>
+      </Pressable>
+      {/* Nuevo botón para ir a AdminDashboard */}
+      <Pressable
+        style={[styles.button, { backgroundColor: '#27ae60', marginTop: 20 }]} // Estilo adicional
+        onPress={() => navigation.navigate('AdminDashboard')} // Navega a AdminDashboard
+      >
+        <Text style={styles.buttonText}>Atras</Text>
       </Pressable>
     </View>
   );
@@ -117,7 +159,7 @@ const styles = StyleSheet.create({
   },
   imagePreview: {
     width: '100%',
-    height: 220,
+    height: 150,
     resizeMode: 'contain',
     marginBottom: 15,
     borderWidth: 1,

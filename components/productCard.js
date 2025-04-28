@@ -1,9 +1,14 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
+import { loadProducts } from '../data/products';  
 import { View, Text, StyleSheet, FlatList, Image, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const ProductCard = ({products}) => {
     const navigation = useNavigation();
+    useEffect(() => {
+          // Cargar productos al inicio
+          loadProducts();
+        }, []);
     const handlePressProduct = (product) => {
         navigation.navigate('ProductDetails', { product });
     };
@@ -13,9 +18,12 @@ const ProductCard = ({products}) => {
             showsVerticalScrollIndicator={false}
             numColumns={2}
             columnWrapperStyle={{ justifyContent: 'space-between' }}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) => item.name}
             renderItem={({ item }) => (
-                <Pressable style={({pressed})=>[styles.card,pressed && styles.cardPressed]} onPress={()=>handlePressProduct(item)} >
+                <Pressable
+                    style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+                    onPress={() => handlePressProduct(item)}
+                >
                     <View style={styles.imageContainer}>
                         <Image source={{ uri: item.image }} style={styles.cardImage} />
                     </View>
