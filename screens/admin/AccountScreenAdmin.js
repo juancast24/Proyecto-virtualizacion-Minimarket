@@ -4,13 +4,13 @@ import Layout from '../../components/Layout';
 import { useCart } from '../../context/CartContext';  // Custom hook para carrito y sesión
 
 const AccountScreen = ({ navigation }) => {
+    const { logout } = useCart(); // Obtén la función logout del contexto
     
-    const { logout } = useCart();
-
     const handleLogout = async () => {
         try {
-            await logout();  // limpia carrito y usuario
-            navigation.navigate('Login');  // redirige al login
+            logout(); // Llama al método logout del contexto para limpiar la sesión
+            // Redirige al HomeScreen
+            navigation.navigate('Home');
         } catch (error) {
             console.error('Error al cerrar sesión:', error);
         }
@@ -51,14 +51,20 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontWeight: 'bold',
         marginBottom: 16,
+        textAlign: 'center',
     },
     logoutContainer: {
-        marginTop: 20,
+        marginTop: 350,
+        marginBottom: 50,
+        width: '45%',
+        alignSelf: 'center',
     },button: {
         backgroundColor: '#007BFF',
         padding: 10,
-        borderRadius: 5,
+        borderRadius: 50,
         alignItems: 'center',
+        width: '60%',
+        alignSelf: 'center',
     },
     buttonText: {
         color: '#FFFFFF',

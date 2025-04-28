@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   Button,
   StyleSheet,
   Alert,
+  BackHandler,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
@@ -29,6 +30,20 @@ const LoginScreen = () => {
       navigation.navigate('UserDashboard');
     }
   };
+
+ // Sobrescribir el comportamiento del botón "Atrás"
+ useEffect(() => {
+  const backHandler = BackHandler.addEventListener(
+    'hardwareBackPress',
+    () => {
+      navigation.navigate('Home'); // Redirige siempre al HomeScreen
+      return true; // Evita el comportamiento predeterminado
+    }
+  );
+
+  return () => backHandler.remove(); // Limpia el evento al desmontar el componente
+}, [navigation]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>

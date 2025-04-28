@@ -1,6 +1,7 @@
-import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+
+import { View, Text, Pressable, StyleSheet, BackHandler, } from 'react-native';
 import {useAuth} from '../../context/AuthContext';
+import React, { useState,useEffect } from 'react';
 import TablaEjemplo from '../../components/ProductsAdmin';
 import Header from '../../components/Header';
 import { useNavigation } from '@react-navigation/native';
@@ -12,6 +13,20 @@ const AdminDashboard = () => {
   const handleMenuPress = () => {
     alert('Menu');
   };
+
+  // Sobrescribir el comportamiento del botón "Atrás"
+   useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        navigation.navigate('AdminDashboard'); // Redirige siempre al HomeScreen
+        return true; // Evita el comportamiento predeterminado
+      }
+    );
+  
+    return () => backHandler.remove(); // Limpia el evento al desmontar el componente
+  }, [navigation]);
+  
   const handleProfilePress = () => {
     if (authState.authenticated) {
         navigation.navigate('AccountScreenAdmin'); // si ya está logueado, ve al perfil
