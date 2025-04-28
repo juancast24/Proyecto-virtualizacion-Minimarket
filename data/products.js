@@ -24,14 +24,16 @@ const saveProducts = async () => {
   };
 
   export const updateProduct = async (name, updatedProduct) => {
-    const updatedProducts = products.filter((product) => {
+    const updatedProducts = products.map((product) => {
         if (product.name === name) {
             return { ...product, ...updatedProduct }; // Actualiza el producto encontrado
         }
         return product; // Mantén los demás productos sin cambios
     });
 
-    if (JSON.stringify(products) === JSON.stringify(updatedProducts)) {
+    // Verifica si el producto fue encontrado y actualizado
+    const productExists = products.some((product) => product.name === name);
+    if (!productExists) {
         throw new Error(`Producto con nombre "${name}" no encontrado.`);
     }
 
