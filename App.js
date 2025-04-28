@@ -5,11 +5,15 @@ import { CartProvider } from './context/CartContext'; // importa CartProvider
 import PublicNavigator from './navigation/PublicNavigator';
 
 export default function App() {
+
+
   return (
+    
       <AuthProvider>
         <CartProvider>
           <NavigationContainer>
             <PublicNavigator />
+             
           </NavigationContainer>
         </CartProvider>
       </AuthProvider>

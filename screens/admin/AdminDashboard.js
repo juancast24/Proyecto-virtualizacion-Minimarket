@@ -2,9 +2,10 @@
 import { View, Text, Pressable, StyleSheet, BackHandler, } from 'react-native';
 import {useAuth} from '../../context/AuthContext';
 import React, { useState,useEffect } from 'react';
-import TablaEjemplo from '../../components/ProductsAdmin';
+import ProductsAdmin from '../../components/ProductsAdmin';
 import Header from '../../components/Header';
 import { useNavigation } from '@react-navigation/native';
+import { products, deleteProduct, loadProducts } from '../../data/products';
 
 const AdminDashboard = () => {
   const { authState } = useAuth();
@@ -13,9 +14,11 @@ const AdminDashboard = () => {
   const handleMenuPress = () => {
     alert('Menu');
   };
+  
 
   // Sobrescribir el comportamiento del botón "Atrás"
    useEffect(() => {
+    loadProducts();
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       () => {
@@ -47,7 +50,7 @@ const AdminDashboard = () => {
     <View style={{ flex: 1, backgroundColor: '#grey' }}>
       <Header onMenuPress={handleMenuPress} onProfilePress={handleProfilePress} />
       <Text style={styles.title}>Productos</Text>
-      <TablaEjemplo />
+      <ProductsAdmin />
       <View style={styles.buttonContainer}>
         <Pressable style={styles.button} onPress={handleCreateProductPress}>
           <Text style={styles.buttonText}>Crear Producto</Text>

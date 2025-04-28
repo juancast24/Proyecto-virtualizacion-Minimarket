@@ -107,6 +107,12 @@ const OrdersScreen = () => {
           </View>
         </Modal>
       )}
+      <Pressable
+                          style={[styles.button, { backgroundColor: '#27ae60', marginTop: 20 }]} // Estilo adicional
+                          onPress={() => navigation.navigate('AdminDashboard')} // Navega a AdminDashboard
+                        >
+                          <Text style={styles.buttonText}>Atras</Text>
+                        </Pressable>
     </View>
   );
 };
@@ -192,6 +198,21 @@ const styles = StyleSheet.create({
   editButtonText: {
     color: 'white',
     textAlign: 'center',
+  },
+  button: {
+    backgroundColor: '#2980b9',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+    width: '50%',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

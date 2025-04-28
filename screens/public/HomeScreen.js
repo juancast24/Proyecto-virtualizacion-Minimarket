@@ -1,17 +1,23 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, FlatList, Pressable, Image } from 'react-native';
 import Header from '../../components/Header';
 import ProductCard from '../../components/ProductCard';
 import { StatusBar } from 'expo-status-bar';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { products } from '../../data/products';
+import { products, deleteProduct, loadProducts } from '../../data/products';
 import { useAuth } from '../../context/AuthContext';
 
 const categories = ['Todas', 'Aseo hogar', 'Despensa', 'Frutas Verduras', 'Carnes', 'Lacteos', 'Higiene Personal'];
 
 const HomeScreen = () => {
+
+    useEffect(() => {
+      // Cargar productos al inicio
+      loadProducts();
+    }, []);
+
     const { authState } = useAuth();
     const navigation = useNavigation();
     const [selectedCategory, setSelectedCategory] = useState(null);//estado para la categoria seleccionada
@@ -62,10 +68,9 @@ const HomeScreen = () => {
             {/* Contenido encima de la lista */}
             <View style={styles.content}>
                 <View style={styles.containerTitle}>
-                    <Text style={styles.title}>
-                        <Text >Empieza{"\n"}</Text>
+                    <Text style={styles.title}>Empieza{"\n"}
                         <Text style={{ color: '#4A90E2' }}>Elije, </Text>
-                        <Text >lleva</Text>
+                        lleva
                     </Text>
                     <View style={styles.imageContainer}>
                         <Image source={require('../../assets/logo-market.png')} style={styles.logo} />
