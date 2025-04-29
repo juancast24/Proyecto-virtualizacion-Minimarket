@@ -7,7 +7,7 @@ const EditProduct = ({ route, navigation }) => {
     const { productName } = route.params;
     const [product, setProduct] = useState(null);
 
-    const [name, setName] = useState(''); // Inicializa el nombre del producto
+    const [name, setName] = useState(productName); // Inicializa el nombre del producto
     const [category, setCategory] = useState('');
     const [price, setPrice] = useState('');
     const [description, setDescription] = useState('');
@@ -19,7 +19,6 @@ const EditProduct = ({ route, navigation }) => {
         const foundProduct = products.find((item) => item.name === productName);
         if (foundProduct) {
             setProduct(foundProduct);
-            setName(foundProduct.name);
             setCategory(foundProduct.category);
             setPrice(foundProduct.price.toString());
             setDescription(foundProduct.description);
@@ -40,14 +39,14 @@ const EditProduct = ({ route, navigation }) => {
         const updatedProduct = {
             name,
             category,
-            price,
+            price: parseFloat(price),
             description,
-            stock,
+            stock: parseInt(stock, 10),
             image,
         };
 
         try {
-            await updateProduct(productName, updatedProduct); // Actualiza el producto
+            await updateProduct(product.name, updatedProduct); // Actualiza el producto
             Alert.alert('Éxito', 'Producto actualizado correctamente.');
             navigation.goBack(); // Regresa a la pantalla anterior
         } catch (error) {
