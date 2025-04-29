@@ -1,14 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import { loadProducts } from '../data/products';  
 import { View, Text, StyleSheet, FlatList, Image, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const ProductCard = ({products}) => {
     const navigation = useNavigation();
-    useEffect(() => {
-          // Cargar productos al inicio
-          loadProducts();
-        }, []);
+    
     const handlePressProduct = (product) => {
         navigation.navigate('ProductDetails', { product });
     };

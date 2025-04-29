@@ -6,17 +6,12 @@ import ProductCard from '../../components/ProductCard';
 import { StatusBar } from 'expo-status-bar';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { products, deleteProduct, loadProducts } from '../../data/products';
+import { products} from '../../data/products';
 import { useAuth } from '../../context/AuthContext';
 
 const categories = ['Todas', 'Aseo hogar', 'Despensa', 'Frutas Verduras', 'Carnes', 'Lacteos', 'Higiene Personal'];
 
 const HomeScreen = () => {
-
-    useEffect(() => {
-      // Cargar productos al inicio
-      loadProducts();
-    }, []);
 
     const { authState } = useAuth();
     const navigation = useNavigation();
