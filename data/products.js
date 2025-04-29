@@ -1,4 +1,5 @@
-export const products = [
+import AsyncStorage from '@react-native-async-storage/async-storage';
+export let products = [
     {
         id: 1,
         name: 'Manzana',
@@ -90,4 +91,4 @@ export const products = [
         stock: 1,
     },
 
-]
+];

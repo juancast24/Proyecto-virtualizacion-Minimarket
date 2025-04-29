@@ -1,23 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { products } from '../data/products';
-import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput, Alert } from 'react-native';
 
 
-const TablaEjemplo = () => {
+const ProductsAdmin = () => {
+
+  const navigation = useNavigation();
+  
   const [searchText, setSearchText] = useState(''); // Estado para el texto de búsqueda
+
+
+
 
   // Filtrar los datos según el texto de búsqueda
   const filteredData = products.filter((item) =>
     item.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
+  const handleDelete = (productName) => {
+    Alert.alert(
+      'Confirmar eliminación',
+      `¿Estás seguro de que deseas eliminar el producto "${productName}"?`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Eliminar',
+          style: 'destructive',
+          onPress: () => {
+            deleteProduct(productName); // Llama a la función para eliminar el producto
+            Alert.alert('Éxito', `El producto "${productName}" ha sido eliminado.`);
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <ScrollView>
       {/* Buscador */}
       <View style={styles.searchContainer}>
+        <Ionicons name="search" size={24} color="gray" style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
           placeholder="Buscar por nombre del producto"
@@ -49,10 +74,10 @@ const TablaEjemplo = () => {
               <Image source={{ uri: item.image }} style={{ width: 50, height: 50 }} />
             </View>
             <View style={styles.columna}>
-              <Pressable onPress={() => console.log('Editar')}>
+            <Pressable onPress={() => handleEdit(item.name)}>
                 <Feather name="edit" size={24} color="#2980b9" />
-              </Pressable>
-              <Pressable onPress={() => console.log('Eliminar')}>
+            </Pressable>
+              <Pressable onPress={() => handleDelete(item.name)}>
                 <Ionicons name="trash-outline" size={24} color="#e74c3c" />
               </Pressable>
             </View>
@@ -65,19 +90,25 @@ const TablaEjemplo = () => {
 
 const styles = StyleSheet.create({
   searchContainer: {
-    margin: 10,
-    padding: 5,
-    backgroundColor: '#f1f1f1',
-    borderRadius: 10,
-  },
-  searchInput: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#fff',
-  },
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 3,
+},
+searchIcon: {
+    marginRight: 8,
+},
+searchInput: {
+    fontSize: 16,
+    color: '#000',
+},
   tabla: {
     margin: 5,
     borderColor: 'transparent',
@@ -109,4 +140,4 @@ const styles = StyleSheet.create({
   
 });
 
-export default TablaEjemplo;
+export default ProductsAdmin;
