@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Alert, Image, TouchableOpacity} from 'react-native';
+import { View, Text, TextInput, StyleSheet, Alert, Image, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
 
@@ -18,13 +18,13 @@ const LoginScreen = () => {
     if (username.trim() === '' || password.trim() === '') {
       return Alert.alert('Error', 'Hay campos sin rellenar');
     }
-  
+
     const user = await onLogin(username.trim(), password);
-  
+
     if (!user) {
       return Alert.alert('Error', 'Usuario o contraseña incorrectos');
     }
-  
+
     // Redirigir dependiendo del rol del usuario
     if (user.role === 'admin') {
       navigation.navigate('AdminDashboard');
@@ -52,32 +52,32 @@ const LoginScreen = () => {
 
         {/* Botones de Login y Registro */}
         <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={[
-            styles.button,
-            { backgroundColor: isLogin ? '#4CAF50' : '#ccc' }, // Color dinámico
-          ]}
-          onPress={() => setIsLogin(true)}
-        >
-          <Text style={styles.buttonText}>Iniciar Sesión</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.button,
+              { backgroundColor: isLogin ? '#2f68ff' : '#4A90E2' }, // Color dinámico
+            ]}
+            onPress={() => setIsLogin(true)}
+          >
+            <Text style={styles.buttonText}>Iniciar Sesión</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[
-            styles.button,
-            { backgroundColor: !isLogin ? '#4CAF50' : '#ccc' }, // Color dinámico
-          ]}
-          onPress={() => setIsLogin(false)}
-        >
-          <Text style={styles.buttonText}>Registrarse</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.button,
+              { backgroundColor: !isLogin ? '#2f68ff' : '#4A90E2' }, // Color dinámico
+            ]}
+            onPress={() => setIsLogin(false)}
+          >
+            <Text style={styles.buttonText}>Registrarse</Text>
+          </TouchableOpacity>
         </View>
-        
-        <View style={styles.imageContainer}>
-        <Image source={require('../../assets/persona.png')} style={styles.persona} />
-      </View>
 
-          {/*    <Text style={styles.title}>{isLogin ? 'Iniciar Sesión' : 'Registro'}</Text> */}
+        <View style={styles.imageContainer}>
+          <Image source={require('../../assets/persona.png')} style={styles.persona} />
+        </View>
+
+        <Text style={styles.title}>{isLogin ? 'Iniciar Sesión' : 'Registro'}</Text>
 
         {/* Formulario de Login */}
         {isLogin ? (
@@ -97,7 +97,7 @@ const LoginScreen = () => {
               style={styles.input}
             />
             <TouchableOpacity style={styles.buttonLogin} onPress={handleLogin}>
-             <Text style={styles.buttonText}>Iniciar Sesión</Text>
+              <Text style={styles.buttonText}>Iniciar Sesión</Text>
             </TouchableOpacity>
           </>
         ) : (
@@ -131,9 +131,9 @@ const LoginScreen = () => {
               onChangeText={setConfirmPassword}
               style={styles.input}
             />
-          <TouchableOpacity style={styles.buttonRegister} onPress={handleRegister}>
-            <Text style={styles.buttonText}>Registrarse</Text>
-          </TouchableOpacity>
+            <TouchableOpacity style={styles.buttonRegister} onPress={handleRegister}>
+              <Text style={styles.buttonText}>Registrarse</Text>
+            </TouchableOpacity>
           </>
         )}
       </View>
@@ -147,12 +147,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     alignItems: 'center',
   },
-  persona:{
-    marginBottom:"10%",
-    height:70,
-    width:70,
-    backgroundColor:"#d5dbdb",
-    borderRadius:50,
+  persona: {
+    marginBottom: "10%",
+    height: 70,
+    width: 70,
+    backgroundColor: "#d5dbdb",
+    borderRadius: 25,
 
   },
   button: {
@@ -163,22 +163,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonLogin: {
-    backgroundColor: '#4CAF50', 
+    backgroundColor: '#2f68ff',
     paddingVertical: 12,
     paddingHorizontal: 25,
     borderRadius: 8,
     alignItems: 'center',
     marginBottom: 10,
   },
-  
+
   buttonRegister: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#2f68ff',
     paddingVertical: 15, // Asegura que el botón tenga un tamaño adecuado
     paddingHorizontal: 25,
     borderRadius: 8,
     alignItems: 'center',
   },
-  
+
   buttonText: {
     color: 'white',
     fontSize: 18,
@@ -187,11 +187,13 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 25,
     justifyContent: 'center', // Centra verticalmente
-    alignItems: 'center',  
+    alignItems: 'center',
     width: '100%',
     backgroundColor: '#4A90E2',
     borderRadius: 10,
-    padding: 40,
+    paddingTop: 0,
+    paddingHorizontal: 15,
+    padding: 35,
     elevation: 5,
   },
   title: {
@@ -217,12 +219,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff', // Fondo blanco (opcional)
   },
   logo: {
-    marginTop:"20%",
-    marginBottom:"0%",
+    marginTop: "20%",
+    marginBottom: "0%",
     width: 240,
     height: 240,
-    
-}
+
+  }
 });
 
 export default LoginScreen;
