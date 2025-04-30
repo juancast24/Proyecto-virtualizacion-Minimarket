@@ -24,22 +24,22 @@ export const AuthProvider = ({ children }) => {
       setAuthState({ authenticated: true, ...admin });
       return admin;
     }
+
+
+
     if (username === 'user' && password === 'user') {
       const user = { username, role: Role.USER };
       setAuthState({ authenticated: true, ...user });
       return user;
     }
     if (username.trim() === '' || password.trim() === '') {
-        alert('hay campos sin rellenar')
+        return alert('hay campos sin rellenar');
       }
-    else {
-        alert('Usuario o contraseña incorrectos');
-    }
   };
 
  // Función para manejar el registro de un usuario
- const onRegister = (username, password,phone) => {
-  if (username && password && phone) {
+ const onRegister = (username, password,confirmPassword,phone) => {
+  if (username.trim() && password.trim() && confirmPassword.trim() &&phone.trim()) {
     // Aquí normalmente registrarías al usuario en la base de datos, pero por ahora se simula
     setAuthState({ authenticated: true, username: username, role: Role.USER });
     alert('¡Usuario registrado con éxito!');
