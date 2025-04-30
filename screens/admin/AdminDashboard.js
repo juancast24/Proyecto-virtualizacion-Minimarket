@@ -7,6 +7,7 @@ import Header from '../../components/Header';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 
+
 const AdminDashboard = () => {
   const { authState } = useAuth();
   const navigation = useNavigation();
@@ -16,6 +17,8 @@ const AdminDashboard = () => {
   };
 
   const [searchText, setSearchText] = useState(''); // Estado para el texto de búsqueda
+ 
+  const {filteredData} = ProductsAdmin;
   
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
@@ -25,6 +28,8 @@ const AdminDashboard = () => {
         return true; // Evita el comportamiento predeterminado
       }
     );
+
+    
   
     return () => backHandler.remove();
   }, [navigation]);
@@ -46,19 +51,10 @@ const AdminDashboard = () => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#grey' }}>
+    <View style={{ flex: 1, backgroundColor: '#F6FDFF', paddingHorizontal: 10 }}> 
       <Header onMenuPress={handleMenuPress} onProfilePress={handleProfilePress} />
       <Text style={styles.title}>Productos</Text>
-      {/* Buscador */}
-            <View style={styles.searchContainer}>
-              <Ionicons name="search" size={24} color="gray" style={styles.searchIcon} />
-              <TextInput
-                style={styles.searchInput}
-                placeholder="Buscar por nombre del producto"
-                value={searchText}
-                onChangeText={(text) => setSearchText(text)}
-              />
-            </View>
+     
       <ProductsAdmin />
       <View style={styles.buttonContainer}>
         <Pressable style={styles.button} onPress={handleCreateProductPress}>
