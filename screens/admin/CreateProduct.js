@@ -104,7 +104,7 @@ const CreateProduct = () => {
       </Pressable>
       {/* Nuevo botón para ir a AdminDashboard */}
       <Pressable
-        style={[styles.button, { backgroundColor: '#27ae60', marginTop: 20 }]} // Estilo adicional
+        style={[styles.button, { backgroundColor: 'red', marginTop: 10 }]} // Estilo adicional
         onPress={() => navigation.navigate('AdminDashboard')} // Navega a AdminDashboard
       >
         <Text style={styles.buttonText}>Atras</Text>
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#2980b9',
     padding: 10,
     borderRadius: 5,
-    marginTop: 10,
+    marginTop: 1,
     width: '50%',
     alignSelf: 'center',
     justifyContent: 'center',
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
   },
   Picker: {

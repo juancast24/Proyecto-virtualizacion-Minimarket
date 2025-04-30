@@ -1,11 +1,11 @@
 
-import { View, Text, Pressable, StyleSheet, BackHandler, } from 'react-native';
+import { View, Text, Pressable, StyleSheet, BackHandler, TextInput } from 'react-native';
 import {useAuth} from '../../context/AuthContext';
 import React, { useState, useEffect } from 'react';
 import ProductsAdmin from '../../components/ProductsAdmin';
 import Header from '../../components/Header';
 import { useNavigation } from '@react-navigation/native';
-import { products, deleteProduct, loadProducts } from '../../data/products';
+import { Ionicons } from '@expo/vector-icons';
 
 const AdminDashboard = () => {
   const { authState } = useAuth();
@@ -14,6 +14,8 @@ const AdminDashboard = () => {
   const handleMenuPress = () => {
     alert('Menu');
   };
+
+  const [searchText, setSearchText] = useState(''); // Estado para el texto de búsqueda
   
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
@@ -47,6 +49,16 @@ const AdminDashboard = () => {
     <View style={{ flex: 1, backgroundColor: '#grey' }}>
       <Header onMenuPress={handleMenuPress} onProfilePress={handleProfilePress} />
       <Text style={styles.title}>Productos</Text>
+      {/* Buscador */}
+            <View style={styles.searchContainer}>
+              <Ionicons name="search" size={24} color="gray" style={styles.searchIcon} />
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Buscar por nombre del producto"
+                value={searchText}
+                onChangeText={(text) => setSearchText(text)}
+              />
+            </View>
       <ProductsAdmin />
       <View style={styles.buttonContainer}>
         <Pressable style={styles.button} onPress={handleCreateProductPress}>
@@ -86,6 +98,26 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
   },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  searchIcon: {
+      marginRight: 8,
+  },
+  searchInput: {
+      fontSize: 16,
+      color: '#000',
+},
 });
 
 export default AdminDashboard;

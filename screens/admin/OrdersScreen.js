@@ -113,7 +113,7 @@ const OrdersScreen = () => {
         </Modal>
       )}
       <Pressable
-                          style={[styles.button, { backgroundColor: '#27ae60', marginTop: 20 }]} // Estilo adicional
+                          style={[styles.button, { backgroundColor: 'red', marginTop: 20 }]} // Estilo adicional
                           onPress={() => navigation.navigate('AdminDashboard')} // Navega a AdminDashboard
                         >
                           <Text style={styles.buttonText}>Atras</Text>
