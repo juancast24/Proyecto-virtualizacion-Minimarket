@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, FlatList, Pressable, Modal, TextInput } from 'r
 import Header from '../../components/Header';
 import {useAuth} from '../../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
+import { Feather } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 
 const OrdersScreen = () => {
 
@@ -60,12 +62,15 @@ const OrdersScreen = () => {
       <Text style={styles.title}>Pedidos</Text>
 
       {/* Buscador */}
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Buscar por nombre"
-        value={searchText}
-        onChangeText={setSearchText}
-      />
+      <View style={styles.searchContainer}>
+        <Ionicons name="search" size={24} color="gray" style={styles.searchIcon} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Buscar por nombre"
+          value={searchText}
+          onChangeText={setSearchText}
+        />
+      </View>
 
       <View style={styles.tableHeader}>
         <Text style={styles.headerCell}>ID</Text>
@@ -107,6 +112,12 @@ const OrdersScreen = () => {
           </View>
         </Modal>
       )}
+      <Pressable
+                          style={[styles.button, { backgroundColor: 'red', marginTop: 20 }]} // Estilo adicional
+                          onPress={() => navigation.navigate('AdminDashboard')} // Navega a AdminDashboard
+                        >
+                          <Text style={styles.buttonText}>Atras</Text>
+                        </Pressable>
     </View>
   );
 };
@@ -118,14 +129,27 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: 'center',
   },
-  searchInput: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 15,
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#fff',
-  },
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 3,
+    marginBottom: 10,
+    },
+    searchIcon: {
+        marginRight: 8,
+    },
+    searchInput: {
+        fontSize: 16,
+        color: '#000',
+    },
   tableHeader: {
     flexDirection: 'row',
     backgroundColor: '#ddd',
@@ -192,6 +216,21 @@ const styles = StyleSheet.create({
   editButtonText: {
     color: 'white',
     textAlign: 'center',
+  },
+  button: {
+    backgroundColor: '#2980b9',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+    width: '50%',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

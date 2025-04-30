@@ -1,4 +1,4 @@
-export const products = [
+export let products = [
     {
         id: 1,
         name: 'Manzana',
@@ -90,4 +90,4 @@ export const products = [
         stock: 1,
     },
 
-]
+];

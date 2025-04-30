@@ -1,14 +1,14 @@
 import React from 'react';
 import { Text, StyleSheet, Button, View, Pressable } from 'react-native';
 import Layout from '../../components/Layout';
-import { useCart } from '../../context/CartContext';  // Custom hook para carrito y sesión
+import { useAuth } from '../../context/AuthContext';  // Custom hook para carrito y sesión
 
 const AccountScreen = ({ navigation }) => {
-    const { logout } = useCart(); // Obtén la función logout del contexto
+    const { onLogout } = useAuth(); // Obtén la función logout del contexto
     
     const handleLogout = async () => {
         try {
-            logout(); // Llama al método logout del contexto para limpiar la sesión
+            onLogout(); // Llama al método logout del contexto para limpiar la sesión
             // Redirige al HomeScreen
             navigation.navigate('Home');
         } catch (error) {
@@ -31,8 +31,7 @@ const AccountScreen = ({ navigation }) => {
                 </Pressable>
             </View>
             <View style={{ marginTop: 20 }}>
-                <Pressable 
-                    style={styles.button} 
+                <Pressable style={styles.button} 
                     onPress={() => navigation.navigate('UserManagement')}
                 >
                     <Text style={styles.buttonText}>Gestionar Usuarios</Text>
@@ -40,7 +39,9 @@ const AccountScreen = ({ navigation }) => {
             </View>
 
             <View style={styles.logoutContainer}>
-                <Button title="Cerrar sesión" onPress={handleLogout} />
+                <Pressable style={styles.button_logout} title="Cerrar sesión" onPress={handleLogout}> 
+                    <Text style={styles.buttonText}>Cerrar sesión</Text>
+                </Pressable> 
             </View>
         </Layout>
     );
@@ -54,9 +55,9 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     logoutContainer: {
-        marginTop: 350,
+        marginTop: "65%",
         marginBottom: 50,
-        width: '45%',
+        width: '65%',
         alignSelf: 'center',
     },button: {
         backgroundColor: '#007BFF',
@@ -69,7 +70,14 @@ const styles = StyleSheet.create({
     buttonText: {
         color: '#FFFFFF',
         fontWeight: 'bold',
-    }
+    },button_logout: {
+        backgroundColor: 'red',
+        padding: 10,
+        borderRadius: 50,
+        alignItems: 'center',
+        width: '60%',
+        alignSelf: 'center',
+    },
 });
 
 export default AccountScreen;

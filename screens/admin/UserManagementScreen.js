@@ -40,6 +40,7 @@ const UserManagementScreen = () => {
             <Text style={styles.title}>Gestión de Usuarios</Text>
                 {/* Buscador */}
                       <View style={styles.searchContainer}>
+                        <Ionicons name="search" size={24} color="gray" style={styles.searchIcon} />
                         <TextInput
                           style={styles.searchInput}
                           placeholder="Busqueda por nombre..."
@@ -119,18 +120,24 @@ const styles = StyleSheet.create({
         width: 60,
     },
     searchContainer: {
-    margin: 10,
-    padding: 5,
-    backgroundColor: '#f1f1f1',
-    borderRadius: 10,
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: '#fff',
+      borderRadius: 10,
+      paddingHorizontal: 10,
+      paddingVertical: 6,
+      shadowColor: '#000',
+      shadowOpacity: 0.1,
+      shadowOffset: { width: 0, height: 2 },
+      shadowRadius: 4,
+      elevation: 3,
+  },
+  searchIcon: {
+      marginRight: 8,
   },
   searchInput: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    backgroundColor: '#fff',
+      fontSize: 16,
+      color: '#000',
   },
 });
 
