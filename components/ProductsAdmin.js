@@ -40,16 +40,7 @@ const ProductsAdmin = () => {
 
   return (
     <ScrollView>
-      {/* Buscador */}
-      <View style={styles.searchContainer}>
-        <Ionicons name="search" size={24} color="gray" style={styles.searchIcon} />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Buscar por nombre del producto"
-          value={searchText}
-          onChangeText={(text) => setSearchText(text)}
-        />
-      </View>
+      
          <View style={styles.tabla}>
             {/* Encabezado */}
             <View style={[styles.fila, styles.encabezado]}>

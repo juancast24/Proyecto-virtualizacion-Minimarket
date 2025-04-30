@@ -65,7 +65,7 @@ const HomeScreen = () => {
                 <View style={styles.containerTitle}>
                     <Text style={styles.title}>Empieza{"\n"}
                         <Text style={{ color: '#4A90E2' }}>Elije, </Text>
-                        lleva
+                        <Text>lleva</Text>
                     </Text>
                     <View style={styles.imageContainer}>
                         <Image source={require('../../assets/logo-market.png')} style={styles.logo} />
