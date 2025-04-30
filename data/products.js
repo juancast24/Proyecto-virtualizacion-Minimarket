@@ -55,7 +55,7 @@ export let products = [
     },
     {
         id: 7,
-        name: 'Arroz Diana',
+        name: 'Arroz Diana 500gr',
         price: 4200,
         image: 'https://exitocol.vtexassets.com/arquivos/ids/27182449/Arroz-Diana-1000-gr-552155_a.jpg?v=638794015588570000',
         description: 'Arroz diana para el desayuno',
