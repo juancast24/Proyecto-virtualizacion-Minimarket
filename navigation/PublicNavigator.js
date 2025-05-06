@@ -5,7 +5,7 @@ import HomeScreen from '../screens/public/HomeScreen';
 import LoginScreen from '../screens/public/LoginScreen';
 import RegisterScreen from '../screens/public/RegisterScreen';
 import ProductDetailsScreen from '../screens/public/ProductDetailsScreen';
-import CartScreen from '../screens/user/CartScreen';   // <-- Asegúrate que la ruta sea correcta
+import CartScreen from '../screens/public/CartScreen'; 
 import AdminNavigator from './AdminNavigator';
 import UserNavigator from './UserNavigator';
 

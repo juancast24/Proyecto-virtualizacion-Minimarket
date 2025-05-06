@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Button, Image, Pressable } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Image, Pressable } from 'react-native';
 import Layout from '../../components/Layout';
 import { CartContext } from '../../context/CartContext';
 
@@ -55,7 +55,7 @@ const CartScreen = ({ navigation }) => {
 
             {cartItems.length > 0 && (
                 <View style={styles.buttonGroup}>
-                    <Pressable onPress={clearCart} style={({ pressed }) => [styles.clearCart,{ backgroundColor: pressed ? '#5CC25F' : '#4CAF50' }]}>
+                    <Pressable onPress={clearCart} style={({ pressed }) => [styles.clearCart,{ backgroundColor: pressed ? '#D13E3E' : '#D21A1A' }]}>
                         <Text style={{color:'white', fontWeight:800, fontSize:20}} >Limpiar carrito</Text>
                     </Pressable>
                     <Pressable onPress={handleCheckout} style={({ pressed }) => [styles.checkout,{ backgroundColor: pressed ? '#5CC25F' : '#4CAF50' }]}>

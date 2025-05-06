@@ -16,9 +16,9 @@ const Layout = ({ children }) => {
 
     const handleProfilePress = () => {
         if (userRole === 'admin') {
-            navigation.navigate('AccountScreenAdmin'); // Navega a la pantalla de admin
+            navigation.navigate('AdminRoot', { screen: 'AccountScreenAdmin' }); // Navega a la pantalla de admin
         } else if (userRole === 'user') {
-            navigation.navigate('AccountScreen'); // Navega a la pantalla de usuario
+            navigation.navigate('UserRoot', { screen: 'AccountScreen' }); // Navega a la pantalla de usuario
         } else {
             navigation.navigate('Login'); // Navega a la pantalla de login si no está logueado
         }
