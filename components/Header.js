@@ -3,7 +3,7 @@ import { View, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const Header = ({ onMenuPress, onProfilePress, onCartPress }) => {
+const Header = ({ onMenuPress, onProfilePress }) => {
     const insets = useSafeAreaInsets();
 
     return (

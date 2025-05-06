@@ -25,10 +25,10 @@ const PublicNavigator = () => {
 
       {/* Rutas protegidas */}
       {authState?.role === 'admin' && (
-        <Stack.Screen name="AdminDashboard" component={AdminNavigator} />
+        <Stack.Screen name="AdminRoot" component={AdminNavigator} />
       )}
       {authState?.role === 'user' && (
-        <Stack.Screen name="UserDashboard" component={UserNavigator} />
+        <Stack.Screen name="UserRoot" component={UserNavigator} />
       )}
     </Stack.Navigator>
   );

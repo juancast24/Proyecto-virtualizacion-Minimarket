@@ -55,10 +55,10 @@ const CartScreen = ({ navigation }) => {
 
             {cartItems.length > 0 && (
                 <View style={styles.buttonGroup}>
-                    <Pressable onPress={clearCart} style={styles.clearCart}>
+                    <Pressable onPress={clearCart} style={({ pressed }) => [styles.clearCart,{ backgroundColor: pressed ? '#5CC25F' : '#4CAF50' }]}>
                         <Text style={{color:'white', fontWeight:800, fontSize:20}} >Limpiar carrito</Text>
                     </Pressable>
-                    <Pressable onPress={handleCheckout} style={styles.checkout}>
+                    <Pressable onPress={handleCheckout} style={({ pressed }) => [styles.checkout,{ backgroundColor: pressed ? '#5CC25F' : '#4CAF50' }]}>
                         <Text style={{color:'white', fontWeight:800, fontSize:20}}>Finalizar compra</Text>
                     </Pressable>
                 </View>
@@ -129,7 +129,6 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     clearCart: {
-        backgroundColor: '#f44336',
         padding: 10,
         borderRadius: 30,
         flex: 1,
@@ -137,7 +136,6 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     checkout: {
-        backgroundColor: '#4CAF50',
         padding: 10,
         borderRadius: 30,
         flex: 1,

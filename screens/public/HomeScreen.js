@@ -1,20 +1,14 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import Layout from '../../components/Layout';
 import { View, Text, StyleSheet, TextInput, FlatList, Pressable, Image } from 'react-native';
-import Header from '../../components/Header';
-import ProductCard from '../../components/ProductCard';
-import { StatusBar } from 'expo-status-bar';
-import { useNavigation } from '@react-navigation/native';
+import ProductCard from '../../components/productCard';
 import { Ionicons } from '@expo/vector-icons';
-import { products} from '../../data/products';
-import { useAuth } from '../../context/AuthContext';
+import { products } from '../../data/products';
 
 const categories = ['Todas', 'Aseo hogar', 'Despensa', 'Frutas Verduras', 'Carnes', 'Lacteos', 'Higiene Personal'];
 
 const HomeScreen = () => {
-
-    const { authState } = useAuth();
-    const navigation = useNavigation();
     const [selectedCategory, setSelectedCategory] = useState(null);//estado para la categoria seleccionada
     const [searchQuery, setSearchQuery] = useState(''); // Estado para la búsqueda
 
@@ -37,84 +31,66 @@ const HomeScreen = () => {
         product.name.toLowerCase().includes(searchQuery.toLowerCase())// Filtra productos cuyo nombre incluya el término de búsqueda
     );
 
-    const handleMenuPress = () => {
-        alert('Menu');
-    };
-    const handleProfilePress = () => {
-        if (authState.authenticated) {
-            if (authState.role === 'admin') {
-                navigation.navigate('AccountScreenAdmin'); // Si el rol es admin, redirige a AccountScreenAdmin
-            } else if (authState.role === 'user') {
-                navigation.navigate('AccountScreen'); // Si el rol es user, redirige a AccountScreen
-            } else {
-                navigation.navigate('Login'); // Si no tiene rol, redirige a Login
-            }
-        } else {
-            navigation.navigate('Login'); // Si no está autenticado, redirige a Login
-        }
-    };
-
     return (
-        <View style={styles.container}>
-            <StatusBar style="dark" />
-            {/* Header estático */}
-            <Header onMenuPress={handleMenuPress} onProfilePress={handleProfilePress} />
+        <Layout>
+            <View style={styles.container}>
+                {/* Contenido encima de la lista */}
+                <View style={styles.content}>
+                    <View style={styles.containerTitle}>
+                        <Text style={styles.title}>
+                            Empieza{"\n"}
+                            <Text style={{ color: '#4A90E2' }}>Elije, </Text>
+                            lleva 
+                        </Text>
+                        <View style={styles.imageContainer}>
+                            <Image source={require('../../assets/logo-market.png')} style={styles.logo} />
+                        </View>
+                    </View>
 
-            {/* Contenido encima de la lista */}
-            <View style={styles.content}>
-                <View style={styles.containerTitle}>
-                    <Text style={styles.title}>Empieza{"\n"}
-                        <Text style={{ color: '#4A90E2' }}>Elije, </Text>
-                        <Text>lleva</Text>
-                    </Text>
-                    <View style={styles.imageContainer}>
-                        <Image source={require('../../assets/logo-market.png')} style={styles.logo} />
+                    <View style={styles.searchContainer}>
+                        <Ionicons name="search" size={24} color="gray" style={styles.searchIcon} />
+                        <TextInput
+                            placeholder="Buscar productos"
+                            style={styles.searchInput}
+                            placeholderTextColor="gray"
+                            value={searchQuery} // Valor del input que está vinculado al estado `searchQuery`
+                            onChangeText={setSearchQuery} // Actualiza el estado `searchQuery` cada vez que el usuario escribe algo
+                        />
+                    </View>
+
+                    <View style={styles.categoryList}>
+                        <FlatList
+                            data={categories}
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            keyExtractor={(item) => item}
+                            renderItem={({ item }) => {
+                                const isSelected = selectedCategory === item || (item === 'Todas' && selectedCategory === null);
+                                return (
+                                    <Pressable
+                                        style={[
+                                            styles.categoryButton,
+                                            isSelected && styles.selectedCategoryButton // estilo especial si está seleccionada
+                                        ]}
+                                        onPress={() => handleCategoryPress(item)}
+                                    >
+                                        <Text style={[
+                                            styles.categoryText,
+                                            isSelected && styles.selectedCategoryText // estilo especial si está seleccionada
+                                        ]}>
+                                            {item}
+                                        </Text>
+                                    </Pressable>
+                                );
+                            }}
+                        />
                     </View>
                 </View>
 
-                <View style={styles.searchContainer}>
-                    <Ionicons name="search" size={24} color="gray" style={styles.searchIcon} />
-                    <TextInput
-                        placeholder="Buscar productos"
-                        style={styles.searchInput}
-                        placeholderTextColor="gray"
-                        value={searchQuery} // Valor del input que está vinculado al estado `searchQuery`
-                        onChangeText={setSearchQuery} // Actualiza el estado `searchQuery` cada vez que el usuario escribe algo
-                    />
-                </View>
-
-                <View style={styles.categoryList}>
-                    <FlatList
-                        data={categories}
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        keyExtractor={(item) => item}
-                        renderItem={({ item }) => {
-                            const isSelected = selectedCategory === item || (item === 'Todas' && selectedCategory === null);
-                            return (
-                                <Pressable
-                                    style={[
-                                        styles.categoryButton,
-                                        isSelected && styles.selectedCategoryButton // estilo especial si está seleccionada
-                                    ]}
-                                    onPress={() => handleCategoryPress(item)}
-                                >
-                                    <Text style={[
-                                        styles.categoryText,
-                                        isSelected && styles.selectedCategoryText // estilo especial si está seleccionada
-                                    ]}>
-                                        {item}
-                                    </Text>
-                                </Pressable>
-                            );
-                        }}
-                    />
-                </View>
-            </View>
-
-            {/* Lista de productos */}
-            <ProductCard products={filteredProducts} /> {/* Pasa los productos filtrados a `ProductCard */}
-        </View >
+                {/* Lista de productos */}
+                <ProductCard products={filteredProducts} /> {/* Pasa los productos filtrados a `ProductCard */}
+            </View >
+        </Layout>
     );
 };
 const styles = StyleSheet.create({

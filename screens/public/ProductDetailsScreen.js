@@ -81,7 +81,7 @@ const ProductDetails = () => {
 
       <View style={styles.addToCart}>
         <Text style={styles.price}>${totalPrice}</Text>
-        <Pressable onPress={handleAddToCart} style={styles.buttonAddToCart}>
+        <Pressable onPress={handleAddToCart} style={({ pressed }) => [styles.buttonAddToCart,{ backgroundColor: pressed ? '#3B82F6' : '#4A90E2' }]}>
           <Text style={{ fontSize: 20, fontWeight: '900', color: 'white' }}>
             Agregar al carrito
           </Text>
@@ -191,7 +191,6 @@ const styles = StyleSheet.create({
     color: '#4A90E2',
   },
   buttonAddToCart: {
-    backgroundColor: '#4A90E2',
     paddingTop: 10,
     paddingHorizontal: 30,
     paddingBottom: 10,

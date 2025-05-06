@@ -3,8 +3,9 @@ import { View, StyleSheet } from 'react-native';
 import Header from './Header';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../context/AuthContext';
+import { StatusBar } from 'expo-status-bar';
 
-const Layout = ({ children}) => {
+const Layout = ({ children }) => {
     const navigation = useNavigation();
     const { authState } = useAuth(); // Obtén el estado global
     const userRole = authState.role; // Obtén el rol del usuario
@@ -23,16 +24,12 @@ const Layout = ({ children}) => {
         }
     };
 
-    const handleCartPress = () => {
-        navigation.navigate('CartScreen'); // <- Esto es lo importante
-    };
-
     return (
         <View style={styles.container}>
-            <Header 
-                onMenuPress={handleMenuPress} 
-                onProfilePress={handleProfilePress} 
-                onCartPress={handleCartPress} 
+            <StatusBar style="dark" />
+            <Header
+                onMenuPress={handleMenuPress}
+                onProfilePress={handleProfilePress}
             />
             <View style={styles.content}>
                 {children}
@@ -48,6 +45,7 @@ const styles = StyleSheet.create({
     },
     content: {
         flex: 1,
+        backgroundColor: '#F6FDFF',
     },
 });
 

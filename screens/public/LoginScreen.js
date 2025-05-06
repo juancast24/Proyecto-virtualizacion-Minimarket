@@ -1,41 +1,44 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Alert, Image, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, TextInput, StyleSheet, Alert, Image, Pressable } from 'react-native';
+import { useNavigation, CommonActions } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
 
 const LoginScreen = () => {
-  const [isLogin, setIsLogin] = useState(true); // Determina si estamos en login o registro
+  const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState(''); // Solo para registro
-  const [phone, setPhone] = useState(''); // Solo para registro
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [phone, setPhone] = useState('');
 
   const { onLogin, onRegister } = useAuth();
   const navigation = useNavigation();
 
   const handleLogin = async () => {
-    // Verificar si los campos están vacíos antes de llamar a onLogin
     if (username.trim() === '' || password.trim() === '') {
       return Alert.alert('Error', 'Hay campos sin rellenar');
     }
 
     const user = await onLogin(username.trim(), password);
-
     if (!user) {
       return Alert.alert('Error', 'Usuario o contraseña incorrectos');
     }
 
-    // Redirigir dependiendo del rol del usuario
-    if (user.role === 'admin') {
-      navigation.navigate('AdminDashboard');
-    } else {
-      navigation.navigate('UserDashboard');
-    }
+    navigation.dispatch( // Resetear la navegación a la pantalla de inicio del usuario o admin según sea el caso    
+      CommonActions.reset({
+        index: 0,
+        routes: [
+          {
+            name: user.role === 'admin' ? 'AdminRoot' : 'UserRoot',
+          },
+        ],
+      })
+    );
   };
+
   const handleRegister = async () => {
     const success = await onRegister(username.trim(), password, confirmPassword.trim(), phone.trim());
     if (success) {
-      setIsLogin(true); // Después de registro, volvemos al login
+      setIsLogin(true);
       setUsername('');
       setPassword('');
       setConfirmPassword('');
@@ -45,85 +48,50 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.bg}>
-      <View style={styles.imageContainer}>
-        <Image source={require('../../assets/logo-market.png')} style={styles.logo} />
-      </View>
       <View style={styles.container}>
+        <Image source={require('../../assets/logo-market.png')} style={styles.logo} />
+        <Text style={styles.title}>{isLogin ? 'Bienvenido' : 'Crea tu cuenta'}</Text>
 
-        {/* Botones de Login y Registro */}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[
-              styles.button,
-              { backgroundColor: isLogin ? '#2f68ff' : '#4A90E2' }, // Color dinámico
-            ]}
+        <View style={styles.toggleContainer}>
+          <Pressable
+            style={[styles.toggleButton, isLogin && styles.activeToggle]}
             onPress={() => setIsLogin(true)}
           >
-            <Text style={styles.buttonText}>Iniciar Sesión</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.button,
-              { backgroundColor: !isLogin ? '#2f68ff' : '#4A90E2' }, // Color dinámico
-            ]}
+            <Text style={[styles.toggleText, isLogin && styles.activeText]}>Iniciar Sesión</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.toggleButton, !isLogin && styles.activeToggle]}
             onPress={() => setIsLogin(false)}
           >
-            <Text style={styles.buttonText}>Registrarse</Text>
-          </TouchableOpacity>
+            <Text style={[styles.toggleText, !isLogin && styles.activeText]}>Registrarse</Text>
+          </Pressable>
         </View>
 
-        <View style={styles.imageContainer}>
-          <Image source={require('../../assets/persona.png')} style={styles.persona} />
-        </View>
-
-        <Text style={styles.title}>{isLogin ? 'Iniciar Sesión' : 'Registro'}</Text>
-
-        {/* Formulario de Login */}
-        {isLogin ? (
-          <>
-            <TextInput
-              placeholder="Usuario"
-              autoCapitalize="none"
-              value={username}
-              onChangeText={setUsername}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder="Contraseña"
-              secureTextEntry
-              value={password}
-              onChangeText={setPassword}
-              style={styles.input}
-            />
-            <TouchableOpacity style={styles.buttonLogin} onPress={handleLogin}>
-              <Text style={styles.buttonText}>Iniciar Sesión</Text>
-            </TouchableOpacity>
-          </>
-        ) : (
-          /* Formulario de Registro */
-          <>
-            <TextInput
-              placeholder="Usuario"
-              autoCapitalize="none"
-              value={username}
-              onChangeText={setUsername}
-              style={styles.input}
-            />
+        <View style={styles.form}>
+          <TextInput
+            placeholder="Usuario"
+            autoCapitalize="none"
+            value={username}
+            onChangeText={setUsername}
+            style={styles.input}
+          />
+          {!isLogin && (
             <TextInput
               placeholder="Teléfono"
+              keyboardType="phone-pad"
               value={phone}
               onChangeText={setPhone}
               style={styles.input}
-              keyboardType="phone-pad"
             />
-            <TextInput
-              placeholder="Contraseña"
-              secureTextEntry
-              value={password}
-              onChangeText={setPassword}
-              style={styles.input}
-            />
+          )}
+          <TextInput
+            placeholder="Contraseña"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+            style={styles.input}
+          />
+          {!isLogin && (
             <TextInput
               placeholder="Confirmar Contraseña"
               secureTextEntry
@@ -131,11 +99,12 @@ const LoginScreen = () => {
               onChangeText={setConfirmPassword}
               style={styles.input}
             />
-            <TouchableOpacity style={styles.buttonRegister} onPress={handleRegister}>
-              <Text style={styles.buttonText}>Registrarse</Text>
-            </TouchableOpacity>
-          </>
-        )}
+          )}
+
+          <Pressable style={styles.mainButton} onPress={isLogin ? handleLogin : handleRegister}>
+            <Text style={styles.mainButtonText}>{isLogin ? 'Entrar' : 'Crear cuenta'}</Text>
+          </Pressable>
+        </View>
       </View>
     </View>
   );
@@ -144,87 +113,81 @@ const LoginScreen = () => {
 const styles = StyleSheet.create({
   bg: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#F6FDFF',
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  persona: {
-    marginBottom: "10%",
-    height: 70,
-    width: 70,
-    backgroundColor: "#d5dbdb",
-    borderRadius: 25,
-
+  container: {
+    width: '85%',
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 25,
+    alignItems: 'center',
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
   },
-  button: {
+  logo: {
+    width: 130,
+    height: 130,
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: '900',
+    color: '#4A90E2',
+    marginBottom: 20,
+  },
+  toggleContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
+    borderRadius: 20,
+    overflow: 'hidden',
+    backgroundColor: '#e0e0e0',
+  },
+  toggleButton: {
     flex: 1,
-    padding: 15,
-    margin: 5,
-    borderRadius: 5,
+    paddingVertical: 10,
     alignItems: 'center',
   },
-  buttonLogin: {
-    backgroundColor: '#2f68ff',
+  toggleText: {
+    color: '#666',
+    fontWeight: '600',
+  },
+  activeToggle: {
+    backgroundColor: '#4A90E2',
+  },
+  activeText: {
+    color: '#fff',
+    textAlign: 'center',
+  },
+  form: {
+    width: '100%',
+  },
+  input: {
+    backgroundColor: '#F2F4F7',
+    borderRadius: 10,
+    paddingHorizontal: 15,
     paddingVertical: 12,
-    paddingHorizontal: 25,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 10,
+    fontSize: 16,
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    color: '#333',
   },
-
-  buttonRegister: {
-    backgroundColor: '#2f68ff',
-    paddingVertical: 15, // Asegura que el botón tenga un tamaño adecuado
-    paddingHorizontal: 25,
-    borderRadius: 8,
+  mainButton: {
+    backgroundColor: '#4A90E2',
+    paddingVertical: 14,
+    marginTop: 10,
+    marginHorizontal: 30,
+    borderRadius: 30,
     alignItems: 'center',
   },
-
-  buttonText: {
-    color: 'white',
+  mainButtonText: {
+    color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
   },
-  container: {
-    paddingHorizontal: 25,
-    justifyContent: 'center', // Centra verticalmente
-    alignItems: 'center',
-    width: '100%',
-    backgroundColor: '#4A90E2',
-    borderRadius: 10,
-    paddingTop: 0,
-    paddingHorizontal: 15,
-    padding: 35,
-    elevation: 5,
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 20,
-    textAlign: 'center',
-    fontWeight: 'bold',
-    color: 'white',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 20,
-  },
-  input: {
-    width: '100%',        // Ocupa todo el ancho disponible
-    paddingVertical: 10,  // Espacio interno arriba y abajo
-    paddingHorizontal: 15,// Espacio interno a los lados
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    marginBottom: 15,     // Espacio entre cada input
-    backgroundColor: '#fff', // Fondo blanco (opcional)
-  },
-  logo: {
-    marginTop: "20%",
-    marginBottom: "0%",
-    width: 240,
-    height: 240,
-
-  }
 });
 
 export default LoginScreen;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, StyleSheet, View } from 'react-native';
+import { Text, StyleSheet, View,TouchableOpacity } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Layout from '../../components/Layout';
 import { useCart } from '../../context/CartContext';
@@ -14,7 +14,7 @@ const AccountScreen = ({ navigation }) => {
         onLogout();
         navigation.reset({
             index: 0,
-            routes: [{ name: 'Login' }],
+            routes: [{ name: 'Home' }],
         });
     };
 
@@ -32,7 +32,7 @@ const AccountScreen = ({ navigation }) => {
                 </View>
 
                 <Animatable.View animation="fadeInUp" duration={600} delay={200}>
-                    <Animatable.TouchableOpacity
+                    <TouchableOpacity
                         style={styles.logoutButton}
                         onPress={handleLogout}
                         animation="pulse"
@@ -41,7 +41,7 @@ const AccountScreen = ({ navigation }) => {
                         useNativeDriver
                     >
                         <Text style={styles.logoutText}>Cerrar sesión</Text>
-                    </Animatable.TouchableOpacity>
+                    </TouchableOpacity>
                 </Animatable.View>
             </View>
         </Layout>
@@ -52,7 +52,6 @@ const styles = StyleSheet.create({
     container: {
         padding: 20,
         flex: 1,
-        backgroundColor: '#f9f9f9',
     },
     title: {
         fontSize: 26,
@@ -86,7 +85,7 @@ const styles = StyleSheet.create({
     logoutButton: {
         backgroundColor: '#d9534f',
         paddingVertical: 14,
-        borderRadius: 10,
+        borderRadius: 30,
         alignItems: 'center',
     },
     logoutText: {
