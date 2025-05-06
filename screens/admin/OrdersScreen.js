@@ -57,7 +57,7 @@ const OrdersScreen = () => {
   );
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#grey', padding: 10 }}>
+    <View style={{ flex: 1, backgroundColor: '#F6FDFF', padding: 10 }}>
         <Header onMenuPress={handleMenuPress} onProfilePress={handleProfilePress} />
       <Text style={styles.title}>Pedidos</Text>
 

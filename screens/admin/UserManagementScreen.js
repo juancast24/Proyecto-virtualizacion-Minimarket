@@ -35,7 +35,7 @@ const UserManagementScreen = () => {
     );
 
     return (
-            <ScrollView >
+            <ScrollView style={{ flex: 1, backgroundColor: '#F6FDFF', padding: 10 }} >
             <Header onMenuPress={handleMenuPress} onProfilePress={handleProfilePress} />
             <Text style={styles.title}>Gestión de Usuarios</Text>
                 {/* Buscador */}
