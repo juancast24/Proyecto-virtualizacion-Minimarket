@@ -2,9 +2,10 @@ import React, { useContext, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, Image, Pressable } from 'react-native';
 import Layout from '../../components/Layout';
 import { CartContext } from '../../context/CartContext';
+import { useNavigation } from '@react-navigation/native';   
 
 const CartScreen = ({ navigation }) => {
-    const { cartItems, clearCart, isLoggedIn } = useContext(CartContext);
+    const { cartItems, clearCart } = useContext(CartContext);
 
     useEffect(() => {
         console.log("Renderizando carrito, productos:", cartItems);
@@ -28,13 +29,7 @@ const CartScreen = ({ navigation }) => {
     };
 
     const handleCheckout = () => {
-        if (isLoggedIn) {
-            console.log("Compra realizada ✅");
-            clearCart();
-            alert("¡Compra exitosa!");
-        } else {
-            navigation.navigate('Login');
-        }
+        navigation.navigate('FormPay', { cartItems });
     };
 
     return (
