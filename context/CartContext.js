@@ -4,17 +4,17 @@ export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
     const [cartItems, setCartItems] = useState([]);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);  // Estado para manejar el login
 
-    const addToCart = (item) => {
+    const addToCart = (item, quantity) => {
         setCartItems(prevItems => {
             const existingIndex = prevItems.findIndex(p => p.name === item.name);
             if (existingIndex !== -1) {
                 const updatedItems = [...prevItems];
-                updatedItems[existingIndex].quantity += item.quantity;
+                updatedItems[existingIndex].quantity += quantity; 
                 return updatedItems;
             } else {
-                return [...prevItems, item];
+                // Si no existe, agregar el producto con la cantidad seleccionada
+                return [...prevItems, { ...item, quantity }];
             }
         });
     };
@@ -23,8 +23,9 @@ export const CartProvider = ({ children }) => {
         setCartItems([]);
     };
 
+    // Función para manejar el logout
     return (
-        <CartContext.Provider value={{ cartItems, addToCart, clearCart, isLoggedIn }}>
+        <CartContext.Provider value={{ cartItems, addToCart, clearCart}}>
             {children}
         </CartContext.Provider>
     );

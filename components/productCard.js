@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { View, Text, StyleSheet, FlatList, Image, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const ProductCard = ({products}) => {
     const navigation = useNavigation();
+    
     const handlePressProduct = (product) => {
         navigation.navigate('ProductDetails', { product });
     };
@@ -13,9 +14,12 @@ const ProductCard = ({products}) => {
             showsVerticalScrollIndicator={false}
             numColumns={2}
             columnWrapperStyle={{ justifyContent: 'space-between' }}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) => item.name}
             renderItem={({ item }) => (
-                <Pressable style={({pressed})=>[styles.card,pressed && styles.cardPressed]} onPress={()=>handlePressProduct(item)} >
+                <Pressable
+                    style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+                    onPress={() => handlePressProduct(item)}
+                >
                     <View style={styles.imageContainer}>
                         <Image source={{ uri: item.image }} style={styles.cardImage} />
                     </View>
@@ -35,7 +39,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         width: '48%',
         backgroundColor: '#fff',
-        borderRadius: 20,
+        borderRadius: 25,
         marginRight: 15,
         padding: 15,
         shadowColor: '#000',
@@ -59,18 +63,18 @@ const styles = StyleSheet.create({
     cardName: {
         fontSize: 19,
         alignItems: 'center',
-        fontWeight: 'bold',
+        fontWeight: '900',
         textAlign: 'center',
     },
     cardPrice: {
         fontSize: 20,
         color: '#4A90E2',
         marginTop: 10,
-        fontWeight: 'bold',
+        fontWeight: '800',
+
     },
     cardDescription: {
         fontSize: 12,
-        color: 'grey',
     },
 });
 export default ProductCard;
