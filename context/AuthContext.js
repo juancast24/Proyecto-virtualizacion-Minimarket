@@ -10,21 +10,20 @@ export const AuthContext = createContext({});
 
 export const AuthProvider = ({ children }) => {
   const [authState, setAuthState] = useState({
-    token: null, // Para compatibilidad con las verificaciones en Layout.js
+    token: null, 
     authenticated: false,
     username: null,
     role: null,
   });
 
-  // onLogin SÓLO valida y devuelve user o null
   const onLogin = async (username, password) => {
     if (username.trim() === "" || password.trim() === "") {
-      return null; // Inválido - campos vacíos
+      return null; 
     }
 
     if (username === "admin" && password === "admin") {
       const authData = {
-        token: "admin-token-123", // Simulando un token
+        token: "admin-token-123", 
         authenticated: true,
         username: username,
         role: Role.ADMIN,
@@ -35,7 +34,7 @@ export const AuthProvider = ({ children }) => {
 
     if (username === "user" && password === "user") {
       const authData = {
-        token: "user-token-123", // Simulando un token
+        token: "user-token-123", 
         authenticated: true,
         username: username,
         role: Role.USER,
@@ -44,7 +43,6 @@ export const AuthProvider = ({ children }) => {
       return authData;
     }
 
-    // No coincide con los usuarios hardcodeados
     return null;
   };
 
