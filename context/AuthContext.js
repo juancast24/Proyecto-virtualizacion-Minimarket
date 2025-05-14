@@ -1,62 +1,94 @@
-import { createContext, useContext, useState } from 'react';
-
+import { createContext, useContext, useState } from "react";
 
 // Roles disponibles
 const Role = {
-  ADMIN: 'admin',
-  USER: 'user',
+  ADMIN: "admin",
+  USER: "user",
 };
 
 export const AuthContext = createContext({});
 
 export const AuthProvider = ({ children }) => {
   const [authState, setAuthState] = useState({
+    token: null, // Para compatibilidad con las verificaciones en Layout.js
     authenticated: false,
     username: null,
     role: null,
   });
 
   // onLogin SÓLO valida y devuelve user o null
-  // NUNCA dispara alert aquí
   const onLogin = async (username, password) => {
-    if (username === 'admin' && password === 'admin') {
-      const admin = { username, role: Role.ADMIN };
-      setAuthState({ authenticated: true, ...admin });
-      return admin;
+    if (username.trim() === "" || password.trim() === "") {
+      return null; // Inválido - campos vacíos
     }
 
-
-
-    if (username === 'user' && password === 'user') {
-      const user = { username, role: Role.USER };
-      setAuthState({ authenticated: true, ...user });
-      return user;
+    if (username === "admin" && password === "admin") {
+      const authData = {
+        token: "admin-token-123", // Simulando un token
+        authenticated: true,
+        username: username,
+        role: Role.ADMIN,
+      };
+      setAuthState(authData);
+      return authData;
     }
-    if (username.trim() === '' || password.trim() === '') {
-        return alert('hay campos sin rellenar');
-      }
+
+    if (username === "user" && password === "user") {
+      const authData = {
+        token: "user-token-123", // Simulando un token
+        authenticated: true,
+        username: username,
+        role: Role.USER,
+      };
+      setAuthState(authData);
+      return authData;
+    }
+
+    // No coincide con los usuarios hardcodeados
+    return null;
   };
 
- // Función para manejar el registro de un usuario
- const onRegister = (username, password,confirmPassword,phone) => {
-  if (username.trim() && password.trim() && confirmPassword.trim() &&phone.trim()) {
-    // Aquí normalmente registrarías al usuario en la base de datos, pero por ahora se simula
-    setAuthState({ authenticated: true, username: username, role: Role.USER });
-    alert('¡Usuario registrado con éxito!');
-    return true; // Indica que el registro fue exitoso
-  } else {
-    alert('Por favor, complete todos los campos.');
-    return false; // Si faltan campos
-  }
-};
+  // Función para manejar el registro de un usuario
+  const onRegister = (username, password, confirmPassword, phone) => {
+    if (
+      username.trim() &&
+      password.trim() &&
+      confirmPassword.trim() &&
+      phone.trim()
+    ) {
+      // Estructura consistente con onLogin
+      setAuthState({
+        token: "new-user-token-123",
+        authenticated: true,
+        username: username,
+        role: Role.USER,
+      });
+      return true;
+    } else {
+      return false;
+    }
+  };
 
-
-  const onLogout = () => {
-    setAuthState({ authenticated: false, username: null, role: null });
+  // Renombrado para consistencia con Layout.js
+  const signOut = () => {
+    setAuthState({
+      token: null,
+      authenticated: false,
+      username: null,
+      role: null,
+    });
   };
 
   return (
-    <AuthContext.Provider value={{ authState, onLogin, onLogout, onRegister }}>
+    <AuthContext.Provider
+      value={{
+        authState,
+        onLogin,
+        onRegister,
+        signOut, // Exportar con el nombre usado en Layout
+        onLogout: signOut, // Para compatibilidad con código existente
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
