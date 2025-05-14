@@ -3,7 +3,7 @@ import { View, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const Header = ({ onMenuPress, onProfilePress, onCartPress }) => {
+const Header = ({ onMenuPress, onProfilePress }) => {
     const insets = useSafeAreaInsets();
 
     return (
@@ -11,15 +11,11 @@ const Header = ({ onMenuPress, onProfilePress, onCartPress }) => {
             <View style={styles.headerContainer}>
                 {/* Botón de menú */}
                 <Pressable onPress={onMenuPress}>
-                    <Ionicons name="menu" size={30} color="black" />
-                </Pressable>
-                {/* Botón de carrito */}
-                <Pressable onPress={onCartPress}>
-                    <Ionicons name="cart" size={30} color="black" />
+                    <Ionicons name="menu-outline" size={30} color="black" />
                 </Pressable>
                 {/* Botón de perfil */}
                 <Pressable onPress={onProfilePress}>
-                    <Ionicons name="person" size={30} color="black" />
+                    <Ionicons name="person-outline" size={30} color="black" />
                 </Pressable>
             </View>
         </View>
