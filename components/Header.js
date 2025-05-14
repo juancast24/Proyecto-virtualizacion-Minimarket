@@ -9,11 +9,11 @@ const Header = ({ onMenuPress, onProfilePress }) => {
     return (
         <View style={{ paddingTop: insets.top }}>
             <View style={styles.headerContainer}>
-                {/* Botón de menú */}
+                
                 <Pressable onPress={onMenuPress}>
                     <Ionicons name="menu-outline" size={30} color="black" />
                 </Pressable>
-                {/* Botón de perfil */}
+                
                 <Pressable onPress={onProfilePress}>
                     <Ionicons name="person-outline" size={30} color="black" />
                 </Pressable>
