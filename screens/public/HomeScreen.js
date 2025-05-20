@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Layout from '../../components/Layout';
 import { View, Text, StyleSheet, TextInput, FlatList, Pressable, Image } from 'react-native';
-import ProductCard from '../../components/productCard';
+import ProductCard from '../../components/ProductCard';
 import { Ionicons } from '@expo/vector-icons';
 
 const categories = ['Todas', 'Aseo hogar', 'Despensa', 'Frutas Verduras', 'Carnes', 'Lacteos', 'Higiene Personal'];
