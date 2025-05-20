@@ -13,7 +13,13 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
-import { getFirestore, collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 import { firebaseApp } from "../firebase.config";
 
 const db = getFirestore(firebaseApp);
@@ -100,7 +106,7 @@ const ProductsAdmin = () => {
 
   // Implementa handleEdit según tu lógica de navegación/edición
   const handleEdit = (productId) => {
-    navigation.navigate("EditProduct", { productId });
+    navigation.navigate("EditProductScreen", { productId });
   };
 
   return (
@@ -122,13 +128,19 @@ const ProductsAdmin = () => {
         </View>
       </View>
       {loading ? (
-        <ActivityIndicator size="large" color="#4A90E2" style={{ marginTop: 40 }} />
+        <ActivityIndicator
+          size="large"
+          color="#4A90E2"
+          style={{ marginTop: 40 }}
+        />
       ) : (
         <ScrollView>
           <View style={styles.tabla}>
             {/* Encabezado */}
             <View style={[styles.fila, styles.encabezado]}>
-              <Text style={[styles.columna, styles.columnaHeader]}>Producto</Text>
+              <Text style={[styles.columna, styles.columnaHeader]}>
+                Producto
+              </Text>
               <Text style={[styles.columna, styles.columnaHeader]}>
                 Categoria
               </Text>
@@ -138,7 +150,9 @@ const ProductsAdmin = () => {
               <Text style={[styles.columna, styles.columnaHeader]}>Precio</Text>
               <Text style={[styles.columna, styles.columnaHeader]}>Stock</Text>
               <Text style={[styles.columna, styles.columnaHeader]}>Imagen</Text>
-              <Text style={[styles.columna, styles.columnaHeader]}>Acciones</Text>
+              <Text style={[styles.columna, styles.columnaHeader]}>
+                Acciones
+              </Text>
             </View>
 
             {/* Filas de datos paginados */}
@@ -156,7 +170,13 @@ const ProductsAdmin = () => {
                   />
                 </View>
                 <View style={styles.columna}>
-                  <Pressable onPress={() => handleEdit(item.id)}>
+                  <Pressable
+                    onPress={() =>
+                      navigation.navigate("EditProductScreen", {
+                        productId: item.id,
+                      })
+                    }
+                  >
                     <Feather name="edit" size={24} color="#2980b9" />
                   </Pressable>
                   <Pressable onPress={() => handleDelete(item.id, item.name)}>
@@ -276,7 +296,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderBottomWidth: 2,
     borderTopWidth: 2,
-    borderTopColor: '#2980b9',
+    borderTopColor: "#2980b9",
     borderBottomColor: "#2980b9",
   },
   columna: {

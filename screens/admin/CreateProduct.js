@@ -13,6 +13,10 @@ import { Picker } from "@react-native-picker/picker";
 import { addProduct } from "../../data/products";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { firebaseApp } from "../../firebase.config";
+
+const db = getFirestore(firebaseApp);
 
 const CreateProduct = () => {
   const navigation = useNavigation();
@@ -22,6 +26,8 @@ const CreateProduct = () => {
   const [price, setPrice] = useState("");
   const [stock, setStock] = useState("");
   const [image, setImage] = useState("");
+  const [quantityPerUnit, setQuantityPerUnit] = useState("");
+  const [unit, setUnit] = useState("");
 
   useEffect(() => {
     const getCameraPermission = async () => {
@@ -58,8 +64,17 @@ const CreateProduct = () => {
     }
   };
 
-  const handleCreateProduct = () => {
-    if (!name || !description || !category || !price || !stock || !image) {
+  const handleCreateProduct = async () => {
+    if (
+      !name ||
+      !description ||
+      !category ||
+      !price ||
+      !stock ||
+      !image ||
+      !quantityPerUnit ||
+      !unit
+    ) {
       Alert.alert("Error", "Por favor, completa todos los campos.");
       return;
     }
@@ -71,10 +86,12 @@ const CreateProduct = () => {
       price: parseFloat(price),
       stock: parseInt(stock, 10),
       image,
+      quantity_per_unit: quantityPerUnit,
+      unit,
     };
 
     try {
-      addProduct(newProduct); // Llama a la función para agregar el producto
+      await addDoc(collection(db, "products"), newProduct);
       Alert.alert("Éxito", "Producto creado exitosamente.");
       // Limpia los campos después de crear el producto
       setName("");
@@ -83,6 +100,8 @@ const CreateProduct = () => {
       setPrice("");
       setStock("");
       setImage("");
+      setQuantityPerUnit("");
+      setUnit("");
     } catch (error) {
       Alert.alert("Error", "Hubo un problema al crear el producto.");
       console.error(error);
@@ -100,11 +119,9 @@ const CreateProduct = () => {
 
   return (
     <View style={styles.container}>
-
       {/* Botón de cámara */}
       <Pressable style={styles.scanButton} onPress={handleOpenCamera}>
         <MaterialIcons name="camera-alt" size={24} color="white" />
-        
       </Pressable>
 
       <Text style={styles.title}>Crear Nuevo Producto</Text>
@@ -144,6 +161,27 @@ const CreateProduct = () => {
         onChangeText={setStock}
         keyboardType="numeric"
       />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Cantidad por unidad (ej: 6, 500, 1)"
+        value={quantityPerUnit}
+        onChangeText={setQuantityPerUnit}
+        keyboardType="numeric"
+      />
+      <Picker
+        selectedValue={unit}
+        style={styles.Picker}
+        onValueChange={(itemValue) => setUnit(itemValue)}
+      >
+        <Picker.Item label="Selecciona unidad de medida" value="" />
+        <Picker.Item label="unidad" value="unidad" />
+        <Picker.Item label="unidades" value="unidades" />
+        <Picker.Item label="kg" value="kg" />
+        <Picker.Item label="ml" value="ml" />
+        <Picker.Item label="lb" value="lb" />
+      </Picker>
+
       <TextInput
         style={styles.input}
         placeholder="URL de la Imagen"
@@ -176,7 +214,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#grey",
+    backgroundColor: "#F6FDFF",
   },
   title: {
     fontSize: 20,
