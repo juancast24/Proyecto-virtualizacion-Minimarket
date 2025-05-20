@@ -12,6 +12,10 @@ import Layout from "../../components/Layout";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import { Feather, Ionicons, AntDesign } from "@expo/vector-icons";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { firebaseApp } from "../../firebase.config";
+
+const db = getFirestore(firebaseApp);
 
 const OrdersScreen = () => {
   const { authState } = useAuth();
@@ -19,107 +23,35 @@ const OrdersScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [searchText, setSearchText] = useState("");
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Paginación
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
-  const orders = [
-    {
-      id: "1",
-      name: "Juan Pérez",
-      date: "2025-04-17",
-      status: "Pendiente",
-      items: ["Manzana", "Pan"],
-      total: 4500,
-      address: "Calle Falsa 123",
-    },
-    {
-      id: "2",
-      name: "Ana López",
-      date: "2025-04-16",
-      status: "Enviado",
-      items: ["Leche", "Huevos"],
-      total: 18000,
-      address: "Calle Falsa 12143",
-    },
-    {
-      id: "3",
-      name: "Carlos Mendez",
-      date: "2025-04-15",
-      status: "Entregado",
-      items: ["Arroz", "Pasta"],
-      total: 8500,
-      address: "Av. Principal 45",
-    },
-    {
-      id: "4",
-      name: "María González",
-      date: "2025-04-14",
-      status: "Pendiente",
-      items: ["Detergente", "Jabón"],
-      total: 12000,
-      address: "Calle 10 #23-45",
-    },
-    {
-      id: "5",
-      name: "Roberto Silva",
-      date: "2025-04-13",
-      status: "Cancelado",
-      items: ["Cerveza", "Snacks"],
-      total: 22500,
-      address: "Carrera 7 #80-54",
-    },
-    {
-      id: "6",
-      name: "Laura Torres",
-      date: "2025-04-12",
-      status: "Enviado",
-      items: ["Carne", "Pollo"],
-      total: 35000,
-      address: "Diagonal 45 #12-34",
-    },
-    {
-      id: "7",
-      name: "Javier Ruiz",
-      date: "2025-04-11",
-      status: "Entregado",
-      items: ["Frutas variadas"],
-      total: 15000,
-      address: "Calle 80 #45-12",
-    },
-    {
-      id: "8",
-      name: "Carmen Díaz",
-      date: "2025-04-10",
-      status: "Pendiente",
-      items: ["Cereal", "Yogurt"],
-      total: 9800,
-      address: "Av. Circunvalar #10-20",
-    },
-    {
-      id: "9",
-      name: "Fernando Páez",
-      date: "2025-04-09",
-      status: "Enviado",
-      items: ["Aceite", "Sal", "Azúcar"],
-      total: 11200,
-      address: "Calle 127 #15-41",
-    },
-    {
-      id: "10",
-      name: "Sofía Martínez",
-      date: "2025-04-08",
-      status: "Pendiente",
-      items: ["Papel higiénico", "Toallas"],
-      total: 28000,
-      address: "Carrera 15 #93-40",
-    },
-  ];
+  useEffect(() => {
+    const fetchOrders = async () => {
+      setLoading(true);
+      try {
+        const querySnapshot = await getDocs(collection(db, "pedidos"));
+        const ordersArray = [];
+        querySnapshot.forEach((doc) => {
+          ordersArray.push({ id: doc.id, ...doc.data() });
+        });
+        setOrders(ordersArray);
+      } catch (error) {
+        console.error("Error al obtener pedidos:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOrders();
+  }, []);
 
   // Filtrar pedidos según el texto de búsqueda
   const filteredOrders = orders.filter((order) =>
-    order.name.toLowerCase().includes(searchText.toLowerCase())
+    (order.name || "").toLowerCase().includes(searchText.toLowerCase())
   );
 
   // Calcular página actual de pedidos
@@ -156,6 +88,7 @@ const OrdersScreen = () => {
 
   // Función para obtener el color según el estado
   const getStatusColor = (status) => {
+    if (!status) return "#9E9E9E";
     switch (status.toLowerCase()) {
       case "pendiente":
         return "#FFC107"; // amarillo
@@ -172,9 +105,12 @@ const OrdersScreen = () => {
 
   const renderOrder = ({ item }) => (
     <View style={styles.row}>
-
       <Text style={[styles.cell, styles.nameCell]}>{item.name}</Text>
-      <Text style={styles.cell}>{item.date}</Text>
+      <Text style={styles.cell}>
+        {item.date && item.date.seconds
+          ? new Date(item.date.seconds * 1000).toLocaleDateString()
+          : item.date || ""}
+      </Text>
       <View style={styles.statusContainer}>
         <View
           style={[
@@ -223,8 +159,7 @@ const OrdersScreen = () => {
 
         {/* Tabla mejorada */}
         <View style={styles.tableContainer}>
-          <View style={styles.tableHeader}>
-  
+          <View className="tableHeader" style={styles.tableHeader}>
             <Text style={[styles.headerCell, { flex: 1.5 }]}>Cliente</Text>
             <Text style={[styles.headerCell, { flex: 1 }]}>Fecha</Text>
             <Text style={[styles.headerCell, { flex: 1 }]}>Estado</Text>
@@ -304,23 +239,53 @@ const OrdersScreen = () => {
                 </View>
 
                 <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Artículos:</Text>
-                  <Text style={styles.detailValue}>
-                    {selectedOrder.items.join(", ")}
-                  </Text>
+                  <Text style={styles.detailLabel}>Productos:</Text>
+                  <View style={styles.detailValue}>
+                    {selectedOrder.products ? (
+                      Array.isArray(selectedOrder.products) ? (
+                        selectedOrder.products.length > 0 ? (
+                          selectedOrder.products.map((prod, idx) => (
+                            <Text key={idx} style={{ fontSize: 15 }}>
+                              • {prod.name} (x{prod.quantity})
+                            </Text>
+                          ))
+                        ) : (
+                          <Text style={{ fontSize: 15 }}>Sin productos</Text>
+                        )
+                      ) : Object.keys(selectedOrder.products).length > 0 ? (
+                        Object.entries(selectedOrder.products).map(
+                          ([key, prod]) => (
+                            <Text key={key} style={{ fontSize: 15 }}>
+                              • {prod.name} (x{prod.quantity})
+                            </Text>
+                          )
+                        )
+                      ) : (
+                        <Text style={{ fontSize: 15 }}>Sin productos</Text>
+                      )
+                    ) : (
+                      <Text style={{ fontSize: 15 }}>Sin productos</Text>
+                    )}
+                  </View>
                 </View>
 
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>Total:</Text>
                   <Text style={styles.detailValue}>
-                    ${selectedOrder.total.toLocaleString()}
+                    $
+                    {selectedOrder.total
+                      ? selectedOrder.total.toLocaleString()
+                      : "0"}
                   </Text>
                 </View>
 
-                <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Fecha:</Text>
-                  <Text style={styles.detailValue}>{selectedOrder.date}</Text>
-                </View>
+                <Text style={styles.detailValue}>
+                  {selectedOrder.date && selectedOrder.date.seconds
+                    ? new Date(
+                        selectedOrder.date.seconds * 1000
+                      ).toLocaleDateString()
+                    : selectedOrder.date || ""}
+                </Text>
 
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>Estado:</Text>

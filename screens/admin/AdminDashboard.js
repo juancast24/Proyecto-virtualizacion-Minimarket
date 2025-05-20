@@ -34,14 +34,6 @@ const AdminDashboard = () => {
     return () => backHandler.remove();
   }, [navigation]);
 
-  const handleProfilePress = () => {
-    if (authState.authenticated) {
-      navigation.navigate("AccountScreenAdmin"); // si ya está logueado, ve al perfil
-    } else {
-      navigation.navigate("Login"); // si no está logueado, ve al login
-    }
-  };
-
   const handleCreateProductPress = () => {
     navigation.navigate("CreateProduct"); // Navegar a la pantalla de creación de productos.
   };
