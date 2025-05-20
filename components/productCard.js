@@ -68,7 +68,7 @@ const ProductCard = ({ selectedCategory, searchQuery }) => {
                     </View>
                     <Text style={styles.cardName}>{item.name}</Text>
                     <Text style={styles.cardPrice}>${item.price}</Text>
-                    <Text style={styles.cardDescription}>{item.description}</Text>
+                    <Text style={styles.cardDescription}>Presentacion: {item.quantity_per_unit} {item.unit}</Text>
                 </Pressable>
             )}
         />

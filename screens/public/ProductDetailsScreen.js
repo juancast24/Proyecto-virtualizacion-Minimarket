@@ -1,13 +1,14 @@
 import React, { useState, useContext } from 'react';
-import { View, Image, StyleSheet, Text, Pressable } from 'react-native';
+import { View, Image, StyleSheet, Text, Pressable, ScrollView, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { CartContext } from '../../context/CartContext';
+import { CartContext } from '../../context/CartContext'; 
 
 const ProductDetails = () => {
   const insets = useSafeAreaInsets();
   const route = useRoute();
+  
   const { product } = route.params;
   const navigation = useNavigation();
   const { addToCart } = useContext(CartContext);
@@ -17,7 +18,7 @@ const ProductDetails = () => {
   };
 
   const handleCartPress = () => {
-    navigation.navigate('CartScreen');
+    navigation.navigate('CartScreen'); 
   };
 
   const [quantity, setQuantity] = useState(1);
@@ -35,56 +36,64 @@ const ProductDetails = () => {
       setQuantity(prev => prev - 1);
     }
   };
+
   const totalPrice = quantity * product.price;
+
   const handleAddToCart = () => {
     addToCart(product, quantity, totalPrice);
-    navigation.navigate('CartScreen');
+    navigation.navigate('CartScreen'); 
   };
-
 
   return (
     <View style={styles.container}>
-      <View style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
-        <View style={styles.headerProductWrapper}>
-          <View style={styles.header}>
-            <Pressable onPress={handlePressBack} style={styles.backButton}>
-              <Ionicons name="chevron-back-outline" size={28} color="black" />
-            </Pressable>
-            <Pressable onPress={handleCartPress} style={styles.cartButton}>
-              <Ionicons name="cart-outline" size={28} color="black" />
-            </Pressable>
-          </View>
+      {/* Header con SafeArea */}
+      <View style={[styles.headerProductWrapper, { paddingTop: insets.top }]}>
+        <View style={styles.header}>
+          <Pressable onPress={handlePressBack} style={styles.headerButton}>
+            <Ionicons name="chevron-back-outline" size={28} color="black" />
+          </Pressable>
+          <Pressable onPress={handleCartPress} style={styles.headerButton}>
+            <Ionicons name="cart-outline" size={28} color="black" />
+          </Pressable>
+        </View>
 
-          <View style={styles.productContainer}>
-            <View>
-              <Image source={{ uri: product.image }} style={styles.image} />
-            </View>
-            <Text style={styles.name}>{product.name}</Text>
+        {/* Contenido principal del producto (imagen, nombre, cantidad) */}
+        <View style={styles.productContainer}>
+          <Image source={{ uri: product.image }} style={styles.image} />
+          <Text style={styles.productName}>{product.name}</Text>
 
-            <View style={styles.quantity}>
-              <Pressable onPress={decreaseQuantity} style={styles.minusQuantity}>
-                <Ionicons name="remove-outline" size={24} color="black" />
-              </Pressable>
-              <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{quantity}</Text>
-              <Pressable onPress={increaseQuantity} style={styles.plusQuantity}>
-                <Ionicons name="add-outline" size={24} color="black" />
-              </Pressable>
-            </View>
+          <View style={styles.quantityControl}>
+            <Pressable onPress={decreaseQuantity} style={styles.quantityButton}>
+              <Ionicons name="remove-outline" size={24} color="#333" />
+            </Pressable>
+            <Text style={styles.quantityText}>{quantity}</Text>
+            <Pressable onPress={increaseQuantity} style={styles.quantityButton}>
+              <Ionicons name="add-outline" size={24} color="#333" />
+            </Pressable>
           </View>
         </View>
       </View>
 
-      <View style={styles.infoContainer}>
-        <Text style={styles.description}>Descripcion</Text>
-        <Text style={styles.descriptionProduct}>{product.description}</Text>
-      </View>
+      {/* Información del producto (Presentación y Descripción) */}
+      <ScrollView style={styles.infoContainer}>
+        <Text style={styles.sectionTitle}>Presentación</Text>
+        <Text style={styles.sectionContent}>{product.quantity_per_unit} {product.unit}</Text>
 
-      <View style={styles.addToCart}>
-        <Text style={styles.price}>${totalPrice}</Text>
-        <Pressable onPress={handleAddToCart} style={({ pressed }) => [styles.buttonAddToCart, { backgroundColor: pressed ? '#3B82F6' : '#4A90E2' }]}>
-          <Text style={{ fontSize: 20, fontWeight: '900', color: 'white' }}>
-            Agregar al carrito
-          </Text>
+        <Text style={styles.sectionTitle}>Descripción</Text>
+        <Text style={styles.sectionContent}>{product.description}</Text>
+      </ScrollView>
+
+      {/* Barra inferior de Precio y Añadir al Carrito */}
+      <View style={[styles.addToCartBar, { paddingBottom: insets.bottom }]}>
+        <Text style={styles.totalPriceText}>${totalPrice.toLocaleString('es-CL')}</Text>
+        <Pressable
+          onPress={handleAddToCart}
+          style={({ pressed }) => [
+            styles.addToCartButton,
+            { backgroundColor: pressed ? '#2563EB' : '#4A90E2' }, 
+          ]}
+        >
+          <Text style={styles.addToCartButtonText}>Agregar al carrito</Text>
         </Pressable>
       </View>
     </View>
@@ -98,106 +107,145 @@ const styles = StyleSheet.create({
   },
   headerProductWrapper: {
     backgroundColor: 'white',
-    borderBottomLeftRadius: 70,
-    borderBottomRightRadius: 70,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 3 },
-    shadowRadius: 4,
-    elevation: 10,
+    borderBottomLeftRadius: 60, 
+    borderBottomRightRadius: 60,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 12,
+      },
+    }),
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
+    paddingHorizontal: 15,
+    paddingTop: 10, 
+    paddingBottom: 5,
   },
-  // backButton: {
-  //   padding: 10,
-  //   // borderRadius: 10,
-  //   // backgroundColor: '#E0E7FF',
-  // },
-  // cartButton: {
-  //   padding: 10,
-  //   // borderRadius: 10,
-  //   // backgroundColor: '#E0E7FF',
-  // },
+  headerButton: {
+    padding: 10,
+    borderRadius: 50, 
+  },
   productContainer: {
-    paddingTop: 5,
     alignItems: 'center',
-    paddingBottom: 60,
-
+    paddingBottom: 70, 
   },
   image: {
-    marginBottom: 10,
-    width: 220,
-    height: 220,
+    width: 250,
+    height: 250,
+    resizeMode: 'contain',
+    marginBottom: 15,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.15,
+        shadowRadius: 10,
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
   },
-  name: {
-    fontSize: 32,
-    fontWeight: '900',
+  productName: {
+    fontSize: 34, 
+    fontWeight: 'bold', 
+    textAlign: 'center',
+    paddingHorizontal: 20,
   },
-  quantity: {
+  quantityControl: {
     position: 'absolute',
-    bottom: -18,
+    bottom: -25, 
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    borderColor: 'black',
-    borderRadius: 30,
     backgroundColor: 'white',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 3 },
-    shadowRadius: 4,
-    elevation: 10,
-  },
-  plusQuantity: {
-    padding: 10,
-    marginLeft: 10,
     borderRadius: 30,
+    paddingHorizontal: 8, 
+    paddingVertical: 5,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+      },
+      android: {
+        elevation: 10,
+      },
+    }),
   },
-  minusQuantity: {
-    padding: 10,
-    marginRight: 10,
-    borderRadius: 30,
+  quantityButton: {
+    padding: 8,
+    borderRadius: 20, 
+    marginHorizontal: 10,
+  },
+  quantityText: {
+    fontSize: 20, 
+    fontWeight: 'bold',
+    color: '#333',
+    minWidth: 30, 
+    textAlign: 'center',
   },
   infoContainer: {
-    marginTop: 30,
-    paddingTop: 20,
-    paddingHorizontal: 20,
+    flex: 1, 
+    paddingHorizontal: 25, 
+    paddingTop: 35, 
   },
-  description: {
-    paddingBottom: 10,
-    fontSize: 28,
+  sectionTitle: {
+    fontSize: 22,
     fontWeight: 'bold',
+    marginBottom: 8,
+    marginTop: 15, 
   },
-  descriptionProduct: {
+  sectionContent: {
     fontSize: 16,
+    color: '#555',
+    marginBottom: 10,
   },
-  addToCart: {
-    position: 'absolute',
-    bottom: 0,
+  addToCartBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingBottom: 15,
-    paddingTop: 15,
-    marginBottom: 5,
+    justifyContent: 'space-between', 
+    backgroundColor: 'white',
+    paddingHorizontal: 25,
+    paddingVertical: 10,
+    borderTopLeftRadius: 30, 
+    borderTopRightRadius: 30,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -4 }, 
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 15,
+      },
+    }),
   },
-  price: {
-    flex: 1,
-    fontSize: 30,
-    fontWeight: '900',
+  totalPriceText: {
+    fontSize: 32,
+    fontWeight: 'bold',
     color: '#4A90E2',
   },
-  buttonAddToCart: {
-    paddingTop: 10,
-    paddingHorizontal: 30,
-    paddingBottom: 10,
+  addToCartButton: {
+    paddingVertical: 14, 
+    paddingHorizontal: 40,
     borderRadius: 30,
     alignItems: 'center',
-    marginLeft: 'auto',
+    justifyContent: 'center',
+  },
+  addToCartButtonText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
   },
 });
 
