@@ -1,6 +1,8 @@
-import React, { useContext } from 'react';
+// PublicNavigator.js
+import React, { useEffect } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { AuthContext } from '../context/AuthContext';
+import { CommonActions, useNavigation } from '@react-navigation/native';
+
 import HomeScreen from '../screens/public/HomeScreen';
 import LoginScreen from '../screens/public/LoginScreen';
 import RegisterScreen from '../screens/public/RegisterScreen';
@@ -9,10 +11,30 @@ import FormPay from '../screens/public/FormPay';
 import CartScreen from '../screens/public/CartScreen'; 
 import AdminNavigator from './AdminNavigator';
 import UserNavigator from './UserNavigator';
+
 const Stack = createStackNavigator();
 
-const PublicNavigator = () => {
-  const { authState } = useContext(AuthContext);
+const PublicNavigator = ({ role }) => {
+  const navigation = useNavigation();
+
+  // Redirige automáticamente al navigator correspondiente cuando el rol está definido
+  useEffect(() => {
+    if (role === 'admin') {
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: 'AdminRoot' }],
+        })
+      );
+    } else if (role === 'user') {
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: 'UserRoot' }],
+        })
+      );
+    }
+  }, [role]);
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -23,11 +45,12 @@ const PublicNavigator = () => {
       <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
       <Stack.Screen name="CartScreen" component={CartScreen} />
       <Stack.Screen name="FormPay" component={FormPay} />
-      {/* Rutas protegidas */}
-      {authState?.role === 'admin' && (
+
+      {/* Rutas protegidas, disponibles según el rol */}
+      {role === 'admin' && (
         <Stack.Screen name="AdminRoot" component={AdminNavigator} />
       )}
-      {authState?.role === 'user' && (
+      {role === 'user' && (
         <Stack.Screen name="UserRoot" component={UserNavigator} />
       )}
     </Stack.Navigator>

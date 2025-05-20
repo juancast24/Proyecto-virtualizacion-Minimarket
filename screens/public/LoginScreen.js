@@ -1,48 +1,57 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Alert, Image, Pressable } from 'react-native';
-import { useNavigation, CommonActions } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
 
 const LoginScreen = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [username, setUsername] = useState('');
+  const [email, setemail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [phone, setPhone] = useState('');
+  const [name, setName] = useState('');
+  const [address, setAddress] = useState('');
 
   const { onLogin, onRegister } = useAuth();
-  const navigation = useNavigation();
 
   const handleLogin = async () => {
-    if (username.trim() === '' || password.trim() === '') {
+    if (email.trim() === '' || password.trim() === '') {
       return Alert.alert('Error', 'Hay campos sin rellenar');
     }
 
-    const user = await onLogin(username.trim(), password);
+    const user = await onLogin(email.trim(), password);
     if (!user) {
-      return Alert.alert('Error', 'Usuario o contraseña incorrectos');
+      return Alert.alert('Error', 'Email o contraseña incorrectos');
     }
-
-    navigation.dispatch( // Resetear la navegación a la pantalla de inicio del usuario o admin según sea el caso    
-      CommonActions.reset({
-        index: 0,
-        routes: [
-          {
-            name: user.role === 'admin' ? 'AdminRoot' : 'UserRoot',
-          },
-        ],
-      })
-    );
   };
 
   const handleRegister = async () => {
-    const success = await onRegister(username.trim(), password, confirmPassword.trim(), phone.trim());
+    if (!name || !phone || !address || !email || !password || !confirmPassword) {
+      return Alert.alert('Error', 'Todos los campos son obligatorios');
+    }
+
+    if (password !== confirmPassword) {
+      return Alert.alert('Error', 'Las contraseñas no coinciden');
+    }
+
+    const success = await onRegister(
+      email.trim(),
+      password,
+      phone.trim(),
+      'user',
+      name.trim(),
+      address.trim()
+    );
+
     if (success) {
       setIsLogin(true);
-      setUsername('');
+      setemail('');
       setPassword('');
       setConfirmPassword('');
       setPhone('');
+      setName('');
+      setAddress('');
+    } else {
+      Alert.alert('Error', 'No se pudo crear la cuenta');
     }
   };
 
@@ -68,22 +77,37 @@ const LoginScreen = () => {
         </View>
 
         <View style={styles.form}>
+          {!isLogin && (
+            <>
+              <TextInput
+                placeholder="Nombre completo"
+                value={name}
+                onChangeText={setName}
+                style={styles.input}
+              />
+              <TextInput
+                placeholder="Teléfono"
+                keyboardType="phone-pad"
+                value={phone}
+                onChangeText={setPhone}
+                style={styles.input}
+              />
+              <TextInput
+                placeholder="Dirección"
+                value={address}
+                onChangeText={setAddress}
+                style={styles.input}
+              />
+            </>
+          )}
+
           <TextInput
-            placeholder="Usuario"
+            placeholder="Email"
             autoCapitalize="none"
-            value={username}
-            onChangeText={setUsername}
+            value={email}
+            onChangeText={setemail}
             style={styles.input}
           />
-          {!isLogin && (
-            <TextInput
-              placeholder="Teléfono"
-              keyboardType="phone-pad"
-              value={phone}
-              onChangeText={setPhone}
-              style={styles.input}
-            />
-          )}
           <TextInput
             placeholder="Contraseña"
             secureTextEntry

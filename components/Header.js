@@ -15,7 +15,7 @@ const Header = ({ onMenuPress, onProfilePress }) => {
                 </Pressable>
                 {/* Botón de perfil */}
                 <Pressable onPress={onProfilePress}>
-                    <Ionicons name="person-outline" size={30} color="black" />
+                    <Ionicons name="person-circle-outline" size={30} color="black" />
                 </Pressable>
             </View>
         </View>
