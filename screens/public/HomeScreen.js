@@ -1,48 +1,33 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Layout from '../../components/Layout';
-import { View, Text,  StyleSheet, TextInput, FlatList, Pressable, Image } from 'react-native';
-import ProductCard from '../../components/productCard';
+import { View, Text, StyleSheet, TextInput, FlatList, Pressable, Image } from 'react-native';
+import ProductCard from '../../components/ProductCard';
 import { Ionicons } from '@expo/vector-icons';
-import { products } from '../../data/products';
 
 const categories = ['Todas', 'Aseo hogar', 'Despensa', 'Frutas Verduras', 'Carnes', 'Lacteos', 'Higiene Personal'];
 
 const HomeScreen = () => {
-    const [selectedCategory, setSelectedCategory] = useState(null);//estado para la categoria seleccionada
-    const [searchQuery, setSearchQuery] = useState(''); // Estado para la búsqueda
+    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
 
-    //funcion para manejar cuando el usuario selecciona una categoría
     const handleCategoryPress = (category) => {
         if (category === 'Todas') {
-            setSelectedCategory(null); // Si se selecciona todas, se limpia la categoría seleccionada
+            setSelectedCategory(null);
         } else {
-            setSelectedCategory(category);// Si se selecciona una categoría, se establece la categoría seleccionada
+            setSelectedCategory(category);
         }
     };
-
-    // Filtrar productos según la categoría seleccionada
-    const filteredProductsByCategory = selectedCategory
-        ? products.filter(product => product.category === selectedCategory)// Si hay una categoría seleccionada, se filtra por ella
-        : products; // Si no hay categoría seleccionada, no se filtra
-
-    // Filtrar productos por nombre según la búsqueda
-    const filteredProducts = filteredProductsByCategory.filter(product =>
-        product.name.toLowerCase().includes(searchQuery.toLowerCase())// Filtra productos cuyo nombre incluya el término de búsqueda
-    );
 
     return (
         <Layout>
             <View style={styles.container}>
                 <View style={styles.content}>
                     <View style={styles.containerTitle}>
-                        
                         <Text style={styles.title}>
                             Empieza{"\n"}
                             <Text style={{ color: '#4A90E2' }}>Elije, </Text>
                             lleva 
                         </Text>
-                        
                         <View style={styles.imageContainer}>
                             <Image source={require('../../assets/logo-market.png')} style={styles.logo} />
                         </View>
@@ -54,8 +39,8 @@ const HomeScreen = () => {
                             placeholder="Buscar productos"
                             style={styles.searchInput}
                             placeholderTextColor="gray"
-                            value={searchQuery} 
-                            onChangeText={setSearchQuery} 
+                            value={searchQuery}
+                            onChangeText={setSearchQuery}
                         />
                     </View>
 
@@ -71,13 +56,13 @@ const HomeScreen = () => {
                                     <Pressable
                                         style={[
                                             styles.categoryButton,
-                                            isSelected && styles.selectedCategoryButton // estilo especial si está seleccionada
+                                            isSelected && styles.selectedCategoryButton
                                         ]}
                                         onPress={() => handleCategoryPress(item)}
                                     >
                                         <Text style={[
                                             styles.categoryText,
-                                            isSelected && styles.selectedCategoryText 
+                                            isSelected && styles.selectedCategoryText
                                         ]}>
                                             {item}
                                         </Text>
@@ -88,9 +73,9 @@ const HomeScreen = () => {
                     </View>
                 </View>
 
-                {/* Lista de productos */}
-                <ProductCard products={filteredProducts} /> {/* Pasa los productos filtrados a `ProductCard */}
-            </View >
+                {/* Solo pasa los filtros, no los productos */}
+                <ProductCard selectedCategory={selectedCategory} searchQuery={searchQuery} />
+            </View>
         </Layout>
     );
 };

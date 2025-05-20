@@ -136,7 +136,7 @@ const Layout = ({ children }) => {
           />
           <MenuItem
             icon="cube-outline"
-            label="Gestionar Productos"
+            label="Crear Producto"
             onPress={() => navigateTo("AdminRoot", { screen: "CreateProduct" })}
           />
           <MenuItem
@@ -148,7 +148,7 @@ const Layout = ({ children }) => {
             icon="people-outline"
             label="Gestión de Usuarios"
             onPress={() =>
-              navigateTo("AdminRoot", { screen: "UserManagementScreen" })
+              navigateTo("AdminRoot", { screen: "UserManagement" })
             }
           />
           <MenuItem
@@ -219,7 +219,6 @@ const Layout = ({ children }) => {
       />
       <View style={styles.content}>{children}</View>
 
-      {/* Overlay oscuro cuando el menú está abierto */}
       {menuVisible && (
         <TouchableWithoutFeedback onPress={closeMenu}>
           <View style={styles.overlay} />

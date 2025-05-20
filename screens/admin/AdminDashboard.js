@@ -18,10 +18,6 @@ const AdminDashboard = () => {
   const { authState } = useAuth();
   const navigation = useNavigation();
 
-  const handleMenuPress = () => {
-    alert("Menu");
-  };
-
   const [searchText, setSearchText] = useState(""); // Estado para el texto de búsqueda
 
   const { filteredData } = ProductsAdmin;

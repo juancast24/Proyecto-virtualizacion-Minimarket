@@ -22,10 +22,15 @@ const db = getFirestore(firebaseApp);
 
 export const AuthProvider = ({ children }) => {
   const [authState, setAuthState] = useState({
+
+    token: null, 
+
+
     authenticated: false,
     user: null,
     role: null,
   });
+
 
   // Detectar login automático (si ya estaba logueado)
   useEffect(() => {
@@ -56,6 +61,7 @@ export const AuthProvider = ({ children }) => {
       return userDoc.data().rol || "user";
     }
     return "user";
+
   };
 
   // Registro de usuario

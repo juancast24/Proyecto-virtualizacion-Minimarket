@@ -16,6 +16,9 @@ const AccountScreen = ({ navigation }) => {
       console.error("Error al cerrar sesión:", error);
     }
   };
+  const handleChangePassword = () => {
+    navigation.navigate("ChangePassword");
+  };
 
   return (
     <Layout>
@@ -57,39 +60,34 @@ const AccountScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.menuSection}>
-          <Text style={styles.sectionTitle}>Panel de Administración</Text>
-
-          <Pressable
-            style={styles.menuItem}
-            onPress={() => navigation.navigate("AdminDashboard")}
-          >
-            <View style={styles.menuIconContainer}>
-              <FontAwesome5 name="box" size={18} color="#ffffff" />
-            </View>
-            <Text style={styles.menuText}>Productos</Text>
+          <Text style={styles.sectionTitle}> Seguridad</Text>
+          <View style={styles.infoRow}>
             <MaterialIcons
-              name="chevron-right"
-              size={24}
+              name="lock"
+              size={20}
               color="#4A6572"
-              style={styles.menuArrow}
+              style={styles.infoIcon}
             />
-          </Pressable>
-
-          <Pressable
-            style={styles.menuItem}
-            onPress={() => navigation.navigate("UserManagement")}
-          >
-            <View style={styles.menuIconContainer}>
-              <Feather name="users" size={18} color="#ffffff" />
-            </View>
-            <Text style={styles.menuText}>Gestionar Usuarios</Text>
-            <MaterialIcons
-              name="chevron-right"
-              size={24}
+            <Text style={styles.infoLabel}>Clave de acceso:</Text>
+            <Text style={styles.infoValue}>***********</Text>
+            <Pressable onPress={handleChangePassword}>
+                <Feather name="edit" size={20} color="#4A6572" />
+              </Pressable>
+          </View>
+          <View style={styles.infoRow}>
+            <FontAwesome5
+              name="shield-alt"
+              size={20}
               color="#4A6572"
-              style={styles.menuArrow}
+              style={styles.infoIcon}
             />
-          </Pressable>
+            <Text style={styles.infoLabel}>Autenticación en dos pasos:</Text>
+            <Text style={styles.infoValue}>Habilitada</Text>
+            <Pressable onPress={handleChangePassword}>
+                <Feather name="edit" size={20} color="#4A6572" />
+              </Pressable>
+          </View>
+          
         </View>
 
         <Pressable style={styles.logoutButton} onPress={handleLogout}>
@@ -176,10 +174,10 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   infoLabel: {
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: "500",
     color: "#4A6572",
-    width: 80,
+    width: 75,
   },
   infoValue: {
     fontSize: 16,
