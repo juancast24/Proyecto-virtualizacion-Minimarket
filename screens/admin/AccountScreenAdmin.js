@@ -1,34 +1,71 @@
-import React from "react";
-import {Text,StyleSheet,View,Pressable,Image} from "react-native";
+import React, { useEffect, useState } from "react";
+import { Text, StyleSheet, View, Pressable } from "react-native";
 import Layout from "../../components/Layout";
 import { useAuth } from "../../context/AuthContext";
 import { MaterialIcons, FontAwesome5, Feather } from "@expo/vector-icons";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { firebaseApp } from "../../firebase.config";
+
+const db = getFirestore(firebaseApp);
 
 const AccountScreen = ({ navigation }) => {
-  const { onLogout } = useAuth(); // Obtén la función logout del contexto
+  const { authState, onLogout } = useAuth();
+  const [userData, setUserData] = useState(null);
+
+  // Obtener datos del usuario desde Firestore
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (authState.user?.uid) {
+        const userDoc = await getDoc(doc(db, "usuarios", authState.user.uid));
+        if (userDoc.exists()) {
+          setUserData(userDoc.data());
+        }
+      }
+    };
+    fetchUserData();
+  }, [authState.user]);
 
   const handleLogout = async () => {
     try {
-      onLogout(); // Llama al método logout del contexto para limpiar la sesión
-      // Redirige al HomeScreen
+      onLogout();
       navigation.navigate("Home");
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
     }
   };
+
   const handleChangePassword = () => {
     navigation.navigate("ChangePassword");
   };
+
+  // Puedes mostrar un loader si userData es null
+  if (!userData) {
+    return (
+      <Layout>
+        <View style={styles.container}>
+          <Text>Cargando datos de usuario...</Text>
+        </View>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
       <View style={styles.container}>
         <View style={styles.profileHeader}>
           <View style={styles.avatarContainer}>
-            <Text style={styles.avatarText}>DA</Text>
+            <Text style={styles.avatarText}>
+              {userData.nombre
+                ? userData.nombre
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .toUpperCase()
+                : "US"}
+            </Text>
           </View>
-          <Text style={styles.title}>Daniel Alejandro</Text>
-          <Text style={styles.subtitle}>Administrador</Text>
+          <Text style={styles.title}>{userData.nombre || "Usuario"}</Text>
+          <Text style={styles.subtitle}>{userData.rol || "Rol"}</Text>
         </View>
 
         <View style={styles.card}>
@@ -43,7 +80,7 @@ const AccountScreen = ({ navigation }) => {
                 style={styles.infoIcon}
               />
               <Text style={styles.infoLabel}>Email:</Text>
-              <Text style={styles.infoValue}>danie@example.com</Text>
+              <Text style={styles.infoValue}>{userData.correo || authState.user.email}</Text>
             </View>
 
             <View style={styles.infoRow}>
@@ -54,7 +91,17 @@ const AccountScreen = ({ navigation }) => {
                 style={styles.infoIcon}
               />
               <Text style={styles.infoLabel}>Teléfono:</Text>
-              <Text style={styles.infoValue}>+123456789</Text>
+              <Text style={styles.infoValue}>{userData.telefono || "-"}</Text>
+            </View>
+            <View style={styles.infoRow}>
+              <MaterialIcons
+                name="home"
+                size={20}
+                color="#4A6572"
+                style={styles.infoIcon}
+              />
+              <Text style={styles.infoLabel}>Dirección:</Text>
+              <Text style={styles.infoValue}>{userData.direccion || "-"}</Text>
             </View>
           </View>
         </View>
@@ -71,23 +118,10 @@ const AccountScreen = ({ navigation }) => {
             <Text style={styles.infoLabel}>Clave de acceso:</Text>
             <Text style={styles.infoValue}>***********</Text>
             <Pressable onPress={handleChangePassword}>
-                <Feather name="edit" size={20} color="#4A6572" />
-              </Pressable>
+              <Feather name="edit" size={20} color="#4A6572" />
+            </Pressable>
           </View>
-          <View style={styles.infoRow}>
-            <FontAwesome5
-              name="shield-alt"
-              size={20}
-              color="#4A6572"
-              style={styles.infoIcon}
-            />
-            <Text style={styles.infoLabel}>Autenticación en dos pasos:</Text>
-            <Text style={styles.infoValue}>Habilitada</Text>
-            <Pressable onPress={handleChangePassword}>
-                <Feather name="edit" size={20} color="#4A6572" />
-              </Pressable>
-          </View>
-          
+          {/* ...otros campos de seguridad... */}
         </View>
 
         <Pressable style={styles.logoutButton} onPress={handleLogout}>
@@ -228,6 +262,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 10,
     marginTop: "auto",
+    marginBottom: 25,
     elevation: 2,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
