@@ -1,11 +1,11 @@
 import React, { useContext, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, Image, Pressable, Platform } from 'react-native';
-import Layout from '../../components/Layout'; // Asegúrate de que esta ruta sea correcta
-import { CartContext } from '../../context/CartContext'; // Asegúrate de que esta ruta sea correcta
+import Layout from '../../components/Layout'; 
+import { useCart } from '../../context/CartContext'; 
 import { useNavigation } from '@react-navigation/native';
 
 const CartScreen = () => {
-  const { cartItems, clearCart } = useContext(CartContext);
+  const { cartItems, clearCart } = useCart();
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -55,10 +55,22 @@ const CartScreen = () => {
 
       {cartItems.length > 0 && (
         <View style={styles.buttonGroup}>
-          <Pressable onPress={clearCart} style={({ pressed }) => [styles.clearCartButton, { backgroundColor: pressed ? '#C62828' : '#D32F2F' }]}>
+          <Pressable
+            onPress={clearCart}
+            style={({ pressed }) => [
+              styles.clearCartButton,
+              { backgroundColor: pressed ? '#C62828' : '#D32F2F' }
+            ]}
+          >
             <Text style={styles.buttonText}>Limpiar carrito</Text>
           </Pressable>
-          <Pressable onPress={handleCheckout} style={({ pressed }) => [styles.checkoutButton, { backgroundColor: pressed ? '#388E3C' : '#43A047' }]}>
+          <Pressable
+            onPress={handleCheckout}
+            style={({ pressed }) => [
+              styles.checkoutButton,
+              { backgroundColor: pressed ? '#388E3C' : '#43A047' }
+            ]}
+          >
             <Text style={styles.buttonText}>Finalizar compra</Text>
           </Pressable>
         </View>
@@ -105,7 +117,7 @@ const styles = StyleSheet.create({
   },
   itemDetails: {
     flex: 1,
-    justifyContent: 'space-between', 
+    justifyContent: 'space-between',
   },
   itemName: {
     fontSize: 20,

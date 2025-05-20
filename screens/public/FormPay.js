@@ -196,9 +196,9 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 15,
   },
-  // --- Resumen de Productos ---
+
   cartItemCard: {
-    backgroundColor: '#F9F9F9', // Fondo ligeramente diferente para cada ítem
+    backgroundColor: '#F9F9F9', 
     borderRadius: 8,
     padding: 12,
     marginBottom: 10,
@@ -250,16 +250,16 @@ const styles = StyleSheet.create({
   totalAmount: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#4CAF50', // Color del botón de confirmación
+    color: '#4CAF50', 
   },
-  // --- Separador ---
+
   separator: {
     height: 2,
     backgroundColor: '#EEE',
     marginVertical: 10,
     marginHorizontal: 10,
   },
-  // --- Datos de Envío ---
+
   deliveryInfo: {
     fontSize: 14,
     color: '#666',
@@ -287,7 +287,6 @@ const styles = StyleSheet.create({
       },
     }),
   },
-  // --- Método de Pago ---
   pickerWrapper: {
     borderWidth: 1,
     borderColor: '#DDD',

@@ -2,15 +2,12 @@ import React from 'react';
 import { Text, StyleSheet, View,TouchableOpacity } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Layout from '../../components/Layout';
-import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 
 const AccountScreen = ({ navigation }) => {
-    const { clearCart } = useCart();
     const { authState, onLogout } = useAuth();
 
     const handleLogout = () => {
-        clearCart?.();
         onLogout();
         navigation.reset({
             index: 0,
