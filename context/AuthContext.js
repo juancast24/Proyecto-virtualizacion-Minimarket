@@ -1,95 +1,127 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut as firebaseSignOut,
+  onAuthStateChanged,
+} from "firebase/auth";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+} from "firebase/firestore";
+import { firebaseApp, auth } from "../firebase.config";
 
-// Roles disponibles
-const Role = {
-  ADMIN: "admin",
-  USER: "user",
-};
-
+// Crear el contexto
 export const AuthContext = createContext({});
+export const useAuth = () => useContext(AuthContext);
+
+// Inicializar Firestore
+const db = getFirestore(firebaseApp);
 
 export const AuthProvider = ({ children }) => {
   const [authState, setAuthState] = useState({
+
     token: null, 
+
+
     authenticated: false,
-    username: null,
+    user: null,
     role: null,
   });
 
-  const onLogin = async (username, password) => {
-    if (username.trim() === "" || password.trim() === "") {
-      return null; 
-    }
 
-    if (username === "admin" && password === "admin") {
-      const authData = {
-        token: "admin-token-123", 
-        authenticated: true,
-        username: username,
-        role: Role.ADMIN,
-      };
-      setAuthState(authData);
-      return authData;
-    }
+  // Detectar login automático (si ya estaba logueado)
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const role = await getUserRole(user.uid);
+        setAuthState({
+          authenticated: true,
+          user,
+          role,
+        });
+      } else {
+        setAuthState({
+          authenticated: false,
+          user: null,
+          role: null,
+        });
+      }
+    });
 
-    if (username === "user" && password === "user") {
-      const authData = {
-        token: "user-token-123", 
-        authenticated: true,
-        username: username,
-        role: Role.USER,
-      };
-      setAuthState(authData);
-      return authData;
-    }
+    return () => unsubscribe();
+  }, []);
 
-    return null;
+  // Obtener el rol desde Firestore
+  const getUserRole = async (uid) => {
+    const userDoc = await getDoc(doc(db, "usuarios", uid));
+    if (userDoc.exists()) {
+      return userDoc.data().rol || "user";
+    }
+    return "user";
+
   };
 
-  // Función para manejar el registro de un usuario
-  const onRegister = (username, password, confirmPassword, phone) => {
-    if (
-      username.trim() &&
-      password.trim() &&
-      confirmPassword.trim() &&
-      phone.trim()
-    ) {
-      // Estructura consistente con onLogin
-      setAuthState({
-        token: "new-user-token-123",
-        authenticated: true,
-        username: username,
-        role: Role.USER,
+  // Registro de usuario
+  const onRegister = async (email, password, telefono = '', rol = 'user', nombre = '', direccion = '') => {
+    try {
+      const res = await createUserWithEmailAndPassword(auth, email, password);
+      const uid = res.user.uid;
+
+      await setDoc(doc(db, "usuarios", uid), {
+        correo: email,
+        telefono: telefono,
+        nombre: nombre,
+        direccion: direccion,
+        rol: rol,
       });
+
+      setAuthState({
+        authenticated: true,
+        user: res.user,
+        role: rol,
+      });
+
       return true;
-    } else {
+    } catch (error) {
+      console.error("Error en registro:", error);
       return false;
     }
   };
 
-  // Renombrado para consistencia con Layout.js
-  const signOut = () => {
+  // Login de usuario
+  const onLogin = async (email, password) => {
+    try {
+      const res = await signInWithEmailAndPassword(auth, email, password);
+      const uid = res.user.uid;
+      const role = await getUserRole(uid);
+      setAuthState({
+        authenticated: true,
+        user: res.user,
+        role,
+      });
+      return true;
+    } catch (error) {
+      console.error("Error en login:", error);
+      return false;
+    }
+  };
+
+  // Logout
+  const onLogout = async () => {
+    await firebaseSignOut(auth);
     setAuthState({
-      token: null,
       authenticated: false,
-      username: null,
+      user: null,
       role: null,
     });
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        authState,
-        onLogin,
-        onRegister,
-        signOut, // Exportar con el nombre usado en Layout
-        onLogout: signOut, // Para compatibilidad con código existente
-      }}
-    >
+    <AuthContext.Provider value={{ authState, onLogin, onRegister, onLogout }}>
       {children}
     </AuthContext.Provider>
   );
 };
-
-export const useAuth = () => useContext(AuthContext);

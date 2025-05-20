@@ -2,7 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import Layout from '../../components/Layout';
 import { View, Text,  StyleSheet, TextInput, FlatList, Pressable, Image } from 'react-native';
-import ProductCard from '../../components/ProductCard';
+import ProductCard from '../../components/productCard';
 import { Ionicons } from '@expo/vector-icons';
 import { products } from '../../data/products';
 

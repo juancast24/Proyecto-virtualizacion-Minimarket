@@ -1,23 +1,23 @@
-import React, { useState,useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Image, StyleSheet, Text, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { CartContext } from '../../context/CartContext'; 
+import { CartContext } from '../../context/CartContext';
 
 const ProductDetails = () => {
   const insets = useSafeAreaInsets();
   const route = useRoute();
   const { product } = route.params;
   const navigation = useNavigation();
-  const { addToCart } = useContext(CartContext); 
+  const { addToCart } = useContext(CartContext);
 
   const handlePressBack = () => {
     navigation.goBack();
   };
 
   const handleCartPress = () => {
-    navigation.navigate('CartScreen');  
+    navigation.navigate('CartScreen');
   };
 
   const [quantity, setQuantity] = useState(1);
@@ -37,7 +37,7 @@ const ProductDetails = () => {
   };
   const totalPrice = quantity * product.price;
   const handleAddToCart = () => {
-    addToCart(product,quantity,totalPrice);
+    addToCart(product, quantity, totalPrice);
     navigation.navigate('CartScreen');
   };
 
@@ -81,7 +81,7 @@ const ProductDetails = () => {
 
       <View style={styles.addToCart}>
         <Text style={styles.price}>${totalPrice}</Text>
-        <Pressable onPress={handleAddToCart} style={({ pressed }) => [styles.buttonAddToCart,{ backgroundColor: pressed ? '#3B82F6' : '#4A90E2' }]}>
+        <Pressable onPress={handleAddToCart} style={({ pressed }) => [styles.buttonAddToCart, { backgroundColor: pressed ? '#3B82F6' : '#4A90E2' }]}>
           <Text style={{ fontSize: 20, fontWeight: '900', color: 'white' }}>
             Agregar al carrito
           </Text>
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 20,
-  },  
+  },
   // backButton: {
   //   padding: 10,
   //   // borderRadius: 10,
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     alignItems: 'center',
     paddingBottom: 60,
-    
+
   },
   image: {
     marginBottom: 10,
@@ -183,6 +183,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 15,
     paddingTop: 15,
+    marginBottom: 5,
   },
   price: {
     flex: 1,

@@ -97,7 +97,7 @@ const Layout = ({ children }) => {
         userRole.toLowerCase() === "admin" ||
         userRole === "ADMIN");
 
-    if (!authState || !authState.token) {
+    if (!authState.authenticated) {
       // Opciones para usuarios no autenticados
       return (
         <>
@@ -107,14 +107,14 @@ const Layout = ({ children }) => {
             onPress={() => navigateTo("Home")}
           />
           <MenuItem
+            icon="cart-outline"
+            label="Carrito"
+            onPress={() => navigateTo("CartScreen")}
+          />
+          <MenuItem
             icon="log-in-outline"
             label="Iniciar Sesión"
             onPress={() => navigateTo("Login")}
-          />
-          <MenuItem
-            icon="person-add-outline"
-            label="Registrarse"
-            onPress={() => navigateTo("Register")}
           />
           <MenuItem
             icon="information-circle-outline"
@@ -169,7 +169,7 @@ const Layout = ({ children }) => {
         </>
       );
     } else {
-      // Opciones para usuarios regulares
+      // Opciones para usuarios
       return (
         <>
           <MenuItem
@@ -185,7 +185,7 @@ const Layout = ({ children }) => {
           <MenuItem
             icon="basket-outline"
             label="Carrito"
-            onPress={() => navigateTo("UserRoot", { screen: "Cart" })}
+            onPress={() => navigateTo("CartScreen")}
           />
           <MenuItem
             icon="list-outline"
@@ -193,7 +193,7 @@ const Layout = ({ children }) => {
             onPress={() => navigateTo("UserRoot", { screen: "OrderHistory" })}
           />
           <MenuItem
-            icon="person-outline"
+            icon="person-circle-outline"
             label="Mi Cuenta"
             onPress={() => navigateTo("UserRoot", { screen: "AccountScreen" })}
           />
@@ -239,8 +239,8 @@ const Layout = ({ children }) => {
                   (userRole === "admin" ||
                     userRole.toLowerCase() === "admin" ||
                     userRole === "ADMIN")
-                ? "Administrador"
-                : "Cliente"}
+                  ? "Administrador"
+                  : "Cliente"}
             </Text>
           </View>
           <View style={styles.drawerContent}>{renderMenuItems()}</View>
