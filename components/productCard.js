@@ -1,20 +1,63 @@
-import React, {useEffect, useState} from 'react';
-import { View, Text, StyleSheet, FlatList, Image, Pressable } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, Image, Pressable, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+// Importa Firestore
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { firebaseApp } from '../firebase.config';
 
-const ProductCard = ({products}) => {
+const db = getFirestore(firebaseApp);
+
+const ProductCard = ({ selectedCategory, searchQuery }) => {
     const navigation = useNavigation();
-    
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const querySnapshot = await getDocs(collection(db, 'products'));
+                const productsArray = [];
+                querySnapshot.forEach((doc) => {
+                    productsArray.push({ id: doc.id, ...doc.data() });
+                });
+                setProducts(productsArray);
+            } catch (error) {
+                console.error('Error al obtener productos:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchProducts();
+    }, []);
+
+    // Filtrar productos por categoría
+    const filteredByCategory = selectedCategory
+        ? products.filter(product =>
+            (product.category || '').toLowerCase().trim() === selectedCategory.toLowerCase().trim()
+        )
+        : products;
+
+    // Filtrar productos por búsqueda
+    const filteredProducts = filteredByCategory.filter(product =>
+        product.name.toLowerCase().includes((searchQuery || '').toLowerCase())
+    );
+
     const handlePressProduct = (product) => {
         navigation.navigate('ProductDetails', { product });
     };
+
+    if (loading) {
+        return <ActivityIndicator size="large" color="#4A90E2" style={{ marginTop: 40 }} />;
+    }
+
     return (
-        <FlatList style={styles.content}
-            data={products}
+        <FlatList
+            style={styles.content}
+            data={filteredProducts}
             showsVerticalScrollIndicator={false}
             numColumns={2}
             columnWrapperStyle={{ justifyContent: 'space-between' }}
-            keyExtractor={(item) => item.name}
+            keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
                 <Pressable
                     style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
