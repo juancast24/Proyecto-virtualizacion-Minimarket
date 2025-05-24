@@ -177,9 +177,11 @@ const CreateProduct = () => {
         <Picker.Item label="Selecciona unidad de medida" value="" />
         <Picker.Item label="unidad" value="unidad" />
         <Picker.Item label="unidades" value="unidades" />
-        <Picker.Item label="kg" value="kg" />
-        <Picker.Item label="ml" value="ml" />
-        <Picker.Item label="lb" value="lb" />
+        <Picker.Item label="Kg" value="kg" />
+        <Picker.Item label="Ml" value="ml" />
+        <Picker.Item label="Lb" value="lb" />
+        <Picker.Item label="g" value="g" />
+        <Picker.Item label="L" value="l" />
       </Picker>
 
       <TextInput
@@ -196,16 +198,26 @@ const CreateProduct = () => {
       ) : (
         <Text style={styles.imagePlaceholder}>Vista previa de la imagen</Text>
       )}
-      <Pressable style={styles.button} onPress={handleCreateProduct}>
-        <Text style={styles.buttonText}>Crear Producto</Text>
-      </Pressable>
-      {/* Nuevo botón para ir a AdminDashboard */}
-      <Pressable
-        style={[styles.button, { backgroundColor: "red", marginTop: 10 }]} // Estilo adicional
-        onPress={() => navigation.navigate("AdminDashboard")} // Navega a AdminDashboard
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "center",
+          marginTop: 10,
+        }}
       >
-        <Text style={styles.buttonText}>Atras</Text>
-      </Pressable>
+        <Pressable
+          style={[styles.button, { marginRight: 10 }]}
+          onPress={handleCreateProduct}
+        >
+          <Text style={styles.buttonText}>Crear Producto</Text>
+        </Pressable>
+        <Pressable
+          style={[styles.button, { backgroundColor: "red" }]}
+          onPress={() => navigation.navigate("AdminDashboard")}
+        >
+          <Text style={styles.buttonText}>Atras</Text>
+        </Pressable>
+      </View>
     </View>
   );
 };
