@@ -5,17 +5,23 @@ import { useAuth } from "../../context/AuthContext";
 import { MaterialIcons, FontAwesome5, Feather } from "@expo/vector-icons";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { firebaseApp } from "../../firebase.config";
+import { ActivityIndicator } from "react-native";
 
+// Inicializa la instancia de Firestore
 const db = getFirestore(firebaseApp);
 
+// Componente principal de la pantalla de cuenta de administrador
 const AccountScreen = ({ navigation }) => {
+  // Obtiene el estado de autenticación y la función de logout del contexto
   const { authState, onLogout } = useAuth();
+  // Estado local para almacenar los datos del usuario
   const [userData, setUserData] = useState(null);
 
-  // Obtener datos del usuario desde Firestore
+  // Hook para obtener los datos del usuario desde Firestore al montar el componente o cuando cambia el usuario autenticado
   useEffect(() => {
     const fetchUserData = async () => {
       if (authState.user?.uid) {
+        // Obtiene el documento del usuario desde la colección "usuarios"
         const userDoc = await getDoc(doc(db, "usuarios", authState.user.uid));
         if (userDoc.exists()) {
           setUserData(userDoc.data());
@@ -25,6 +31,7 @@ const AccountScreen = ({ navigation }) => {
     fetchUserData();
   }, [authState.user]);
 
+  // Función para cerrar sesión y navegar a la pantalla de inicio
   const handleLogout = async () => {
     try {
       onLogout();
@@ -34,24 +41,27 @@ const AccountScreen = ({ navigation }) => {
     }
   };
 
+  // Función para navegar a la pantalla de cambio de contraseña
   const handleChangePassword = () => {
     navigation.navigate("ChangePassword");
   };
 
-  // Puedes mostrar un loader si userData es null
+  // Si los datos del usuario aún no se han cargado, muestra una animación de carga
   if (!userData) {
     return (
       <Layout>
         <View style={styles.container}>
-          <Text>Cargando datos de usuario...</Text>
+          <ActivityIndicator size="large" color="#0077B6" />
         </View>
       </Layout>
     );
   }
 
+  // Renderiza la información del usuario y las opciones de seguridad
   return (
     <Layout>
       <View style={styles.container}>
+        {/* Encabezado del perfil con avatar, nombre y rol */}
         <View style={styles.profileHeader}>
           <View style={styles.avatarContainer}>
             <Text style={styles.avatarText}>
@@ -68,10 +78,12 @@ const AccountScreen = ({ navigation }) => {
           <Text style={styles.subtitle}>{userData.rol || "Rol"}</Text>
         </View>
 
+        {/* Tarjeta con información personal */}
         <View style={styles.card}>
           <View style={styles.infoSection}>
             <Text style={styles.sectionTitle}>Información Personal</Text>
 
+            {/* Fila de email */}
             <View style={styles.infoRow}>
               <MaterialIcons
                 name="email"
@@ -80,9 +92,12 @@ const AccountScreen = ({ navigation }) => {
                 style={styles.infoIcon}
               />
               <Text style={styles.infoLabel}>Email:</Text>
-              <Text style={styles.infoValue}>{userData.correo || authState.user.email}</Text>
+              <Text style={styles.infoValue}>
+                {userData.correo || authState.user.email}
+              </Text>
             </View>
 
+            {/* Fila de teléfono */}
             <View style={styles.infoRow}>
               <MaterialIcons
                 name="phone"
@@ -93,6 +108,7 @@ const AccountScreen = ({ navigation }) => {
               <Text style={styles.infoLabel}>Teléfono:</Text>
               <Text style={styles.infoValue}>{userData.telefono || "-"}</Text>
             </View>
+            {/* Fila de dirección */}
             <View style={styles.infoRow}>
               <MaterialIcons
                 name="home"
@@ -106,6 +122,7 @@ const AccountScreen = ({ navigation }) => {
           </View>
         </View>
 
+        {/* Sección de seguridad */}
         <View style={styles.menuSection}>
           <Text style={styles.sectionTitle}> Seguridad</Text>
           <View style={styles.infoRow}>
@@ -117,6 +134,7 @@ const AccountScreen = ({ navigation }) => {
             />
             <Text style={styles.infoLabel}>Clave de acceso:</Text>
             <Text style={styles.infoValue}>***********</Text>
+            {/* Botón para cambiar la contraseña */}
             <Pressable onPress={handleChangePassword}>
               <Feather name="edit" size={20} color="#4A6572" />
             </Pressable>
@@ -124,6 +142,7 @@ const AccountScreen = ({ navigation }) => {
           {/* ...otros campos de seguridad... */}
         </View>
 
+        {/* Botón para cerrar sesión */}
         <Pressable style={styles.logoutButton} onPress={handleLogout}>
           <MaterialIcons
             name="logout"

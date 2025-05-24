@@ -7,35 +7,32 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-import { getFirestore, doc, setDoc } from "firebase/firestore";
-import { firebaseApp } from "../../firebase.config";
 import { Picker } from "@react-native-picker/picker";
 import Layout from "../../components/Layout";
-
-const db = getFirestore(firebaseApp);
+import { useAuth } from "../../context/AuthContext"; 
 
 const CreateUserScreen = ({ navigation }) => {
+  const { onRegister } = useAuth(); 
+
   const [nombre, setNombre] = useState("");
   const [correo, setCorreo] = useState("");
   const [telefono, setTelefono] = useState("");
   const [rol, setRol] = useState("");
+  const [password, setPassword] = useState(""); 
 
   const handleCreate = async () => {
-    if (!nombre || !correo) {
-      Alert.alert("Error", "Nombre y correo son obligatorios.");
+    if (!nombre || !correo || !password || !rol) {
+      Alert.alert("Error", "Todos los campos son obligatorios.");
       return;
     }
     try {
-      // Genera un ID único (puedes usar uuid o similar)
-      const userId = Date.now().toString();
-      await setDoc(doc(db, "usuarios", userId), {
-        nombre,
-        correo,
-        telefono,
-        rol,
-      });
-      Alert.alert("Éxito", "Usuario creado correctamente.");
-      navigation.goBack();
+      const ok = await onRegister(correo, password, telefono, rol, nombre, "");
+      if (ok) {
+        Alert.alert("Éxito", "Usuario creado correctamente.");
+        navigation.goBack();
+      } else {
+        Alert.alert("Error", "No se pudo crear el usuario.");
+      }
     } catch (error) {
       Alert.alert("Error", "No se pudo crear el usuario.");
       console.error(error);
@@ -57,6 +54,14 @@ const CreateUserScreen = ({ navigation }) => {
           placeholder="Correo"
           value={correo}
           onChangeText={setCorreo}
+          autoCapitalize="none"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Contraseña"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
         />
         <TextInput
           style={styles.input}
