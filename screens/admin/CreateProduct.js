@@ -8,27 +8,28 @@ import {
   Image,
   Alert,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker";
-import { Picker } from "@react-native-picker/picker";
-import { addProduct } from "../../data/products";
-import { useNavigation } from "@react-navigation/native";
-import { MaterialIcons } from "@expo/vector-icons";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
-import { firebaseApp } from "../../firebase.config";
+import * as ImagePicker from "expo-image-picker"; // Para acceder a la cámara y galería
+import { Picker } from "@react-native-picker/picker"; // Selector de opciones (categoría, unidad)
+import { useNavigation } from "@react-navigation/native"; // Navegación entre pantallas
+import { MaterialIcons } from "@expo/vector-icons"; // Iconos para el botón de cámara
+import { getFirestore, collection, addDoc } from "firebase/firestore"; // Firestore para guardar productos
+import { firebaseApp } from "../../firebase.config"; // Configuración de Firebase
 
-const db = getFirestore(firebaseApp);
+const db = getFirestore(firebaseApp); // Instancia de Firestore
 
 const CreateProduct = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation(); // Hook para navegación
+  // Estados para los campos del formulario
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
   const [stock, setStock] = useState("");
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState(""); // URL de la imagen seleccionada/capturada
   const [quantityPerUnit, setQuantityPerUnit] = useState("");
   const [unit, setUnit] = useState("");
 
+  // Solicita permisos de cámara al montar el componente
   useEffect(() => {
     const getCameraPermission = async () => {
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -42,19 +43,18 @@ const CreateProduct = () => {
     getCameraPermission();
   }, []);
 
-  // Función para abrir la cámara
+  // Abre la cámara y permite capturar una imagen
   const handleOpenCamera = async () => {
     try {
       const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 0.7,
+        mediaTypes: ImagePicker.MediaTypeOptions.Images, // Solo imágenes
+        allowsEditing: true, // Permite recortar
+        aspect: [4, 3], // Relación de aspecto
+        quality: 0.7, // Calidad de la imagen
       });
 
       if (!result.canceled) {
-        // Aquí podrías subir la imagen a un servidor y obtener una URL
-        // Por ahora solo mostramos la URI de la imagen local
+        // Si el usuario toma una foto, guarda la URI local en el estado
         setImage(result.assets[0].uri);
         Alert.alert("Éxito", "Imagen capturada correctamente");
       }
@@ -64,7 +64,9 @@ const CreateProduct = () => {
     }
   };
 
+  // Maneja la creación del producto en Firestore
   const handleCreateProduct = async () => {
+    // Valida que todos los campos estén completos
     if (
       !name ||
       !description ||
@@ -79,6 +81,7 @@ const CreateProduct = () => {
       return;
     }
 
+    // Construye el objeto producto
     const newProduct = {
       name,
       description,
@@ -91,6 +94,7 @@ const CreateProduct = () => {
     };
 
     try {
+      // Guarda el producto en la colección "products" de Firestore
       await addDoc(collection(db, "products"), newProduct);
       Alert.alert("Éxito", "Producto creado exitosamente.");
       // Limpia los campos después de crear el producto
@@ -108,6 +112,7 @@ const CreateProduct = () => {
     }
   };
 
+  // Opciones de categorías disponibles
   const categories = [
     "Aseo hogar",
     "Despensa",
@@ -119,34 +124,39 @@ const CreateProduct = () => {
 
   return (
     <View style={styles.container}>
-      {/* Botón de cámara */}
+      {/* Botón flotante para abrir la cámara */}
       <Pressable style={styles.scanButton} onPress={handleOpenCamera}>
         <MaterialIcons name="camera-alt" size={24} color="white" />
       </Pressable>
 
+      {/* Título de la pantalla */}
       <Text style={styles.title}>Crear Nuevo Producto</Text>
+      {/* Campo para el nombre */}
       <TextInput
         style={styles.input}
         placeholder="Nombre del producto"
         value={name}
         onChangeText={setName}
       />
+      {/* Campo para la descripción */}
       <TextInput
         style={styles.input}
         placeholder="Descripción del producto"
         value={description}
         onChangeText={setDescription}
       />
+      {/* Selector de categoría */}
       <Picker
         selectedValue={category}
         onValueChange={(itemValue) => setCategory(itemValue)}
-        style={[styles.Picker]} // Combina estilos
+        style={[styles.Picker]}
       >
         <Picker.Item label="Selecciona una categoría" value="" />
         {categories.map((cat, index) => (
           <Picker.Item key={index} label={cat} value={cat} />
         ))}
       </Picker>
+      {/* Campo para el precio */}
       <TextInput
         style={styles.input}
         placeholder="Precio"
@@ -154,6 +164,7 @@ const CreateProduct = () => {
         onChangeText={setPrice}
         keyboardType="numeric"
       />
+      {/* Campo para el stock */}
       <TextInput
         style={styles.input}
         placeholder="Stock"
@@ -161,7 +172,7 @@ const CreateProduct = () => {
         onChangeText={setStock}
         keyboardType="numeric"
       />
-
+      {/* Campo para la cantidad por unidad */}
       <TextInput
         style={styles.input}
         placeholder="Cantidad por unidad (ej: 6, 500, 1)"
@@ -169,6 +180,7 @@ const CreateProduct = () => {
         onChangeText={setQuantityPerUnit}
         keyboardType="numeric"
       />
+      {/* Selector de unidad de medida */}
       <Picker
         selectedValue={unit}
         style={styles.Picker}
@@ -183,13 +195,14 @@ const CreateProduct = () => {
         <Picker.Item label="g" value="g" />
         <Picker.Item label="L" value="l" />
       </Picker>
-
+      {/* Campo para la URL de la imagen (rellenado automáticamente al tomar foto) */}
       <TextInput
         style={styles.input}
         placeholder="URL de la Imagen"
         value={image}
         onChangeText={setImage}
       />
+      {/* Vista previa de la imagen seleccionada o mensaje si no hay imagen */}
       {image ? (
         <Image
           source={{ uri: `${image}?timestamp=${new Date().getTime()}` }}
@@ -198,6 +211,7 @@ const CreateProduct = () => {
       ) : (
         <Text style={styles.imagePlaceholder}>Vista previa de la imagen</Text>
       )}
+      {/* Botones para crear producto o volver atrás */}
       <View
         style={{
           flexDirection: "row",

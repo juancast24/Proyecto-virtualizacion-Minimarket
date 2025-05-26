@@ -9,27 +9,34 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import Layout from "../../components/Layout";
-import { useAuth } from "../../context/AuthContext"; 
+import { useAuth } from "../../context/AuthContext";
 
+// Pantalla para crear un nuevo usuario
 const CreateUserScreen = ({ navigation }) => {
-  const { onRegister } = useAuth(); 
+  
+  const { onRegister } = useAuth(); // Obtiene la función de registro del contexto de autenticación
 
-  const [nombre, setNombre] = useState("");
-  const [correo, setCorreo] = useState("");
-  const [telefono, setTelefono] = useState("");
-  const [rol, setRol] = useState("");
-  const [password, setPassword] = useState(""); 
+  // Estados para los campos del formulario
+  const [nombre, setNombre] = useState(""); // Nombre del usuario
+  const [correo, setCorreo] = useState(""); // Correo electrónico
+  const [telefono, setTelefono] = useState(""); // Teléfono
+  const [rol, setRol] = useState(""); // Rol del usuario (admin/user)
+  const [password, setPassword] = useState(""); // Contraseña
 
+  // Función que maneja la creación del usuario
   const handleCreate = async () => {
+    // Valida que los campos obligatorios estén completos
     if (!nombre || !correo || !password || !rol) {
       Alert.alert("Error", "Todos los campos son obligatorios.");
       return;
     }
     try {
+      // Llama a la función de registro del contexto de autenticación
+      // El último argumento ("") es para la foto, que aquí no se usa
       const ok = await onRegister(correo, password, telefono, rol, nombre, "");
       if (ok) {
         Alert.alert("Éxito", "Usuario creado correctamente.");
-        navigation.goBack();
+        navigation.goBack(); // Vuelve a la pantalla anterior si se crea el usuario
       } else {
         Alert.alert("Error", "No se pudo crear el usuario.");
       }
@@ -42,13 +49,16 @@ const CreateUserScreen = ({ navigation }) => {
   return (
     <Layout>
       <View style={styles.container}>
+        {/* Título de la pantalla */}
         <Text style={styles.title}>Crear Usuario</Text>
+        {/* Campo para el nombre */}
         <TextInput
           style={styles.input}
           placeholder="Nombre"
           value={nombre}
           onChangeText={setNombre}
         />
+        {/* Campo para el correo electrónico */}
         <TextInput
           style={styles.input}
           placeholder="Correo"
@@ -56,6 +66,7 @@ const CreateUserScreen = ({ navigation }) => {
           onChangeText={setCorreo}
           autoCapitalize="none"
         />
+        {/* Campo para la contraseña */}
         <TextInput
           style={styles.input}
           placeholder="Contraseña"
@@ -63,12 +74,14 @@ const CreateUserScreen = ({ navigation }) => {
           onChangeText={setPassword}
           secureTextEntry
         />
+        {/* Campo para el teléfono */}
         <TextInput
           style={styles.input}
           placeholder="Teléfono"
           value={telefono}
           onChangeText={setTelefono}
         />
+        {/* Selector de rol */}
         <Picker
           selectedValue={rol}
           style={styles.picker}
@@ -78,6 +91,7 @@ const CreateUserScreen = ({ navigation }) => {
           <Picker.Item label="Usuario" value="user" />
           <Picker.Item label="Administrador" value="admin" />
         </Picker>
+        {/* Botón para crear el usuario */}
         <Pressable style={styles.button} onPress={handleCreate}>
           <Text style={styles.buttonText}>Crear</Text>
         </Pressable>

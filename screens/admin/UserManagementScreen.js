@@ -22,42 +22,52 @@ import {
 } from "firebase/firestore";
 import { firebaseApp } from "../../firebase.config";
 
+// Inicializa la instancia de Firestore
 const db = getFirestore(firebaseApp);
 
+// Pantalla principal para la gestión de usuarios
 const UserManagementScreen = () => {
+  // Estado para el texto de búsqueda
   const [searchText, setSearchText] = useState("");
+  // Estado para almacenar todos los usuarios obtenidos de Firestore
   const [users, setUsers] = useState([]);
+  // Estado para mostrar indicador de carga mientras se obtienen los usuarios
   const [loading, setLoading] = useState(true);
 
+  // Obtiene el estado de autenticación del usuario
   const { authState } = useAuth();
+  // Hook de navegación para cambiar de pantalla
   const navigation = useNavigation();
 
-  // Leer usuarios desde Firestore
+  // useEffect para obtener los usuarios de Firestore al montar el componente
   useEffect(() => {
     const fetchUsers = async () => {
       setLoading(true);
       try {
+        // Obtiene todos los documentos de la colección "usuarios"
         const querySnapshot = await getDocs(collection(db, "usuarios"));
         const usersArray = [];
+        // Recorre cada documento y lo agrega al array de usuarios
         querySnapshot.forEach((doc) => {
           usersArray.push({ id: doc.id, ...doc.data() });
         });
-        setUsers(usersArray);
+        setUsers(usersArray); // Actualiza el estado con los usuarios obtenidos
       } catch (error) {
         Alert.alert("Error", "No se pudieron cargar los usuarios.");
         console.error(error);
       } finally {
-        setLoading(false);
+        setLoading(false); // Oculta el indicador de carga
       }
     };
     fetchUsers();
   }, []);
 
-  // Filtrar los datos según el texto de búsqueda
+  // Filtra los usuarios según el texto de búsqueda (por nombre)
   const filteredData = users.filter((item) =>
     (item.nombre || "").toLowerCase().includes(searchText.toLowerCase())
   );
 
+  // Elimina un usuario de Firestore y del estado local
   const handleDelete = async (userId, userName) => {
     Alert.alert(
       "Confirmar eliminación",
@@ -69,7 +79,9 @@ const UserManagementScreen = () => {
           style: "destructive",
           onPress: async () => {
             try {
+              // Elimina el documento del usuario en Firestore
               await deleteDoc(doc(db, "usuarios", userId));
+              // Actualiza el estado local eliminando el usuario
               setUsers((prev) => prev.filter((u) => u.id !== userId));
               Alert.alert(
                 "Éxito",
@@ -85,7 +97,7 @@ const UserManagementScreen = () => {
     );
   };
 
-  // Editar usuario (puedes navegar a una pantalla de edición)
+  // Navega a la pantalla de edición de usuario
   const handleEdit = (userId) => {
     navigation.navigate("EditUserScreen", { userId });
   };
@@ -93,8 +105,9 @@ const UserManagementScreen = () => {
   return (
     <Layout>
       <View style={styles.container}>
+        {/* Título de la pantalla */}
         <Text style={styles.title}>Gestión de Usuarios</Text>
-        {/* Buscador */}
+        {/* Buscador de usuarios */}
         <View style={styles.searchContainer}>
           <Ionicons
             name="search"
@@ -109,8 +122,9 @@ const UserManagementScreen = () => {
             onChangeText={setSearchText}
           />
         </View>
-        {/* Tabla */}
+        {/* Tabla de usuarios */}
         <View style={styles.tabla}>
+          {/* Encabezado de la tabla */}
           <View style={[styles.fila, styles.encabezado]}>
             <Text style={[styles.columna]}>Nombre</Text>
             <Text style={[styles.columna]}>Correo</Text>
@@ -118,6 +132,7 @@ const UserManagementScreen = () => {
             <Text style={[styles.columna]}>Rol</Text>
             <Text style={[styles.columna]}>Acciones</Text>
           </View>
+          {/* Muestra mensaje de carga, sin usuarios o la lista filtrada */}
           {loading ? (
             <Text style={{ textAlign: "center", margin: 10 }}>Cargando...</Text>
           ) : filteredData.length === 0 ? (
@@ -125,6 +140,7 @@ const UserManagementScreen = () => {
               No hay usuarios.
             </Text>
           ) : (
+            // Renderiza cada usuario en una fila con acciones de editar y eliminar
             filteredData.map((item, index) => (
               <View key={item.id} style={styles.fila}>
                 <Text style={styles.columna}>{item.nombre}</Text>
@@ -132,9 +148,11 @@ const UserManagementScreen = () => {
                 <Text style={styles.columna}>{item.telefono}</Text>
                 <Text style={styles.columna}>{item.rol}</Text>
                 <View style={[styles.columna, styles.actions]}>
+                  {/* Botón para editar usuario */}
                   <Pressable onPress={() => handleEdit(item.id)}>
                     <Feather name="edit" size={24} color="#2980b9" />
                   </Pressable>
+                  {/* Botón para eliminar usuario */}
                   <Pressable onPress={() => handleDelete(item.id, item.nombre)}>
                     <Ionicons name="trash-outline" size={24} color="#e74c3c" />
                   </Pressable>
@@ -143,6 +161,7 @@ const UserManagementScreen = () => {
             ))
           )}
         </View>
+        {/* Botón para navegar a la pantalla de creación de usuario */}
         <Pressable
           style={{
             backgroundColor: "#2980b9",
