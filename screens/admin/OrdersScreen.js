@@ -15,78 +15,93 @@ import { Feather, Ionicons, AntDesign } from "@expo/vector-icons";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { firebaseApp } from "../../firebase.config";
 
+// Inicializa la instancia de Firestore
 const db = getFirestore(firebaseApp);
 
+// Pantalla principal para visualizar y gestionar pedidos
 const OrdersScreen = () => {
+  // Obtiene el estado de autenticación del usuario
   const { authState } = useAuth();
+  // Hook de navegación para cambiar de pantalla
   const navigation = useNavigation();
+  // Estado para controlar la visibilidad del modal de detalles
   const [modalVisible, setModalVisible] = useState(false);
+  // Estado para almacenar el pedido seleccionado en el modal
   const [selectedOrder, setSelectedOrder] = useState(null);
+  // Estado para el texto de búsqueda
   const [searchText, setSearchText] = useState("");
+  // Estado para almacenar todos los pedidos obtenidos de Firestore
   const [orders, setOrders] = useState([]);
+  // Estado para mostrar indicador de carga mientras se obtienen los pedidos
   const [loading, setLoading] = useState(true);
 
-  // Paginación
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  // Estados para la paginación
+  const [currentPage, setCurrentPage] = useState(1); // Página actual
+  const [itemsPerPage, setItemsPerPage] = useState(5); // Cantidad de pedidos por página
 
+  // useEffect para obtener los pedidos de Firestore al montar el componente
   useEffect(() => {
     const fetchOrders = async () => {
       setLoading(true);
       try {
+        // Obtiene todos los documentos de la colección "pedidos"
         const querySnapshot = await getDocs(collection(db, "pedidos"));
         const ordersArray = [];
+        // Recorre cada documento y lo agrega al array de pedidos
         querySnapshot.forEach((doc) => {
           ordersArray.push({ id: doc.id, ...doc.data() });
         });
-        setOrders(ordersArray);
+        setOrders(ordersArray); // Actualiza el estado con los pedidos obtenidos
       } catch (error) {
         console.error("Error al obtener pedidos:", error);
       } finally {
-        setLoading(false);
+        setLoading(false); // Oculta el indicador de carga
       }
     };
     fetchOrders();
   }, []);
 
-  // Filtrar pedidos según el texto de búsqueda
+  // Filtra los pedidos según el texto de búsqueda (por nombre)
   const filteredOrders = orders.filter((order) =>
     (order.name || "").toLowerCase().includes(searchText.toLowerCase())
   );
 
-  // Calcular página actual de pedidos
+  // Calcula los índices para mostrar solo los pedidos de la página actual
   const indexOfLastOrder = currentPage * itemsPerPage;
   const indexOfFirstOrder = indexOfLastOrder - itemsPerPage;
   const currentOrders = filteredOrders.slice(
     indexOfFirstOrder,
     indexOfLastOrder
   );
+  // Calcula el total de páginas según la cantidad de pedidos filtrados
   const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
 
-  // Resetear a la primera página cuando cambia el filtro
+  // useEffect para resetear la página a la primera cuando cambia el filtro de búsqueda
   useEffect(() => {
     setCurrentPage(1);
   }, [searchText]);
 
+  // Maneja la selección de un pedido para mostrar sus detalles en el modal
   const handlePressOrder = (order) => {
     setSelectedOrder(order);
     setModalVisible(true);
   };
 
-  // Navegar entre páginas
+  // Función para avanzar a la siguiente página de pedidos
   const goToNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
     }
   };
 
+  // Función para retroceder a la página anterior de pedidos
   const goToPrevPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
   };
 
-  // Función para obtener el color según el estado
+  // Devuelve un color según el estado del pedido
   const getStatusColor = (status) => {
     if (!status) return "#9E9E9E";
     switch (status.toLowerCase()) {
@@ -103,6 +118,7 @@ const OrdersScreen = () => {
     }
   };
 
+  // Renderiza cada fila de la tabla de pedidos
   const renderOrder = ({ item }) => (
     <View style={styles.row}>
       <Text style={[styles.cell, styles.nameCell]}>{item.name}</Text>
@@ -127,6 +143,7 @@ const OrdersScreen = () => {
       >
         {item.address}
       </Text>
+      {/* Botón para ver detalles del pedido */}
       <Pressable
         style={styles.actionButton}
         onPress={() => handlePressOrder(item)}
@@ -139,9 +156,10 @@ const OrdersScreen = () => {
   return (
     <Layout>
       <View style={styles.container}>
+        {/* Título de la pantalla */}
         <Text style={styles.title}>Pedidos</Text>
 
-        {/* Buscador */}
+        {/* Buscador de pedidos */}
         <View style={styles.searchContainer}>
           <Ionicons
             name="search"
@@ -157,8 +175,9 @@ const OrdersScreen = () => {
           />
         </View>
 
-        {/* Tabla mejorada */}
+        {/* Tabla de pedidos */}
         <View style={styles.tableContainer}>
+          {/* Encabezado de la tabla */}
           <View className="tableHeader" style={styles.tableHeader}>
             <Text style={[styles.headerCell, { flex: 1.5 }]}>Cliente</Text>
             <Text style={[styles.headerCell, { flex: 1 }]}>Fecha</Text>
@@ -167,6 +186,7 @@ const OrdersScreen = () => {
             <Text style={[styles.headerCell, { flex: 0.8 }]}>Acción</Text>
           </View>
 
+          {/* Lista de pedidos paginada */}
           <FlatList
             data={currentOrders}
             renderItem={renderOrder}
@@ -174,7 +194,7 @@ const OrdersScreen = () => {
             contentContainerStyle={styles.tableContent}
           />
 
-          {/* Paginación */}
+          {/* Controles de paginación */}
           <View style={styles.paginationContainer}>
             <Text style={styles.paginationText}>
               Mostrando {indexOfFirstOrder + 1}-
@@ -182,6 +202,7 @@ const OrdersScreen = () => {
               {filteredOrders.length} pedidos
             </Text>
             <View style={styles.paginationControls}>
+              {/* Botón página anterior */}
               <Pressable
                 style={[
                   styles.paginationButton,
@@ -196,9 +217,11 @@ const OrdersScreen = () => {
                   color={currentPage === 1 ? "#BBBBBB" : "#2980b9"}
                 />
               </Pressable>
+              {/* Indicador de página actual */}
               <Text style={styles.pageIndicator}>
                 {currentPage} de {totalPages}
               </Text>
+              {/* Botón página siguiente */}
               <Pressable
                 style={[
                   styles.paginationButton,
@@ -217,7 +240,7 @@ const OrdersScreen = () => {
           </View>
         </View>
 
-        {/* Modal de detalles */}
+        {/* Modal para mostrar detalles del pedido seleccionado */}
         {selectedOrder && (
           <Modal
             visible={modalVisible}
@@ -228,16 +251,19 @@ const OrdersScreen = () => {
               <View style={styles.modalContent}>
                 <Text style={styles.modalTitle}>Detalles del Pedido</Text>
 
+                {/* ID del pedido */}
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>ID:</Text>
                   <Text style={styles.detailValue}>{selectedOrder.id}</Text>
                 </View>
 
+                {/* Nombre del cliente */}
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>Cliente:</Text>
                   <Text style={styles.detailValue}>{selectedOrder.name}</Text>
                 </View>
 
+                {/* Lista de productos del pedido */}
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>Productos:</Text>
                   <View style={styles.detailValue}>
@@ -269,6 +295,7 @@ const OrdersScreen = () => {
                   </View>
                 </View>
 
+                {/* Total del pedido */}
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>Total:</Text>
                   <Text style={styles.detailValue}>
@@ -279,6 +306,7 @@ const OrdersScreen = () => {
                   </Text>
                 </View>
 
+                {/* Fecha del pedido */}
                 <Text style={styles.detailValue}>
                   {selectedOrder.date && selectedOrder.date.seconds
                     ? new Date(
@@ -287,6 +315,7 @@ const OrdersScreen = () => {
                     : selectedOrder.date || ""}
                 </Text>
 
+                {/* Estado del pedido con indicador de color */}
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>Estado:</Text>
                   <View style={styles.statusBadge}>
@@ -304,6 +333,7 @@ const OrdersScreen = () => {
                   </View>
                 </View>
 
+                {/* Botón para editar el estado del pedido (a implementar) */}
                 <Pressable
                   style={styles.editButton}
                   onPress={() => setModalVisible(false)}
@@ -311,6 +341,7 @@ const OrdersScreen = () => {
                   <Text style={styles.editButtonText}>Editar estado</Text>
                 </Pressable>
 
+                {/* Botón para cerrar el modal */}
                 <Pressable
                   style={styles.closeButton}
                   onPress={() => setModalVisible(false)}
@@ -322,6 +353,7 @@ const OrdersScreen = () => {
           </Modal>
         )}
 
+        {/* Botón para regresar al dashboard de administrador */}
         <Pressable
           style={[styles.button, { backgroundColor: "red", marginTop: 20 }]}
           onPress={() => navigation.navigate("AdminDashboard")}

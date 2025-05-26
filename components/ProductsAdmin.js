@@ -22,17 +22,19 @@ import {
 } from "firebase/firestore";
 import { firebaseApp } from "../firebase.config";
 
+// Inicializa la instancia de Firestore
 const db = getFirestore(firebaseApp);
 
+// Componente principal para la administración de productos
 const ProductsAdmin = () => {
-  const navigation = useNavigation();
-  const [searchText, setSearchText] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const navigation = useNavigation(); // Hook para navegación entre pantallas
+  const [searchText, setSearchText] = useState(""); // Estado para el texto de búsqueda
+  const [currentPage, setCurrentPage] = useState(1); // Página actual para la paginación
+  const [itemsPerPage, setItemsPerPage] = useState(5); // Cantidad de productos por página
+  const [products, setProducts] = useState([]); // Lista de productos obtenidos de Firestore
+  const [loading, setLoading] = useState(true); // Estado de carga
 
-  // Obtener productos de Firestore
+  // Obtener productos de Firestore al montar el componente
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
@@ -52,27 +54,27 @@ const ProductsAdmin = () => {
     fetchProducts();
   }, []);
 
-  // Filtrar los datos según el texto de búsqueda
+  // Filtrar los productos según el texto de búsqueda
   const filteredData = products.filter((item) =>
     item.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  // Total de páginas basado en los datos filtrados
+  // Calcular el total de páginas basado en los productos filtrados
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
-  // Resetear a la primera página cuando cambie la búsqueda
+  // Resetear a la primera página cuando cambie el texto de búsqueda
   useEffect(() => {
     setCurrentPage(1);
   }, [searchText]);
 
-  // Obtener los elementos de la página actual
+  // Obtener los productos de la página actual
   const getCurrentItems = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     return filteredData.slice(startIndex, endIndex);
   };
 
-  // Eliminar producto de Firestore
+  // Eliminar un producto de Firestore y del estado local
   const deleteProduct = async (productId) => {
     try {
       await deleteDoc(doc(db, "products", productId));
@@ -83,6 +85,7 @@ const ProductsAdmin = () => {
     }
   };
 
+  // Mostrar alerta de confirmación antes de eliminar un producto
   const handleDelete = (productId, productName) => {
     Alert.alert(
       "Confirmar eliminación",
@@ -104,13 +107,21 @@ const ProductsAdmin = () => {
     );
   };
 
-  // Implementa handleEdit según tu lógica de navegación/edición
+  // Navegar a la pantalla de edición de producto
   const handleEdit = (productId) => {
     navigation.navigate("EditProductScreen", { productId });
   };
 
+  // Cambiar de página en la paginación
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
   return (
     <View style={styles.container}>
+      {/* Barra de búsqueda */}
       <View style={styles.searchContainer}>
         <View style={styles.search}>
           <Ionicons
@@ -127,6 +138,7 @@ const ProductsAdmin = () => {
           />
         </View>
       </View>
+      {/* Indicador de carga mientras se obtienen los productos */}
       {loading ? (
         <ActivityIndicator
           size="large"
@@ -136,7 +148,7 @@ const ProductsAdmin = () => {
       ) : (
         <ScrollView>
           <View style={styles.tabla}>
-            {/* Encabezado */}
+            {/* Encabezado de la tabla */}
             <View style={[styles.fila, styles.encabezado]}>
               <Text style={[styles.columna, styles.columnaHeader]}>
                 Producto
@@ -155,7 +167,7 @@ const ProductsAdmin = () => {
               </Text>
             </View>
 
-            {/* Filas de datos paginados */}
+            {/* Filas de productos paginados */}
             {getCurrentItems().map((item, index) => (
               <View key={item.id} style={styles.fila}>
                 <Text style={styles.columna}>{item.name}</Text>
@@ -170,6 +182,7 @@ const ProductsAdmin = () => {
                   />
                 </View>
                 <View style={styles.columna}>
+                  {/* Botón para editar producto */}
                   <Pressable
                     onPress={() =>
                       navigation.navigate("EditProductScreen", {
@@ -179,6 +192,7 @@ const ProductsAdmin = () => {
                   >
                     <Feather name="edit" size={24} color="#2980b9" />
                   </Pressable>
+                  {/* Botón para eliminar producto */}
                   <Pressable onPress={() => handleDelete(item.id, item.name)}>
                     <Ionicons name="trash-outline" size={24} color="#e74c3c" />
                   </Pressable>
@@ -189,7 +203,7 @@ const ProductsAdmin = () => {
         </ScrollView>
       )}
 
-      {/* Controles de Paginación */}
+      {/* Controles de paginación */}
       <View style={styles.paginationContainer}>
         <View style={styles.paginationInfo}>
           <Text>
@@ -202,6 +216,7 @@ const ProductsAdmin = () => {
           </Text>
         </View>
         <View style={styles.paginationControls}>
+          {/* Botón para ir a la primera página */}
           <Pressable
             onPress={() => handlePageChange(1)}
             disabled={currentPage === 1}
@@ -212,6 +227,7 @@ const ProductsAdmin = () => {
           >
             <Text style={styles.paginationText}>{"<<"}</Text>
           </Pressable>
+          {/* Botón para ir a la página anterior */}
           <Pressable
             onPress={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
@@ -223,10 +239,12 @@ const ProductsAdmin = () => {
             <Text style={styles.paginationText}>{"<"}</Text>
           </Pressable>
 
+          {/* Información de la página actual */}
           <Text style={styles.pageInfo}>{`${currentPage} de ${
             totalPages || 1
           }`}</Text>
 
+          {/* Botón para ir a la página siguiente */}
           <Pressable
             onPress={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages || totalPages === 0}
@@ -238,6 +256,7 @@ const ProductsAdmin = () => {
           >
             <Text style={styles.paginationText}>{">"}</Text>
           </Pressable>
+          {/* Botón para ir a la última página */}
           <Pressable
             onPress={() => handlePageChange(totalPages)}
             disabled={currentPage === totalPages || totalPages === 0}
