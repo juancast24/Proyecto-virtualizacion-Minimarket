@@ -266,31 +266,15 @@ const OrdersScreen = () => {
                 {/* Lista de productos del pedido */}
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>Productos:</Text>
-                  <View style={styles.detailValue}>
-                    {selectedOrder.products ? (
-                      Array.isArray(selectedOrder.products) ? (
-                        selectedOrder.products.length > 0 ? (
-                          selectedOrder.products.map((prod, idx) => (
-                            <Text key={idx} style={{ fontSize: 15 }}>
-                              • {prod.name} (x{prod.quantity})
-                            </Text>
-                          ))
-                        ) : (
-                          <Text style={{ fontSize: 15 }}>Sin productos</Text>
-                        )
-                      ) : Object.keys(selectedOrder.products).length > 0 ? (
-                        Object.entries(selectedOrder.products).map(
-                          ([key, prod]) => (
-                            <Text key={key} style={{ fontSize: 15 }}>
-                              • {prod.name} (x{prod.quantity})
-                            </Text>
-                          )
-                        )
-                      ) : (
-                        <Text style={{ fontSize: 15 }}>Sin productos</Text>
-                      )
+                  <View style={styles.detailProductsList}>
+                    {Array.isArray(selectedOrder.products) && selectedOrder.products.length > 0 ? (
+                      selectedOrder.products.map((prod, idx) => (
+                        <Text key={idx} style={styles.productText}>
+                          • {prod}
+                        </Text>
+                      ))
                     ) : (
-                      <Text style={{ fontSize: 15 }}>Sin productos</Text>
+                      <Text style={styles.productText}>Sin productos</Text>
                     )}
                   </View>
                 </View>
@@ -499,89 +483,120 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#333",
   },
-  modalContainer: {
+ modalContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.6)", // Más oscuro para mejor enfoque
+    padding: 10,
   },
   modalContent: {
-    backgroundColor: "#fff",
-    padding: 25,
-    borderRadius: 12,
-    width: "85%",
+    backgroundColor: "#f9f9f9", // Más suave
+    padding: 30,
+    borderRadius: 18,
+    width: "92%",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 8,
+    alignItems: "stretch",
   },
   modalTitle: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 20,
-    color: "#333",
+    marginBottom: 18,
+    color: "#2980b9",
     textAlign: "center",
+    letterSpacing: 1,
   },
   detailRow: {
     flexDirection: "row",
-    marginBottom: 12,
+    marginBottom: 14,
+    alignItems: "flex-start",
   },
   detailLabel: {
     fontWeight: "bold",
-    width: "30%",
+    width: "32%",
     fontSize: 16,
     color: "#555",
+    marginTop: 2,
   },
   detailValue: {
     fontSize: 16,
     color: "#333",
     flex: 1,
+    flexWrap: "wrap",
+  },
+  detailProductsList: {
+    flex: 1,
+    flexDirection: "column",
+    gap: 2,
+  },
+  productText: {
+    fontSize: 15,
+    color: "#444",
+    marginBottom: 2,
+    marginLeft: 2,
   },
   statusBadge: {
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 3,
-    paddingHorizontal: 5,
-    borderRadius: 4,
-    backgroundColor: "#f0f0f0",
+    paddingHorizontal: 8,
+    borderRadius: 6,
+    backgroundColor: "#eaf6fb",
     alignSelf: "flex-start",
+    marginLeft: 2,
   },
   statusDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 6,
+    width: 13,
+    height: 13,
+    borderRadius: 7,
+    marginRight: 7,
   },
   statusText: {
     fontSize: 16,
     fontWeight: "500",
+    color: "#2980b9",
   },
   editButton: {
     backgroundColor: "#3498db",
-    padding: 12,
+    padding: 13,
     borderRadius: 8,
-    marginTop: 20,
+    marginTop: 22,
     alignItems: "center",
+    shadowColor: "#2980b9",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.13,
+    shadowRadius: 4,
+    elevation: 2,
   },
   editButtonText: {
     color: "white",
     fontWeight: "bold",
     fontSize: 16,
     textAlign: "center",
+    letterSpacing: 0.5,
   },
   closeButton: {
     backgroundColor: "#e74c3c",
-    padding: 12,
+    padding: 13,
     borderRadius: 8,
-    marginTop: 12,
+    marginTop: 14,
     alignItems: "center",
+    shadowColor: "#e74c3c",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.13,
+    shadowRadius: 4,
+    elevation: 2,
   },
   closeButtonText: {
     color: "#fff",
     fontWeight: "bold",
     fontSize: 16,
     textAlign: "center",
+    letterSpacing: 0.5,
   },
   button: {
     backgroundColor: "#2980b9",
