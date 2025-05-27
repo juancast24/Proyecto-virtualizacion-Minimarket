@@ -19,7 +19,7 @@ const DRAWER_WIDTH = width * 0.7;
 
 const Layout = ({ children }) => {
   const navigation = useNavigation();
-  const { authState, signOut } = useAuth();
+  const { authState, onLogout } = useAuth();
   const userRole = authState?.role || authState?.user?.role || "";
 
   useEffect(() => {
@@ -163,7 +163,7 @@ const Layout = ({ children }) => {
             label="Cerrar Sesión"
             onPress={() => {
               closeMenu();
-              signOut();
+              onLogout();
             }}
           />
         </>
@@ -202,7 +202,7 @@ const Layout = ({ children }) => {
             label="Cerrar Sesión"
             onPress={() => {
               closeMenu();
-              signOut();
+              onLogout();
             }}
           />
         </>
