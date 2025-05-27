@@ -4,8 +4,15 @@ import { View, Text, StyleSheet, TextInput, FlatList, Pressable, Image } from 'r
 import ProductCard from '../../components/ProductCard';
 import { Ionicons } from '@expo/vector-icons';
 
-const categories = ['Todas', 'Aseo hogar', 'Despensa', 'Frutas Verduras', 'Carnes', 'Lacteos', 'Higiene Personal'];
-
+const categories = [
+    { name: 'Todas', image: { uri: 'https://i.imgur.com/2hDMKvt.png' } },
+    { name: 'Aseo hogar', image: { uri: 'https://i.imgur.com/t1KbWt7.png' } },
+    { name: 'Despensa', image: { uri: 'https://i.imgur.com/WAFeXKf.png' } },
+    { name: 'Frutas Verduras', image: { uri: 'https://i.imgur.com/QK3goB8.png' } },
+    { name: 'Carnes', image: { uri: 'https://i.imgur.com/tdd9GPB.png' } },
+    { name: 'Lacteos', image: { uri: 'https://i.imgur.com/TQw6Gxv.png' } },
+    { name: 'Higiene Personal', image: { uri: 'https://i.imgur.com/ynGOwqT.png' } },
+];
 const HomeScreen = () => {
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
@@ -26,7 +33,7 @@ const HomeScreen = () => {
                         <Text style={styles.title}>
                             Empieza{"\n"}
                             <Text style={{ color: '#4A90E2' }}>Elije, </Text>
-                            lleva 
+                            lleva
                         </Text>
                         <View style={styles.imageContainer}>
                             <Image source={require('../../assets/logo-market.png')} style={styles.logo} />
@@ -49,22 +56,25 @@ const HomeScreen = () => {
                             data={categories}
                             horizontal
                             showsHorizontalScrollIndicator={false}
-                            keyExtractor={(item) => item}
+                            keyExtractor={(item) => item.name}
                             renderItem={({ item }) => {
-                                const isSelected = selectedCategory === item || (item === 'Todas' && selectedCategory === null);
+                                const isSelected = selectedCategory === item.name || (item.name === 'Todas' && selectedCategory === null);
                                 return (
                                     <Pressable
                                         style={[
                                             styles.categoryButton,
                                             isSelected && styles.selectedCategoryButton
                                         ]}
-                                        onPress={() => handleCategoryPress(item)}
+                                        onPress={() => handleCategoryPress(item.name)}
                                     >
+                                        <View style={styles.imageContainer}>
+                                            <Image source={item.image} style={styles.categoryImage} />
+                                        </View>
                                         <Text style={[
                                             styles.categoryText,
                                             isSelected && styles.selectedCategoryText
                                         ]}>
-                                            {item}
+                                            {item.name}
                                         </Text>
                                     </Pressable>
                                 );
@@ -127,13 +137,21 @@ const styles = StyleSheet.create({
         marginBottom: 15,
     },
     categoryButton: {
-        backgroundColor: '#E4F0FF',
         borderRadius: 20,
         marginRight: 10,
         padding: 8,
     },
+    imageContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 5,
+    },
+    categoryImage: {
+        width: 40,
+        height: 40,
+    },
     categoryText: {
-        fontSize: 16,
+        fontSize: 15,
         fontWeight: '600',
         color: '#374151',
     },
