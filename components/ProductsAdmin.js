@@ -30,7 +30,7 @@ const ProductsAdmin = () => {
   const navigation = useNavigation(); // Hook para navegación entre pantallas
   const [searchText, setSearchText] = useState(""); // Estado para el texto de búsqueda
   const [currentPage, setCurrentPage] = useState(1); // Página actual para la paginación
-  const [itemsPerPage, setItemsPerPage] = useState(5); // Cantidad de productos por página
+  const [itemsPerPage, setItemsPerPage] = useState(3); // Cantidad de productos por página
   const [products, setProducts] = useState([]); // Lista de productos obtenidos de Firestore
   const [loading, setLoading] = useState(true); // Estado de carga
 
@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
   },
   columna: {
     flex: 1,
-    fontSize: 6,
+    fontSize: 10,
     textAlign: "center",
     alignItems: "center",
     borderColor: "transparent",

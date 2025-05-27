@@ -7,35 +7,38 @@ import {
   Animated,
   Dimensions,
   TouchableWithoutFeedback,
+  Image,
 } from "react-native";
 import Header from "./Header";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../context/AuthContext";
 import { StatusBar } from "expo-status-bar";
+import { firebaseApp } from "../firebase.config";
 import { Ionicons } from "@expo/vector-icons";
 
 const { width } = Dimensions.get("window");
-const DRAWER_WIDTH = width * 0.7;
+const DRAWER_WIDTH = width * 0.6;
+
+const db = getFirestore(firebaseApp);
 
 const Layout = ({ children }) => {
   const navigation = useNavigation();
   const { authState, onLogout } = useAuth();
   const userRole = authState?.role || authState?.user?.role || "";
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    console.log(
-      "Estado de autenticación completo:",
-      JSON.stringify(authState, null, 2)
-    );
-    console.log("Tipo de authState:", typeof authState);
-    console.log("Rol extraído:", userRole);
-    console.log("Tipo de rol:", typeof userRole);
-    console.log("¿Es admin? (comparación directa):", userRole === "admin");
-    console.log(
-      "¿Es admin? (comparación insensible):",
-      userRole.toLowerCase() === "admin"
-    );
-  }, [authState, userRole]);
+    const fetchUserData = async () => {
+      if (authState.user?.uid) {
+        const userDoc = await getDoc(doc(db, "usuarios", authState.user.uid));
+        if (userDoc.exists()) {
+          setUserData(userDoc.data());
+        }
+      }
+    };
+    fetchUserData();
+  }, [authState.user]);
 
   const [menuVisible, setMenuVisible] = useState(false);
   const slideAnim = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
@@ -129,15 +132,10 @@ const Layout = ({ children }) => {
         <>
           <MenuItem
             icon="grid-outline"
-            label="Panel Principal"
+            label="Productos"
             onPress={() =>
               navigateTo("AdminRoot", { screen: "AdminDashboard" })
             }
-          />
-          <MenuItem
-            icon="cube-outline"
-            label="Crear Producto"
-            onPress={() => navigateTo("AdminRoot", { screen: "CreateProduct" })}
           />
           <MenuItem
             icon="document-text-outline"
@@ -231,16 +229,21 @@ const Layout = ({ children }) => {
           style={[styles.drawer, { transform: [{ translateX: slideAnim }] }]}
         >
           <View style={styles.drawerHeader}>
-            <Text style={styles.drawerTitle}>MiniMarket</Text>
+            <Text style={styles.drawerTitle}>La Economia</Text>
+            <Image
+              source={require("../assets/logo-market.png")} // Ajusta la ruta si tu logo está en otra carpeta
+              style={styles.logo}
+              resizeMode="contain"
+            />
             <Text style={styles.drawerSubtitle}>
-              {!authState.token
-                ? "Invitado"
+              {!authState.authenticated
+                ? "Bienvenido, Invitado"
                 : userRole &&
                   (userRole === "admin" ||
                     userRole.toLowerCase() === "admin" ||
                     userRole === "ADMIN")
-                  ? "Administrador"
-                  : "Cliente"}
+                ? `Bienvenido`
+                : `Bienvenido`}	
             </Text>
           </View>
           <View style={styles.drawerContent}>{renderMenuItems()}</View>
@@ -295,7 +298,7 @@ const styles = StyleSheet.create({
   },
   drawerHeader: {
     padding: 20,
-    backgroundColor: "#0077B6",
+    backgroundColor: "#7BB6E9",
     borderBottomWidth: 1,
     borderBottomColor: "#E0E0E0",
     marginBottom: 10,
@@ -325,6 +328,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 15,
     color: "#333",
+  },
+  logo: {
+    width: 80,
+    height: 80,
+    alignSelf: "left",
+    marginVertical: 10,
+    position: "absolute",
+    top: 0,
+    right: 15,
   },
 });
 

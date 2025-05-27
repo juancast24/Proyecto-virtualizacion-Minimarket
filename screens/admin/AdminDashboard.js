@@ -52,9 +52,6 @@ const AdminDashboard = () => {
           <Pressable style={styles.button} onPress={handleCreateProductPress}>
             <Text style={styles.buttonText}>Crear Producto</Text>
           </Pressable>
-          <Pressable style={styles.button} onPress={handleOrdersPress}>
-            <Text style={styles.buttonText}>Ver Pedidos</Text>
-          </Pressable>
         </View>
       </View>
     </Layout>
