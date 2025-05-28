@@ -1,12 +1,33 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, FlatList, Pressable, Platform, ScrollView } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
 import Layout from '../../components/Layout'; 
 import { Ionicons } from '@expo/vector-icons';
+import { useAuth } from '../../context/AuthContext';
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { firebaseApp } from '../../firebase.config';
+
+const db = getFirestore(firebaseApp);
 const FormPay = () => {
   const route = useRoute();
   const { cartItems } = route.params || { cartItems: [] };
+  const {authState} = useAuth(); 
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (authState.user?.uid) {
+        const userDoc = await getDocs(collection(db, 'usuarios'));
+        userDoc.forEach((doc) => {
+          if (doc.id === authState.user.uid) {
+            setUserData(doc.data());
+          }
+        });
+      }
+    };
+    fetchUserData();
+  }, [authState.user]);
 
   const [form, setForm] = useState({
     nombre: '',
@@ -80,7 +101,7 @@ const FormPay = () => {
               placeholder="Nombre completo"
               placeholderTextColor="#999"
               onChangeText={text => handleChange('nombre', text)}
-              value={form.nombre}
+              value={userData ? userData.nombre : form.nombre}
             />
             <TextInput
               style={styles.input}
@@ -88,7 +109,7 @@ const FormPay = () => {
               placeholderTextColor="#999"
               onChangeText={text => handleChange('telefono', text)}
               keyboardType="phone-pad"
-              value={form.telefono}
+              value={userData ? userData.telefono : form.telefono}
             />
             <TextInput
               style={styles.input}
@@ -97,7 +118,7 @@ const FormPay = () => {
               onChangeText={text => handleChange('correo', text)}
               keyboardType="email-address"
               autoCapitalize="none"
-              value={form.correo}
+              value={userData ? userData.correo : form.correo}
             />
             <TextInput
               style={styles.input}
@@ -111,7 +132,7 @@ const FormPay = () => {
               placeholder="Dirección (Calle, número de casa/apto)"
               placeholderTextColor="#999"
               onChangeText={text => handleChange('direccion', text)}
-              value={form.direccion}
+              value={userData ? userData.direccion : form.direccion}
             />
           </View>
 
