@@ -166,8 +166,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
     borderRadius: 30,
-    paddingHorizontal: 8, 
-    paddingVertical: 5,
     ...Platform.select({
       ios: {
         shadowColor: '#000',
@@ -181,7 +179,7 @@ const styles = StyleSheet.create({
     }),
   },
   quantityButton: {
-    padding: 8,
+    padding: 10,
     borderRadius: 20, 
     marginHorizontal: 10,
   },
