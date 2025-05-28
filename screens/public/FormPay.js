@@ -1,20 +1,17 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, FlatList, Pressable, Platform, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { View, Text, TextInput, StyleSheet, FlatList, Pressable, Platform, ScrollView } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
-import Layout from '../../components/Layout'; // Asegúrate de que esta ruta sea correcta
-import { Ionicons } from '@expo/vector-icons'; // Para añadir iconos si lo deseas
-
+import Layout from '../../components/Layout'; 
+import { Ionicons } from '@expo/vector-icons';
 const FormPay = () => {
   const route = useRoute();
-  const navigation = useNavigation(); // Obtener navigation para volver atrás si es necesario
   const { cartItems } = route.params || { cartItems: [] };
 
   const [form, setForm] = useState({
     nombre: '',
     telefono: '',
     correo: '',
-    // ciudad: '', // Eliminado si solo se envía a Santander de Quilichao
     barrio: '',
     direccion: '',
     metodoPago: 'contra_entrega'
