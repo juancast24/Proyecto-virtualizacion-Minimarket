@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, FlatList, Pressable, Platform, ScrollView } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
-import Layout from '../../components/Layout'; 
+import Layout from '../../components/Layout';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
@@ -11,10 +11,12 @@ import { firebaseApp } from '../../firebase.config';
 const db = getFirestore(firebaseApp);
 const FormPay = () => {
   const route = useRoute();
+  // Obtiene los productos del carrito desde los parámetros de navegación
   const { cartItems } = route.params || { cartItems: [] };
-  const {authState} = useAuth(); 
+  const { authState } = useAuth();
   const [userData, setUserData] = useState(null);
 
+  // Carga los datos del usuario autenticado desde Firestore
   useEffect(() => {
     const fetchUserData = async () => {
       if (authState.user?.uid) {
@@ -29,6 +31,7 @@ const FormPay = () => {
     fetchUserData();
   }, [authState.user]);
 
+  // Estado para el formulario de datos de envío y pago
   const [form, setForm] = useState({
     nombre: '',
     telefono: '',
@@ -38,10 +41,12 @@ const FormPay = () => {
     metodoPago: 'contra_entrega'
   });
 
+  // Maneja los cambios en los campos del formulario
   const handleChange = (name, value) => {
     setForm({ ...form, [name]: value });
   };
 
+  // Renderiza cada producto del carrito en el resumen
   const renderItem = ({ item }) => {
     const totalItemPrice = item.price * item.quantity;
     return (
@@ -56,123 +61,125 @@ const FormPay = () => {
     );
   };
 
+  // Calcula el total general del pedido
   const calcularTotalGeneral = () => {
     return cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   };
 
+  // Maneja la confirmación del pedido
   const handleConfirmOrder = () => {
-
+    // Aquí podrías guardar el pedido en la base de datos
     console.log('Pedido confirmado con los siguientes datos:', form, 'y productos:', cartItems);
-    alert('¡Pedido confirmado con éxito!'); 
+    alert('¡Pedido confirmado con éxito!');
   };
 
   return (
     <Layout>
-        <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-          {/* Header de la pantalla de pago */}
-          <View style={styles.header}>
-            <Text style={styles.title}>Resumen del Pedido</Text>
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+        {/* Header de la pantalla de pago */}
+        <View style={styles.header}>
+          <Text style={styles.title}>Resumen del Pedido</Text>
+        </View>
+
+        {/* Resumen de los Productos */}
+        <View style={styles.sectionWrapper}>
+          <Text style={styles.sectionTitle}>Productos</Text>
+          <FlatList
+            data={cartItems}
+            renderItem={renderItem}
+            keyExtractor={(item, index) => item?.name ? item.name + index : index.toString()}
+            scrollEnabled={false}
+          />
+          <View style={styles.totalSummary}>
+            <Text style={styles.totalLabel}>Total General:</Text>
+            <Text style={styles.totalAmount}>${calcularTotalGeneral().toLocaleString('es-CL')}</Text>
           </View>
+        </View>
+        <View style={styles.separator} />
 
-          {/* Resumen de los Productos */}
-          <View style={styles.sectionWrapper}>
-            <Text style={styles.sectionTitle}>Productos</Text>
-            <FlatList
-              data={cartItems}
-              renderItem={renderItem}
-              keyExtractor={(item, index) => item?.name ? item.name + index : index.toString()}
-              scrollEnabled={false} 
-            />
-            <View style={styles.totalSummary}>
-              <Text style={styles.totalLabel}>Total General:</Text>
-              <Text style={styles.totalAmount}>${calcularTotalGeneral().toLocaleString('es-CL')}</Text>
-            </View>
+        {/* Formulario de Datos de Envío */}
+        <View style={styles.sectionWrapper}>
+          <Text style={styles.sectionTitle}>Datos de Envío</Text>
+          <Text style={styles.deliveryInfo}>
+            <Ionicons name="information-circle-outline" size={16} color="#666" /> Solo se realizan envíos a Santander de Quilichao.
+          </Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Nombre completo"
+            placeholderTextColor="#999"
+            onChangeText={text => handleChange('nombre', text)}
+            value={userData ? userData.nombre : form.nombre}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Teléfono"
+            placeholderTextColor="#999"
+            onChangeText={text => handleChange('telefono', text)}
+            keyboardType="phone-pad"
+            value={userData ? userData.telefono : form.telefono}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Correo electrónico"
+            placeholderTextColor="#999"
+            onChangeText={text => handleChange('correo', text)}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            value={userData ? userData.correo : form.correo}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Barrio"
+            placeholderTextColor="#999"
+            onChangeText={text => handleChange('barrio', text)}
+            value={form.barrio}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Dirección (Calle, número de casa/apto)"
+            placeholderTextColor="#999"
+            onChangeText={text => handleChange('direccion', text)}
+            value={userData ? userData.direccion : form.direccion}
+          />
+        </View>
+
+        <View style={styles.separator} />
+
+        {/* Método de Pago */}
+        <View style={styles.sectionWrapper}>
+          <Text style={styles.sectionTitle}>Método de Pago</Text>
+          <View style={styles.pickerWrapper}>
+            <Picker
+              selectedValue={form.metodoPago}
+              onValueChange={(itemValue) => handleChange('metodoPago', itemValue)}
+              style={styles.picker}
+              itemStyle={styles.pickerItem}
+            >
+              <Picker.Item label="Contra entrega" value="contra_entrega" />
+              <Picker.Item label="PSE " value="pse" />
+            </Picker>
           </View>
-          <View style={styles.separator} />
+        </View>
 
-          {/* Formulario de Datos de Envío */}
-          <View style={styles.sectionWrapper}>
-            <Text style={styles.sectionTitle}>Datos de Envío</Text>
-            <Text style={styles.deliveryInfo}>
-              <Ionicons name="information-circle-outline" size={16} color="#666" /> Solo se realizan envíos a Santander de Quilichao.
-            </Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Nombre completo"
-              placeholderTextColor="#999"
-              onChangeText={text => handleChange('nombre', text)}
-              value={userData ? userData.nombre : form.nombre}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Teléfono"
-              placeholderTextColor="#999"
-              onChangeText={text => handleChange('telefono', text)}
-              keyboardType="phone-pad"
-              value={userData ? userData.telefono : form.telefono}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Correo electrónico"
-              placeholderTextColor="#999"
-              onChangeText={text => handleChange('correo', text)}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              value={userData ? userData.correo : form.correo}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Barrio"
-              placeholderTextColor="#999"
-              onChangeText={text => handleChange('barrio', text)}
-              value={form.barrio}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Dirección (Calle, número de casa/apto)"
-              placeholderTextColor="#999"
-              onChangeText={text => handleChange('direccion', text)}
-              value={userData ? userData.direccion : form.direccion}
-            />
-          </View>
-
-          <View style={styles.separator} />
-
-          {/* Método de Pago */}
-          <View style={styles.sectionWrapper}>
-            <Text style={styles.sectionTitle}>Método de Pago</Text>
-            <View style={styles.pickerWrapper}>
-              <Picker
-                selectedValue={form.metodoPago}
-                onValueChange={(itemValue) => handleChange('metodoPago', itemValue)}
-                style={styles.picker}
-                itemStyle={styles.pickerItem} 
-              >
-                <Picker.Item label="Contra entrega" value="contra_entrega" />
-                <Picker.Item label="PSE " value="pse"/>
-              </Picker>
-            </View>
-          </View>
-
-          {/* Botón Confirmar Pedido */}
-          <Pressable
-            onPress={handleConfirmOrder}
-            style={({ pressed }) => [
-              styles.confirmButton,
-              { backgroundColor: pressed ? '#388E3C' : '#4CAF50' },
-            ]}
-          >
-            <Text style={styles.confirmButtonText}>Confirmar pedido</Text>
-          </Pressable>
-        </ScrollView>
+        {/* Botón Confirmar Pedido */}
+        <Pressable
+          onPress={handleConfirmOrder}
+          style={({ pressed }) => [
+            styles.confirmButton,
+            { backgroundColor: pressed ? '#388E3C' : '#4CAF50' },
+          ]}
+        >
+          <Text style={styles.confirmButtonText}>Confirmar pedido</Text>
+        </Pressable>
+      </ScrollView>
     </Layout>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
-    paddingBottom: 40,
+    marginHorizontal: 16,
+    paddingBottom: 20,
   },
   header: {
     flexDirection: 'row',
@@ -187,9 +194,9 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: 'bold',
     color: '#333',
-    flex: 1, 
-    textAlign: 'center', 
-    marginRight: 45, 
+    flex: 1,
+    textAlign: 'center',
+    marginRight: 45,
   },
   sectionWrapper: {
     backgroundColor: 'white',
@@ -216,7 +223,7 @@ const styles = StyleSheet.create({
   },
 
   cartItemCard: {
-    backgroundColor: '#F9F9F9', 
+    backgroundColor: '#F9F9F9',
     borderRadius: 8,
     padding: 12,
     marginBottom: 10,
@@ -268,7 +275,7 @@ const styles = StyleSheet.create({
   totalAmount: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#4CAF50', 
+    color: '#4CAF50',
   },
 
   separator: {
@@ -325,10 +332,10 @@ const styles = StyleSheet.create({
     }),
   },
   picker: {
-    height: 50, 
+    height: 50,
     width: '100%',
   },
-  pickerItem: { 
+  pickerItem: {
     fontSize: 16,
     color: '#333',
   },
@@ -341,7 +348,7 @@ const styles = StyleSheet.create({
   },
   confirmButtonText: {
     color: 'white',
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
   },
 });

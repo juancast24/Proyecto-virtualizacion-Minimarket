@@ -5,12 +5,17 @@ import { MaterialIcons, Feather } from "@expo/vector-icons";
 import { useAuth } from '../../context/AuthContext';
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { firebaseApp } from "../../firebase.config";
+
 // Inicializa la instancia de Firestore
 const db = getFirestore(firebaseApp);
+
 const AccountScreen = ({ navigation }) => {
+    // Obtiene el estado de autenticación y la función de logout
     const { authState, onLogout } = useAuth();
+    // Estado local para los datos del usuario
     const [userData, setUserData] = useState(null);
 
+    // Maneja el cierre de sesión
     const handleLogout = () => {
         onLogout();
         navigation.reset({
@@ -18,9 +23,13 @@ const AccountScreen = ({ navigation }) => {
             routes: [{ name: 'Home' }],
         });
     };
+
+    // Navega a la pantalla para cambiar la contraseña
     const handleChangePassword = () => {
         navigation.navigate("ChangePassword");
     };
+
+    // Obtiene los datos del usuario desde Firestore al cargar el componente o cambiar el usuario
     useEffect(() => {
         const fetchUserData = async () => {
             if (authState.user?.uid) {
@@ -34,6 +43,7 @@ const AccountScreen = ({ navigation }) => {
         fetchUserData();
     }, [authState.user]);
 
+    // Muestra un indicador de carga mientras se obtienen los datos
     if (!userData) {
         return (
             <Layout>
@@ -43,6 +53,7 @@ const AccountScreen = ({ navigation }) => {
             </Layout>
         );
     }
+
     return (
         <Layout>
             <View style={styles.container}>
@@ -282,4 +293,5 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
 });
+
 export default AccountScreen;

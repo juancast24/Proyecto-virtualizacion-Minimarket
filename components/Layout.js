@@ -22,12 +22,15 @@ const DRAWER_WIDTH = width * 0.6;
 
 const db = getFirestore(firebaseApp);
 
+// Componente principal de Layout que envuelve la aplicación
 const Layout = ({ children }) => {
   const navigation = useNavigation();
   const { authState, onLogout } = useAuth();
+  // Obtiene el rol del usuario autenticado
   const userRole = authState?.role || authState?.user?.role || "";
   const [userData, setUserData] = useState(null);
 
+  // Efecto para obtener datos adicionales del usuario desde Firestore
   useEffect(() => {
     const fetchUserData = async () => {
       if (authState.user?.uid) {
@@ -43,7 +46,7 @@ const Layout = ({ children }) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const slideAnim = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
 
-  // Función para abrir el menú
+  // Función para abrir el menú lateral
   const openMenu = () => {
     setMenuVisible(true);
     Animated.timing(slideAnim, {
@@ -53,7 +56,7 @@ const Layout = ({ children }) => {
     }).start();
   };
 
-  // Función para cerrar el menú
+  // Función para cerrar el menú lateral
   const closeMenu = () => {
     Animated.timing(slideAnim, {
       toValue: -DRAWER_WIDTH,
@@ -62,6 +65,7 @@ const Layout = ({ children }) => {
     }).start(() => setMenuVisible(false));
   };
 
+  // Alterna la visibilidad del menú
   const handleMenuPress = () => {
     if (menuVisible) {
       closeMenu();
@@ -70,6 +74,7 @@ const Layout = ({ children }) => {
     }
   };
 
+  // Navega a la pantalla de perfil según el rol
   const handleProfilePress = () => {
     const isAdmin =
       userRole &&
@@ -86,13 +91,13 @@ const Layout = ({ children }) => {
     }
   };
 
-  // Función para navegar y cerrar el menú
+  // Navega a una pantalla y cierra el menú
   const navigateTo = (screenName, params = {}) => {
     closeMenu();
     navigation.navigate(screenName, params);
   };
 
-  // Renderiza diferentes opciones de menú según el rol de usuario
+  // Renderiza los elementos del menú según el estado de autenticación y rol
   const renderMenuItems = () => {
     const isAdmin =
       userRole &&
@@ -167,7 +172,7 @@ const Layout = ({ children }) => {
         </>
       );
     } else {
-      // Opciones para usuarios
+      // Opciones para usuarios autenticados
       return (
         <>
           <MenuItem
@@ -210,20 +215,24 @@ const Layout = ({ children }) => {
 
   return (
     <View style={styles.container}>
+      {/* Barra de estado */}
       <StatusBar style="dark" />
+      {/* Header con botones de menú y perfil */}
       <Header
         onMenuPress={handleMenuPress}
         onProfilePress={handleProfilePress}
       />
+      {/* Contenido principal de la pantalla */}
       <View style={styles.content}>{children}</View>
 
+      {/* Overlay para cerrar el menú al tocar fuera */}
       {menuVisible && (
         <TouchableWithoutFeedback onPress={closeMenu}>
           <View style={styles.overlay} />
         </TouchableWithoutFeedback>
       )}
 
-      {/* Menú desplegable */}
+      {/* Menú lateral animado */}
       {menuVisible && (
         <Animated.View
           style={[styles.drawer, { transform: [{ translateX: slideAnim }] }]}
@@ -236,6 +245,7 @@ const Layout = ({ children }) => {
               resizeMode="contain"
             />
             <Text style={styles.drawerSubtitle}>
+              {/* Mensaje de bienvenida según autenticación y rol */}
               {!authState.authenticated
                 ? "Bienvenido, Invitado"
                 : userRole &&
@@ -253,7 +263,7 @@ const Layout = ({ children }) => {
   );
 };
 
-// Componente para cada elemento del menú
+// Componente para cada elemento del menú lateral
 const MenuItem = ({ icon, label, onPress }) => (
   <TouchableOpacity style={styles.menuItem} onPress={onPress}>
     <Ionicons name={icon} size={24} color="#333" />

@@ -3,7 +3,9 @@ import { View, Text, TextInput, StyleSheet, Alert, Image, Pressable } from 'reac
 import { useAuth } from '../../context/AuthContext';
 
 const LoginScreen = () => {
+  // Estado para alternar entre login y registro
   const [isLogin, setIsLogin] = useState(true);
+  // Estados para los campos del formulario
   const [email, setemail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -11,8 +13,10 @@ const LoginScreen = () => {
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
 
+  // Obtiene funciones de autenticación del contexto
   const { onLogin, onRegister } = useAuth();
 
+  // Maneja el inicio de sesión
   const handleLogin = async () => {
     if (email.trim() === '' || password.trim() === '') {
       return Alert.alert('Error', 'Hay campos sin rellenar');
@@ -24,6 +28,7 @@ const LoginScreen = () => {
     }
   };
 
+  // Maneja el registro de usuario
   const handleRegister = async () => {
     if (!name || !phone || !address || !email || !password || !confirmPassword) {
       return Alert.alert('Error', 'Todos los campos son obligatorios');
@@ -43,6 +48,7 @@ const LoginScreen = () => {
     );
 
     if (success) {
+      // Limpia los campos y cambia a modo login
       setIsLogin(true);
       setemail('');
       setPassword('');
@@ -58,9 +64,11 @@ const LoginScreen = () => {
   return (
     <View style={styles.bg}>
       <View style={styles.container}>
+        {/* Logo y título */}
         <Image source={require('../../assets/logo-market.png')} style={styles.logo} />
         <Text style={styles.title}>{isLogin ? 'Bienvenido' : 'Crea tu cuenta'}</Text>
 
+        {/* Botones para alternar entre login y registro */}
         <View style={styles.toggleContainer}>
           <Pressable
             style={[styles.toggleButton, isLogin && styles.activeToggle]}
@@ -76,7 +84,9 @@ const LoginScreen = () => {
           </Pressable>
         </View>
 
+        {/* Formulario de login o registro */}
         <View style={styles.form}>
+          {/* Campos adicionales solo para registro */}
           {!isLogin && (
             <>
               <TextInput
@@ -101,6 +111,7 @@ const LoginScreen = () => {
             </>
           )}
 
+          {/* Campo de email */}
           <TextInput
             placeholder="Email"
             autoCapitalize="none"
@@ -108,6 +119,7 @@ const LoginScreen = () => {
             onChangeText={setemail}
             style={styles.input}
           />
+          {/* Campo de contraseña */}
           <TextInput
             placeholder="Contraseña"
             secureTextEntry
@@ -115,6 +127,7 @@ const LoginScreen = () => {
             onChangeText={setPassword}
             style={styles.input}
           />
+          {/* Confirmar contraseña solo en registro */}
           {!isLogin && (
             <TextInput
               placeholder="Confirmar Contraseña"
@@ -125,6 +138,7 @@ const LoginScreen = () => {
             />
           )}
 
+          {/* Botón principal para login o registro */}
           <Pressable style={styles.mainButton} onPress={isLogin ? handleLogin : handleRegister}>
             <Text style={styles.mainButtonText}>{isLogin ? 'Entrar' : 'Crear cuenta'}</Text>
           </Pressable>

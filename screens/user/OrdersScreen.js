@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Button, FlatList } from 'react-native';
 import Layout from '../../components/Layout';
 import { CartContext } from '../../context/CartContext';
 
+// Lista de pedidos de ejemplo (mock)
 const orders = [
     { id: '1', date: '2025-04-10', status: 'Entregado', total: '$12.50', products: ['Manzanas', 'Leche'] },
     { id: '2', date: '2025-04-05', status: 'En camino', total: '$8.20', products: ['Pan', 'Huevos'] },
@@ -10,8 +11,10 @@ const orders = [
 ];
 
 const OrdersScreen = ({ navigation }) => {
+    // Obtiene funciones del contexto del carrito
     const { addToCart, isLoggedIn } = useContext(CartContext);
 
+    // Permite repetir un pedido agregando sus productos al carrito
     const repeatOrder = (order) => {
         if (isLoggedIn) {
             order.products.forEach(product => {
@@ -23,6 +26,7 @@ const OrdersScreen = ({ navigation }) => {
         }
     };
 
+    // Renderiza cada pedido en la lista
     const renderItem = ({ item }) => (
         <View style={styles.orderItem}>
             <View style={{ flex: 1 }}>
@@ -32,6 +36,7 @@ const OrdersScreen = ({ navigation }) => {
                 <Text>Total: {item.total}</Text>
             </View>
             <View style={{ marginLeft: 10 }}>
+                {/* Botón para repetir el pedido */}
                 <Button title="Repetir" onPress={() => repeatOrder(item)} />
             </View>
         </View>
@@ -41,6 +46,7 @@ const OrdersScreen = ({ navigation }) => {
         <Layout>
             <Text style={styles.title}>Mis Pedidos</Text>
 
+            {/* Lista de pedidos o mensaje si no hay pedidos */}
             {orders.length > 0 ? (
                 <FlatList
                     data={orders}

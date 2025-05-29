@@ -1,4 +1,3 @@
-// PublicNavigator.js
 import React, { useEffect } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { CommonActions, useNavigation } from '@react-navigation/native';
@@ -14,12 +13,14 @@ import UserNavigator from './UserNavigator';
 
 const Stack = createStackNavigator();
 
+// Navigator público que gestiona las rutas accesibles sin autenticación
 const PublicNavigator = ({ role }) => {
   const navigation = useNavigation();
 
   // Redirige automáticamente al navigator correspondiente cuando el rol está definido
   useEffect(() => {
     if (role === 'admin') {
+      // Si el usuario es admin, redirige al stack de administrador
       navigation.dispatch(
         CommonActions.reset({
           index: 0,
@@ -27,6 +28,7 @@ const PublicNavigator = ({ role }) => {
         })
       );
     } else if (role === 'user') {
+      // Si el usuario es user, redirige al stack de usuario
       navigation.dispatch(
         CommonActions.reset({
           index: 0,

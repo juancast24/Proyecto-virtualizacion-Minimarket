@@ -78,7 +78,7 @@ export default function ProductCard({ selectedCategory, searchQuery }) {
                         <Image source={{ uri: item.image }} style={styles.cardImage} />
                     </View>
                     <Text style={styles.cardName}>{item.name}</Text>
-                    <Text style={styles.cardPresentation}>{item.quantity_per_unit} {item.unit}</Text>
+                    <Text style={styles.cardPresentation}>Presentacion: {item.quantity_per_unit} {item.unit}</Text>
                     <View style={styles.cardBottom}>
                         <Text style={styles.cardPrice}>${item.price.toLocaleString('es-CL')}</Text>
                         <Pressable onPress={() => handleAddToCart(item, 1, item.price)} style={({ pressed }) => [styles.addToCartButtonText, { backgroundColor: pressed ? '#2563EB' : '#4A90E2' }]}>
@@ -128,6 +128,7 @@ const styles = StyleSheet.create({
     cardPresentation: {
         fontSize: 12,
         marginTop: 5,
+        marginBottom: 8,
     },
     cardBottom: {
         flexDirection: 'row',

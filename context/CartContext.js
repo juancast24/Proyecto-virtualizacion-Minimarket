@@ -37,6 +37,7 @@ export const CartProvider = ({ children }) => {
         setLoading(false);
     };
 
+    // Cargar el carrito cuando el usuario se autentica
     useEffect(() => {
         if (authState.authenticated) {
             loadCartFromFirestore();
@@ -46,12 +47,14 @@ export const CartProvider = ({ children }) => {
         }
     }, [authState.authenticated]);
 
+    // Guardar el carrito en Firestore cada vez que cambia
     useEffect(() => {
         if (authState.authenticated && cartItems !== null) {
             saveCartToFirestore(cartItems);
         }
     }, [cartItems]);
 
+    // Agregar un producto al carrito
     const addToCart = (item, quantity) => {
         setCartItems(prevItems => {
             const existingIndex = prevItems.findIndex(p => p.name === item.name);
@@ -65,12 +68,30 @@ export const CartProvider = ({ children }) => {
         });
     };
 
+    // Vaciar el carrito
     const clearCart = () => {
         setCartItems([]);
     };
 
+    // Actualizar la cantidad de un producto en el carrito
+    const updateItemQuantity = (itemName, quantity) => {
+        setCartItems(prevItems => {
+            return prevItems.map(item => 
+                item.name === itemName ? { ...item, quantity } : item
+            );
+        });
+    };
+
+    // Eliminar un producto del carrito
+    const removeItemFromCart = (itemName) => {
+        setCartItems(prevItems => {
+            return prevItems.filter(item => item.name !== itemName);
+        });
+    };
+
+    // Proveer el contexto a los hijos
     return (
-        <CartContext.Provider value={{ cartItems, addToCart, clearCart, loading }}>
+        <CartContext.Provider value={{ cartItems, addToCart, clearCart, loading, updateItemQuantity, removeItemFromCart }}>
             {children}
         </CartContext.Provider>
     );

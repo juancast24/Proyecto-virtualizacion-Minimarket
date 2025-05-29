@@ -5,11 +5,15 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 import ProductCard from '../../components/ProductCard';
 
 const HomeScreen = () => {
+    // Estado para la categoría seleccionada
     const [selectedCategory, setSelectedCategory] = useState(null);
+    // Estado para la búsqueda
     const [searchQuery, setSearchQuery] = useState('');
+
     return (
         <Layout>
             <View style={styles.container}>
+                {/* Encabezado con título y logo */}
                 <View style={styles.content}>
                     <View style={styles.containerTitle}>
                         <Text style={styles.title}>
@@ -22,6 +26,7 @@ const HomeScreen = () => {
                         </View>
                     </View>
                 </View>
+                {/* Componente de búsqueda y categorías */}
                 <SearchAndCategory
                     selectedCategory={selectedCategory}
                     setSelectedCategory={setSelectedCategory}
@@ -29,12 +34,13 @@ const HomeScreen = () => {
                     setSearchQuery={setSearchQuery}
                 />
 
-                {/* Solo pasa los filtros, no los productos */}
+                {/* Muestra los productos filtrados por categoría y búsqueda */}
                 <ProductCard selectedCategory={selectedCategory} searchQuery={searchQuery} />
             </View>
         </Layout>
     );
 };
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,

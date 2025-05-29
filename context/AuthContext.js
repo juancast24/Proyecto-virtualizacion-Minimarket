@@ -15,10 +15,11 @@ export const useAuth = () => useContext(AuthContext);
 // Inicializar Firestore
 const db = getFirestore(firebaseApp);
 
+// Proveedor del contexto de autenticación
 export const AuthProvider = ({ children }) => {
+  // Estado de autenticación
   const [authState, setAuthState] = useState({
     token: null,
-
     authenticated: false,
     user: null,
     role: null,
@@ -28,6 +29,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
+        // Si hay usuario, obtener su rol y actualizar el estado
         const role = await getUserRole(user.uid);
         setAuthState({
           authenticated: true,
@@ -35,6 +37,7 @@ export const AuthProvider = ({ children }) => {
           role,
         });
       } else {
+        // Si no hay usuario, limpiar el estado
         setAuthState({
           authenticated: false,
           user: null,
@@ -65,9 +68,11 @@ export const AuthProvider = ({ children }) => {
     direccion = ""
   ) => {
     try {
+      // Crear usuario en Firebase Auth
       const res = await createUserWithEmailAndPassword(auth, email, password);
       const uid = res.user.uid;
 
+      // Guardar datos adicionales en Firestore
       await setDoc(doc(db, "usuarios", uid), {
         correo: email,
         telefono: telefono,
@@ -76,6 +81,7 @@ export const AuthProvider = ({ children }) => {
         rol: rol,
       });
 
+      // Actualizar estado de autenticación
       setAuthState({
         authenticated: true,
         user: res.user,
@@ -92,8 +98,10 @@ export const AuthProvider = ({ children }) => {
   // Login de usuario
   const onLogin = async (email, password) => {
     try {
+      // Iniciar sesión con Firebase Auth
       const res = await signInWithEmailAndPassword(auth, email, password);
       const uid = res.user.uid;
+      // Obtener datos adicionales del usuario desde Firestore
       const userDoc = await getDoc(doc(db, "usuarios", uid));
       let userData = res.user;
       let role = "user";
@@ -101,6 +109,7 @@ export const AuthProvider = ({ children }) => {
         userData = { ...res.user, ...userDoc.data() }; // Combina datos de Auth y Firestore
         role = userDoc.data().rol || "user";
       }
+      // Actualizar estado de autenticación
       setAuthState({
         authenticated: true,
         user: userData,
@@ -123,6 +132,7 @@ export const AuthProvider = ({ children }) => {
     });
   };
 
+  // Proveer el contexto a los hijos
   return (
     <AuthContext.Provider value={{ authState, onLogin, onRegister, onLogout }}>
       {children}
