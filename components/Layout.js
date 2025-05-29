@@ -178,7 +178,7 @@ const Layout = ({ children }) => {
           <MenuItem
             icon="cart-outline"
             label="Productos"
-            onPress={() => navigateTo("UserRoot", { screen: "ProductList" })}
+            onPress={() => navigateTo("UserRoot", { screen: "ProductsScreen" })}
           />
           <MenuItem
             icon="basket-outline"

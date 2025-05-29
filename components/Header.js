@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderBottomWidth: 1,
         borderBottomColor: '#ddd',
+        marginBottom: 10,
     },
     headerText: {
         fontSize: 20,

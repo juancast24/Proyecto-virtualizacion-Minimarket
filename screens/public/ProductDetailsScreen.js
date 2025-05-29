@@ -1,14 +1,14 @@
 import React, { useState, useContext } from 'react';
-import { View, Image, StyleSheet, Text, Pressable, ScrollView, Platform } from 'react-native';
+import { View, Image, StyleSheet, Text, Pressable, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { CartContext } from '../../context/CartContext'; 
+import { CartContext } from '../../context/CartContext';
 
 const ProductDetails = () => {
   const insets = useSafeAreaInsets();
   const route = useRoute();
-  
+
   const { product } = route.params;
   const navigation = useNavigation();
   const { addToCart } = useContext(CartContext);
@@ -18,7 +18,7 @@ const ProductDetails = () => {
   };
 
   const handleCartPress = () => {
-    navigation.navigate('CartScreen'); 
+    navigation.navigate('CartScreen');
   };
 
   const [quantity, setQuantity] = useState(1);
@@ -41,7 +41,7 @@ const ProductDetails = () => {
 
   const handleAddToCart = () => {
     addToCart(product, quantity, totalPrice);
-    navigation.navigate('CartScreen'); 
+    navigation.navigate('CartScreen');
   };
 
   return (
@@ -76,21 +76,28 @@ const ProductDetails = () => {
 
       {/* Información del producto (Presentación y Descripción) */}
       <ScrollView style={styles.infoContainer}>
-        <Text style={styles.sectionTitle}>Presentación</Text>
-        <Text style={styles.sectionContent}>{product.quantity_per_unit} {product.unit}</Text>
-
+        <View style={styles.infoHeader}>
+          <View style={styles.sectionHeader}>
+            <Image source={{ uri: 'https://i.imgur.com/H9LTHyB.png' }} style={styles.imageSectionHeader} />
+            <Text style={styles.sectionContent}>{product.quantity_per_unit} {product.unit}</Text>
+          </View>
+          <View style={styles.sectionHeader}>
+            <Image source={{ uri: 'https://i.imgur.com/PRWE0fh.png' }} style={styles.imageSectionHeader} />
+            <Text style={styles.sectionContent}>Stock: {product.stock}</Text>
+          </View>
+        </View>
         <Text style={styles.sectionTitle}>Descripción</Text>
         <Text style={styles.sectionContent}>{product.description}</Text>
       </ScrollView>
 
       {/* Barra inferior de Precio y Añadir al Carrito */}
-      <View style={[styles.addToCartBar, { paddingBottom: insets.bottom }]}>
+      <View style={[styles.sectionBottom, { paddingBottom: insets.bottom }]}>
         <Text style={styles.totalPriceText}>${totalPrice.toLocaleString('es-CL')}</Text>
         <Pressable
           onPress={handleAddToCart}
           style={({ pressed }) => [
             styles.addToCartButton,
-            { backgroundColor: pressed ? '#2563EB' : '#4A90E2' }, 
+            { backgroundColor: pressed ? '#2563EB' : '#4A90E2' },
           ]}
         >
           <Text style={styles.addToCartButtonText}>Agregar al carrito</Text>
@@ -107,19 +114,9 @@ const styles = StyleSheet.create({
   },
   headerProductWrapper: {
     backgroundColor: 'white',
-    borderBottomLeftRadius: 60, 
+    borderBottomLeftRadius: 60,
     borderBottomRightRadius: 60,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 12,
-      },
-    }),
+    elevation: 12,
   },
   header: {
     flexDirection: 'row',
@@ -130,111 +127,95 @@ const styles = StyleSheet.create({
   },
   headerButton: {
     padding: 10,
-    borderRadius: 50, 
+    borderRadius: 50,
   },
   productContainer: {
     alignItems: 'center',
-    paddingBottom: 70, 
+    paddingBottom: 70,
   },
   image: {
     width: 250,
     height: 250,
     resizeMode: 'contain',
     marginBottom: 15,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.15,
-        shadowRadius: 10,
-      },
-      android: {
-        elevation: 8,
-      },
-    }),
   },
   productName: {
-    fontSize: 34, 
-    fontWeight: 'bold', 
+    fontSize: 34,
+    fontWeight: 'bold',
     textAlign: 'center',
     paddingHorizontal: 20,
   },
   quantityControl: {
     position: 'absolute',
-    bottom: -25, 
+    bottom: -20,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'white',
     borderRadius: 30,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 6,
-      },
-      android: {
-        elevation: 10,
-      },
-    }),
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    elevation: 10,
   },
   quantityButton: {
-    padding: 10,
-    borderRadius: 20, 
+    padding: 8,
     marginHorizontal: 10,
   },
   quantityText: {
-    fontSize: 20, 
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#333',
-    minWidth: 30, 
+    minWidth: 30,
     textAlign: 'center',
   },
+  infoHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+  },
+  imageSectionHeader: {
+    width: 55,
+    height: 45,
+
+  },
+  sectionHeader: {
+    alignItems: 'center',  
+    justifyContent: 'center', 
+  },
   infoContainer: {
-    flex: 1, 
-    paddingHorizontal: 25, 
-    paddingTop: 35, 
+    flex: 1,
+    paddingHorizontal: 25,
+    paddingTop: 35,
   },
   sectionTitle: {
     fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 8,
-    marginTop: 15, 
+    marginTop: 15,
   },
   sectionContent: {
     fontSize: 16,
     color: '#555',
     marginBottom: 10,
   },
-  addToCartBar: {
+  sectionBottom: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between', 
+    justifyContent: 'space-between',
     backgroundColor: 'white',
     paddingHorizontal: 25,
     paddingVertical: 10,
-    borderTopLeftRadius: 30, 
+    borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: -4 }, 
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 15,
-      },
-    }),
+    elevation: 15,
   },
   totalPriceText: {
     fontSize: 32,
     fontWeight: 'bold',
     color: '#4A90E2',
+    maxWidth: '50%',
   },
   addToCartButton: {
-    paddingVertical: 14, 
-    paddingHorizontal: 40,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
     borderRadius: 30,
     alignItems: 'center',
     justifyContent: 'center',
