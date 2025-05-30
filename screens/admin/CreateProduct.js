@@ -132,6 +132,7 @@ const CreateProduct = () => {
       {/* Título de la pantalla */}
       <Text style={styles.title}>Crear Nuevo Producto</Text>
       {/* Campo para el nombre */}
+      <Text style={styles.label}>Nombre del producto</Text>
       <TextInput
         style={styles.input}
         placeholder="Nombre del producto"
@@ -139,13 +140,15 @@ const CreateProduct = () => {
         onChangeText={setName}
       />
       {/* Campo para la descripción */}
+      <Text style={styles.label}>Descripción del producto</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input]}
         placeholder="Descripción del producto"
         value={description}
         onChangeText={setDescription}
       />
       {/* Selector de categoría */}
+      <Text style={styles.label}>Categoría</Text>
       <Picker
         selectedValue={category}
         onValueChange={(itemValue) => setCategory(itemValue)}
@@ -156,46 +159,63 @@ const CreateProduct = () => {
           <Picker.Item key={index} label={cat} value={cat} />
         ))}
       </Picker>
-      {/* Campo para el precio */}
-      <TextInput
-        style={styles.input}
-        placeholder="Precio"
-        value={price}
-        onChangeText={setPrice}
-        keyboardType="numeric"
-      />
-      {/* Campo para el stock */}
-      <TextInput
-        style={styles.input}
-        placeholder="Stock"
-        value={stock}
-        onChangeText={setStock}
-        keyboardType="numeric"
-      />
-      {/* Campo para la cantidad por unidad */}
-      <TextInput
-        style={styles.input}
-        placeholder="Cantidad por unidad (ej: 6, 500, 1)"
-        value={quantityPerUnit}
-        onChangeText={setQuantityPerUnit}
-        keyboardType="numeric"
-      />
-      {/* Selector de unidad de medida */}
-      <Picker
-        selectedValue={unit}
-        style={styles.Picker}
-        onValueChange={(itemValue) => setUnit(itemValue)}
-      >
-        <Picker.Item label="Selecciona unidad de medida" value="" />
-        <Picker.Item label="unidad" value="unidad" />
-        <Picker.Item label="unidades" value="unidades" />
-        <Picker.Item label="Kg" value="kg" />
-        <Picker.Item label="Ml" value="ml" />
-        <Picker.Item label="Lb" value="lb" />
-        <Picker.Item label="g" value="g" />
-        <Picker.Item label="L" value="l" />
-      </Picker>
+      {/* Campos Precio y Stock*/}
+      <View style={{ flexDirection: "row", gap: 10, marginBottom: 15 }}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.label}>Precio</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Precio"
+            value={price}
+            onChangeText={setPrice}
+            keyboardType="numeric"
+          />
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.label}>Stock</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Stock"
+            value={stock}
+            onChangeText={setStock}
+            keyboardType="numeric"
+          />
+        </View>
+      </View>
+      {/* Campos Cantidad por unidad y Unidad de medida en una fila */}
+      <View style={{ flexDirection: "row", gap: 10, marginBottom: 15 }}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.label}>Cantidad por unidad</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Cantidad(ej: 6, 500, 1)"
+            value={quantityPerUnit}
+            onChangeText={setQuantityPerUnit}
+            keyboardType="numeric"
+          />
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.label}>Unidad de medida</Text>
+          <Picker
+            selectedValue={unit}
+            style={styles.Picker}
+            onValueChange={(itemValue) => setUnit(itemValue)}
+          >
+            <Picker.Item label="Selecciona unidad de medida" value="" />
+            <Picker.Item label="unidad" value="unidad" />
+            <Picker.Item label="unidades" value="unidades" />
+            <Picker.Item label="Kg" value="kg" />
+            <Picker.Item label="Ml" value="ml" />
+            <Picker.Item label="Lb" value="lb" />
+            <Picker.Item label="g" value="g" />
+            <Picker.Item label="L" value="l" />
+          </Picker>
+        </View>
+      </View>
+
+      <View style={{ flexDirection: "column", gap: 10, marginBottom: 1, marginTop: -25 }}>
       {/* Campo para la URL de la imagen (rellenado automáticamente al tomar foto) */}
+      <Text style={styles.label}>Imagen</Text>
       <TextInput
         style={styles.input}
         placeholder="URL de la Imagen"
@@ -211,6 +231,7 @@ const CreateProduct = () => {
       ) : (
         <Text style={styles.imagePlaceholder}>Vista previa de la imagen</Text>
       )}
+      </View>
       {/* Botones para crear producto o volver atrás */}
       <View
         style={{
@@ -256,6 +277,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginBottom: 15,
+  },
+  label: {
+    fontWeight: "bold",
+    marginBottom: 4,
+    marginLeft: 2,
+    color: "#333",
   },
   button: {
     backgroundColor: "#2980b9",
