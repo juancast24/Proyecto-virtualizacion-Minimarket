@@ -17,14 +17,30 @@ const db = getFirestore(firebaseApp);
 
 // Proveedor del contexto de autenticación
 export const AuthProvider = ({ children }) => {
-  const [userData, setUserData] = useState(null);
-
   const [authState, setAuthState] = useState({
     authenticated: false,
     user: null,
     role: null,
   });
-  
+
+  // Función reutilizable para construir el estado del usuario
+  const buildAuthState = useCallback(async (user) => {
+    const userDoc = await getDoc(doc(db, "usuarios", user.uid));
+    let userData = user;
+    let role = "user";
+
+    if (userDoc.exists()) {
+      userData = { ...user, ...userDoc.data() }; // Mezcla datos de Auth + Firestore
+      role = userDoc.data().rol || "user";
+    }
+
+    return {
+      authenticated: true,
+      user: userData,
+      role,
+    };
+  }, []);
+
   // Detectar login automático
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -43,36 +59,6 @@ export const AuthProvider = ({ children }) => {
     return () => unsubscribe();
   }, [buildAuthState]);
 
-  //obtener datos del usuario al iniciar sesión
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (authState.user?.uid) {
-        const userDoc = await getDoc(doc(db, "usuarios", authState.user.uid));
-        if (userDoc.exists()) {
-          setUserData(userDoc.data());
-        }
-      }
-    };
-    fetchUserData();
-  }, [authState.user]);
-
-  // Función reutilizable para obtener y construir el estado del usuario
-  const buildAuthState = useCallback(async (user) => {
-    const userDoc = await getDoc(doc(db, "usuarios", user.uid));
-    let userData = user;
-    let role = "user";
-
-    if (userDoc.exists()) {
-      userData = { ...user, ...userDoc.data() };
-      role = userDoc.data().rol || "user";
-    }
-
-    return {
-      authenticated: true,
-      user: userData,
-      role,
-    };
-  }, []);
   // Registro de usuario
   const onRegister = async (
     email,
@@ -94,11 +80,8 @@ export const AuthProvider = ({ children }) => {
         rol,
       });
 
-      setAuthState({
-        authenticated: true,
-        user: res.user,
-        role: rol,
-      });
+      const newState = await buildAuthState(res.user);
+      setAuthState(newState);
 
       return true;
     } catch (error) {
@@ -131,7 +114,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ authState, onLogin, onRegister, onLogout, userData }}>
+    <AuthContext.Provider value={{ authState, onLogin, onRegister, onLogout }}>
       {children}
     </AuthContext.Provider>
   );

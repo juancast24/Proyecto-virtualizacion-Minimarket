@@ -13,7 +13,7 @@ const FormPay = () => {
   const route = useRoute();
   // Obtiene los productos del carrito desde los parámetros de navegación
   const { cartItems } = route.params || { cartItems: [] };
-  const { userData } = useAuth();
+  const { authState } = useAuth();
 
   // Estado para el formulario de datos de envío y pago
   const [form, setForm] = useState({
@@ -92,7 +92,7 @@ const FormPay = () => {
             placeholder="Nombre completo"
             placeholderTextColor="#999"
             onChangeText={text => handleChange('nombre', text)}
-            value={userData ? userData.nombre : form.nombre}
+            value={authState.user ? authState.user.nombre : form.nombre}
           />
           <TextInput
             style={styles.input}
@@ -100,7 +100,7 @@ const FormPay = () => {
             placeholderTextColor="#999"
             onChangeText={text => handleChange('telefono', text)}
             keyboardType="phone-pad"
-            value={userData ? userData.telefono : form.telefono}
+            value={authState.user ? authState.user.telefono : form.telefono}
           />
           <TextInput
             style={styles.input}
@@ -109,7 +109,7 @@ const FormPay = () => {
             onChangeText={text => handleChange('correo', text)}
             keyboardType="email-address"
             autoCapitalize="none"
-            value={userData ? userData.correo : form.correo}
+            value={authState.user ? authState.user.correo : form.correo}
           />
           <TextInput
             style={styles.input}
@@ -123,7 +123,7 @@ const FormPay = () => {
             placeholder="Dirección (Calle, número de casa/apto)"
             placeholderTextColor="#999"
             onChangeText={text => handleChange('direccion', text)}
-            value={userData ? userData.direccion : form.direccion}
+            value={authState.user ? authState.user.direccion : form.direccion}
           />
         </View>
 

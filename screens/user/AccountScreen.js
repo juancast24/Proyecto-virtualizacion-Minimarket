@@ -11,7 +11,7 @@ const db = getFirestore(firebaseApp);
 
 const AccountScreen = ({ navigation }) => {
     // Obtiene el estado de autenticación y la función de logout
-    const { authState, onLogout, userData } = useAuth();
+    const { authState, onLogout } = useAuth();
     // Maneja el cierre de sesión
     const handleLogout = () => {
         onLogout();
@@ -27,7 +27,7 @@ const AccountScreen = ({ navigation }) => {
     };
 
     // Muestra un indicador de carga mientras se obtienen los datos
-    if (!userData) {
+    if (!authState.user) {
         return (
             <Layout>
                 <View style={styles.container}>
@@ -44,8 +44,8 @@ const AccountScreen = ({ navigation }) => {
                 <View style={styles.profileHeader}>
                     <View style={styles.avatarContainer}>
                         <Text style={styles.avatarText}>
-                            {userData.nombre
-                                ? userData.nombre
+                            {authState.user.nombre
+                                ? authState.user.nombre
                                     .split(" ")
                                     .map((n) => n[0])
                                     .join("")
@@ -53,8 +53,8 @@ const AccountScreen = ({ navigation }) => {
                                 : "US"}
                         </Text>
                     </View>
-                    <Text style={styles.title}>{userData.nombre || "Usuario"}</Text>
-                    <Text style={styles.subtitle}>{userData.rol || "Rol"}</Text>
+                    <Text style={styles.title}>{authState.user.nombre || "Usuario"}</Text>
+                    <Text style={styles.subtitle}>{authState.user.rol || "Rol"}</Text>
                 </View>
 
                 {/* Tarjeta con información personal */}
@@ -72,7 +72,7 @@ const AccountScreen = ({ navigation }) => {
                             />
                             <Text style={styles.infoLabel}>Email:</Text>
                             <Text style={styles.infoValue}>
-                                {userData.correo || authState.user.email}
+                                {authState.user.correo || authState.user.email}
                             </Text>
                         </View>
 
@@ -85,7 +85,7 @@ const AccountScreen = ({ navigation }) => {
                                 style={styles.infoIcon}
                             />
                             <Text style={styles.infoLabel}>Teléfono:</Text>
-                            <Text style={styles.infoValue}>{userData.telefono || "-"}</Text>
+                            <Text style={styles.infoValue}>{authState.user.telefono || "-"}</Text>
                         </View>
                         {/* Fila de dirección */}
                         <View style={styles.infoRow}>
@@ -96,7 +96,7 @@ const AccountScreen = ({ navigation }) => {
                                 style={styles.infoIcon}
                             />
                             <Text style={styles.infoLabel}>Dirección:</Text>
-                            <Text style={styles.infoValue}>{userData.direccion || "-"}</Text>
+                            <Text style={styles.infoValue}>{authState.user.direccion || "-"}</Text>
                         </View>
                     </View>
                 </View>
