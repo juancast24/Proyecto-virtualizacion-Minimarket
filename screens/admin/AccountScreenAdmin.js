@@ -13,23 +13,7 @@ const db = getFirestore(firebaseApp);
 // Componente principal de la pantalla de cuenta de administrador
 const AccountScreen = ({ navigation }) => {
   // Obtiene el estado de autenticación y la función de logout del contexto
-  const { authState, onLogout } = useAuth();
-  // Estado local para almacenar los datos del usuario
-  const [userData, setUserData] = useState(null);
-
-  // Hook para obtener los datos del usuario desde Firestore al montar el componente o cuando cambia el usuario autenticado
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (authState.user?.uid) {
-        // Obtiene el documento del usuario desde la colección "usuarios"
-        const userDoc = await getDoc(doc(db, "usuarios", authState.user.uid));
-        if (userDoc.exists()) {
-          setUserData(userDoc.data());
-        }
-      }
-    };
-    fetchUserData();
-  }, [authState.user]);
+  const { authState, onLogout, userData } = useAuth();
 
   // Función para cerrar sesión y navegar a la pantalla de inicio
   const handleLogout = async () => {

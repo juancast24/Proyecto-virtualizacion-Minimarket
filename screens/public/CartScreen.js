@@ -98,7 +98,7 @@ const CartScreen = () => {
         <View style={styles.emptyCartContainer}>
           <Image source={{ uri: 'https://i.imgur.com/kRhJKyd.png' }} style={styles.emptyCartImage} />
           <Text style={styles.emptyCartText}>Tu carrito está vacío.</Text>
-          <Pressable onPress={() => navigation.navigate('Home')} style={styles.shopButton}>
+          <Pressable onPress={() => navigation.navigate('ProductsScreen')} style={styles.shopButton}>
             <Text style={styles.shopButtonText}>Ir a la tienda</Text>
           </Pressable>
         </View>

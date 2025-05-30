@@ -13,23 +13,7 @@ const FormPay = () => {
   const route = useRoute();
   // Obtiene los productos del carrito desde los parámetros de navegación
   const { cartItems } = route.params || { cartItems: [] };
-  const { authState } = useAuth();
-  const [userData, setUserData] = useState(null);
-
-  // Carga los datos del usuario autenticado desde Firestore
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (authState.user?.uid) {
-        const userDoc = await getDocs(collection(db, 'usuarios'));
-        userDoc.forEach((doc) => {
-          if (doc.id === authState.user.uid) {
-            setUserData(doc.data());
-          }
-        });
-      }
-    };
-    fetchUserData();
-  }, [authState.user]);
+  const { userData } = useAuth();
 
   // Estado para el formulario de datos de envío y pago
   const [form, setForm] = useState({

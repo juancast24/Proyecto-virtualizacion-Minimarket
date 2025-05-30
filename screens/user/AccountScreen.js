@@ -11,10 +11,7 @@ const db = getFirestore(firebaseApp);
 
 const AccountScreen = ({ navigation }) => {
     // Obtiene el estado de autenticación y la función de logout
-    const { authState, onLogout } = useAuth();
-    // Estado local para los datos del usuario
-    const [userData, setUserData] = useState(null);
-
+    const { authState, onLogout, userData } = useAuth();
     // Maneja el cierre de sesión
     const handleLogout = () => {
         onLogout();
@@ -28,20 +25,6 @@ const AccountScreen = ({ navigation }) => {
     const handleChangePassword = () => {
         navigation.navigate("ChangePassword");
     };
-
-    // Obtiene los datos del usuario desde Firestore al cargar el componente o cambiar el usuario
-    useEffect(() => {
-        const fetchUserData = async () => {
-            if (authState.user?.uid) {
-                // Obtiene el documento del usuario desde la colección "usuarios"
-                const userDoc = await getDoc(doc(db, "usuarios", authState.user.uid));
-                if (userDoc.exists()) {
-                    setUserData(userDoc.data());
-                }
-            }
-        };
-        fetchUserData();
-    }, [authState.user]);
 
     // Muestra un indicador de carga mientras se obtienen los datos
     if (!userData) {

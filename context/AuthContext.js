@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -17,27 +17,21 @@ const db = getFirestore(firebaseApp);
 
 // Proveedor del contexto de autenticación
 export const AuthProvider = ({ children }) => {
-  // Estado de autenticación
+  const [userData, setUserData] = useState(null);
+
   const [authState, setAuthState] = useState({
-    token: null,
     authenticated: false,
     user: null,
     role: null,
   });
-
-  // Detectar login automático (si ya estaba logueado)
+  
+  // Detectar login automático
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // Si hay usuario, obtener su rol y actualizar el estado
-        const role = await getUserRole(user.uid);
-        setAuthState({
-          authenticated: true,
-          user,
-          role,
-        });
+        const newState = await buildAuthState(user);
+        setAuthState(newState);
       } else {
-        // Si no hay usuario, limpiar el estado
         setAuthState({
           authenticated: false,
           user: null,
@@ -47,17 +41,38 @@ export const AuthProvider = ({ children }) => {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [buildAuthState]);
 
-  // Obtener el rol desde Firestore
-  const getUserRole = async (uid) => {
-    const userDoc = await getDoc(doc(db, "usuarios", uid));
+  //obtener datos del usuario al iniciar sesión
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (authState.user?.uid) {
+        const userDoc = await getDoc(doc(db, "usuarios", authState.user.uid));
+        if (userDoc.exists()) {
+          setUserData(userDoc.data());
+        }
+      }
+    };
+    fetchUserData();
+  }, [authState.user]);
+
+  // Función reutilizable para obtener y construir el estado del usuario
+  const buildAuthState = useCallback(async (user) => {
+    const userDoc = await getDoc(doc(db, "usuarios", user.uid));
+    let userData = user;
+    let role = "user";
+
     if (userDoc.exists()) {
-      return userDoc.data().rol || "user";
+      userData = { ...user, ...userDoc.data() };
+      role = userDoc.data().rol || "user";
     }
-    return "user";
-  };
 
+    return {
+      authenticated: true,
+      user: userData,
+      role,
+    };
+  }, []);
   // Registro de usuario
   const onRegister = async (
     email,
@@ -68,20 +83,17 @@ export const AuthProvider = ({ children }) => {
     direccion = ""
   ) => {
     try {
-      // Crear usuario en Firebase Auth
       const res = await createUserWithEmailAndPassword(auth, email, password);
       const uid = res.user.uid;
 
-      // Guardar datos adicionales en Firestore
       await setDoc(doc(db, "usuarios", uid), {
         correo: email,
-        telefono: telefono,
-        nombre: nombre,
-        direccion: direccion,
-        rol: rol,
+        telefono,
+        nombre,
+        direccion,
+        rol,
       });
 
-      // Actualizar estado de autenticación
       setAuthState({
         authenticated: true,
         user: res.user,
@@ -98,23 +110,9 @@ export const AuthProvider = ({ children }) => {
   // Login de usuario
   const onLogin = async (email, password) => {
     try {
-      // Iniciar sesión con Firebase Auth
       const res = await signInWithEmailAndPassword(auth, email, password);
-      const uid = res.user.uid;
-      // Obtener datos adicionales del usuario desde Firestore
-      const userDoc = await getDoc(doc(db, "usuarios", uid));
-      let userData = res.user;
-      let role = "user";
-      if (userDoc.exists()) {
-        userData = { ...res.user, ...userDoc.data() }; // Combina datos de Auth y Firestore
-        role = userDoc.data().rol || "user";
-      }
-      // Actualizar estado de autenticación
-      setAuthState({
-        authenticated: true,
-        user: userData,
-        role,
-      });
+      const newState = await buildAuthState(res.user);
+      setAuthState(newState);
       return true;
     } catch (error) {
       console.error("Error en login:", error);
@@ -132,9 +130,8 @@ export const AuthProvider = ({ children }) => {
     });
   };
 
-  // Proveer el contexto a los hijos
   return (
-    <AuthContext.Provider value={{ authState, onLogin, onRegister, onLogout }}>
+    <AuthContext.Provider value={{ authState, onLogin, onRegister, onLogout, userData }}>
       {children}
     </AuthContext.Provider>
   );
