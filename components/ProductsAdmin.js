@@ -55,9 +55,12 @@ const ProductsAdmin = () => {
   }, []);
 
   // Filtrar los productos según el texto de búsqueda
-  const filteredData = products.filter((item) =>
-    item.name.toLowerCase().includes(searchText.toLowerCase())
-  );
+  const filteredData = products.filter((product) => {
+    const query = searchText.toLowerCase().trim();
+    return Object.values(product).some((value) =>
+      String(value).toLowerCase().includes(query)
+    );
+  });
 
   // Calcular el total de páginas basado en los productos filtrados
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
@@ -209,9 +212,9 @@ const ProductsAdmin = () => {
           <Text>
             {filteredData.length > 0
               ? `Mostrando ${(currentPage - 1) * itemsPerPage + 1}-${Math.min(
-                  currentPage * itemsPerPage,
-                  filteredData.length
-                )} de ${filteredData.length} productos`
+                currentPage * itemsPerPage,
+                filteredData.length
+              )} de ${filteredData.length} productos`
               : "No hay productos que coincidan con la búsqueda"}
           </Text>
         </View>
@@ -240,9 +243,8 @@ const ProductsAdmin = () => {
           </Pressable>
 
           {/* Información de la página actual */}
-          <Text style={styles.pageInfo}>{`${currentPage} de ${
-            totalPages || 1
-          }`}</Text>
+          <Text style={styles.pageInfo}>{`${currentPage} de ${totalPages || 1
+            }`}</Text>
 
           {/* Botón para ir a la página siguiente */}
           <Pressable
@@ -251,7 +253,7 @@ const ProductsAdmin = () => {
             style={[
               styles.paginationButton,
               (currentPage === totalPages || totalPages === 0) &&
-                styles.disabledButton,
+              styles.disabledButton,
             ]}
           >
             <Text style={styles.paginationText}>{">"}</Text>
@@ -263,7 +265,7 @@ const ProductsAdmin = () => {
             style={[
               styles.paginationButton,
               (currentPage === totalPages || totalPages === 0) &&
-                styles.disabledButton,
+              styles.disabledButton,
             ]}
           >
             <Text style={styles.paginationText}>{">>"}</Text>

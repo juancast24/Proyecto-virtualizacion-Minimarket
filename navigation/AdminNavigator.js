@@ -9,13 +9,14 @@ import EditProductScreen from "../screens/admin/EditProductScreen";
 import CreateUserScreen from "../screens/admin/CreateUserScreen";
 import EditUserScreen from "../screens/admin/EditUserScreen";
 import ChangePasswordScreen from "../screens/admin/ChangePasswordScreen";
+import HomeScreen from "../screens/public/HomeScreen";
 
 const Stack = createStackNavigator();
 
 const AdminNavigator = () => {
   return (
     // stack navigator contiene las pantallas accesibles para el admin
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='AdminDashboard'>
       <Stack.Screen name="AdminDashboard" component={AdminDashboard} />
       <Stack.Screen name="CreateProduct" component={CreateProduct} />
       <Stack.Screen name="OrdersScreen" component={OrdersScreen} />
@@ -24,6 +25,7 @@ const AdminNavigator = () => {
       <Stack.Screen name="EditProductScreen" component={EditProductScreen} />
       <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} options={{ title: "Cambiar contraseña" }} />
       <Stack.Screen
+
         name="CreateUserScreen"
         component={CreateUserScreen}
         options={{ title: "Crear Usuario" }}

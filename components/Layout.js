@@ -14,7 +14,7 @@ import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../context/AuthContext";
 import { StatusBar } from "expo-status-bar";
-import { firebaseApp } from "../firebase.config";
+import { auth, firebaseApp } from "../firebase.config";
 import { Ionicons } from "@expo/vector-icons";
 
 const { width } = Dimensions.get("window");
@@ -25,11 +25,10 @@ const db = getFirestore(firebaseApp);
 // Componente principal de Layout que envuelve la aplicación
 const Layout = ({ children }) => {
   const navigation = useNavigation();
-  const { authState, onLogout } = useAuth();
+  const { authState, onLogout} = useAuth();
   // Obtiene el rol del usuario autenticado
   const userRole = authState?.role || authState?.user?.role || "";
   const [userData, setUserData] = useState(null);
-
   // Efecto para obtener datos adicionales del usuario desde Firestore
   useEffect(() => {
     const fetchUserData = async () => {
@@ -62,7 +61,19 @@ const Layout = ({ children }) => {
       toValue: -DRAWER_WIDTH,
       duration: 300,
       useNativeDriver: true,
-    }).start(() => setMenuVisible(false));
+    }).start(() => {
+      setMenuVisible(false);
+    });
+  };
+  const handleLogout = () => {
+    Animated.timing(slideAnim, {
+      toValue: -DRAWER_WIDTH,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      setMenuVisible(false);
+      onLogout();
+    });
   };
 
   // Alterna la visibilidad del menú
@@ -83,9 +94,9 @@ const Layout = ({ children }) => {
         userRole === "ADMIN");
 
     if (isAdmin) {
-      navigation.navigate("AdminRoot", { screen: "AccountScreenAdmin" });
+      navigation.navigate("AccountScreenAdmin");
     } else if (userRole) {
-      navigation.navigate("UserRoot", { screen: "AccountScreen" });
+      navigation.navigate("AccountScreen");
     } else {
       navigation.navigate("Login");
     }
@@ -138,35 +149,28 @@ const Layout = ({ children }) => {
           <MenuItem
             icon="grid-outline"
             label="Productos"
-            onPress={() =>
-              navigateTo("AdminRoot", { screen: "AdminDashboard" })
-            }
+            onPress={() => navigateTo("AdminDashboard")}
           />
           <MenuItem
             icon="document-text-outline"
             label="Pedidos"
-            onPress={() => navigateTo("AdminRoot", { screen: "OrdersScreen" })}
+            onPress={() => navigateTo("OrdersScreen")}
           />
           <MenuItem
             icon="people-outline"
             label="Gestión de Usuarios"
-            onPress={() =>
-              navigateTo("AdminRoot", { screen: "UserManagement" })
-            }
+            onPress={() => navigateTo("UserManagement")}
           />
           <MenuItem
             icon="person-circle-outline"
             label="Mi Cuenta"
-            onPress={() =>
-              navigateTo("AdminRoot", { screen: "AccountScreenAdmin" })
-            }
+            onPress={() => navigateTo("AccountScreenAdmin")}
           />
           <MenuItem
             icon="log-out-outline"
             label="Cerrar Sesión"
             onPress={() => {
-              closeMenu();
-              onLogout();
+              handleLogout();
             }}
           />
         </>
@@ -178,12 +182,12 @@ const Layout = ({ children }) => {
           <MenuItem
             icon="home-outline"
             label="Inicio"
-            onPress={() => navigateTo("UserRoot", { screen: "UserDashboard" })}
+            onPress={() => navigateTo("UserDashboard")}
           />
           <MenuItem
             icon="cart-outline"
             label="Productos"
-            onPress={() => navigateTo("UserRoot", { screen: "ProductsScreen" })}
+            onPress={() => navigateTo("ProductsScreen")}
           />
           <MenuItem
             icon="basket-outline"
@@ -193,19 +197,18 @@ const Layout = ({ children }) => {
           <MenuItem
             icon="list-outline"
             label="Mis Pedidos"
-            onPress={() => navigateTo("UserRoot", { screen: "OrderHistory" })}
+            onPress={() => navigateTo("OrderHistory")}
           />
           <MenuItem
             icon="person-circle-outline"
             label="Mi Cuenta"
-            onPress={() => navigateTo("UserRoot", { screen: "AccountScreen" })}
+            onPress={() => navigateTo("AccountScreen")}
           />
           <MenuItem
             icon="log-out-outline"
             label="Cerrar Sesión"
             onPress={() => {
-              closeMenu();
-              onLogout();
+              handleLogout();
             }}
           />
         </>
@@ -252,8 +255,8 @@ const Layout = ({ children }) => {
                   (userRole === "admin" ||
                     userRole.toLowerCase() === "admin" ||
                     userRole === "ADMIN")
-                ? `Bienvenido`
-                : `Bienvenido`}	
+                  ? `Bienvenido, `
+                  : `Bienvenido, `}
             </Text>
           </View>
           <View style={styles.drawerContent}>{renderMenuItems()}</View>

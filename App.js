@@ -1,21 +1,29 @@
 // App.js
 import 'react-native-gesture-handler';
-import React, { useContext } from 'react';
+import { useAuth } from './context/AuthContext';
 import { NavigationContainer } from '@react-navigation/native';
-import { AuthProvider, AuthContext } from './context/AuthContext';
-import { CartProvider } from './context/CartContext'; 
+import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
+import { PedidosProvider } from './context/PedidosContext';
 import PublicNavigator from './navigation/PublicNavigator';
+import AdminNavigator from './navigation/AdminNavigator';
+import UserNavigator from './navigation/UserNavigator';
 
 // Componente interno que utiliza el contexto de autenticación
 const AppInner = () => {
-  // Obtiene el estado de autenticación (incluye el rol del usuario)
-  const { authState } = useContext(AuthContext);
+  const { authState } = useAuth(); // Obtiene el estado de autenticación (incluye el rol del usuario)
 
   return (
-    // Contenedor de navegación principal de React Navigation
     <NavigationContainer>
-      {/* Navigator público, recibe el rol para redirigir según el tipo de usuario */}
-      <PublicNavigator role={authState?.role} />
+      {authState.authenticated ? (
+        authState.role === 'admin' ? (
+          <AdminNavigator />
+        ) : (
+          <UserNavigator />
+        )
+      ) : (
+        <PublicNavigator />
+      )}
     </NavigationContainer>
   );
 };
@@ -27,8 +35,9 @@ export default function App() {
     <AuthProvider>
       {/* Proveedor de carrito envuelve la navegación y provee el contexto del carrito */}
       <CartProvider>
-        {/* Componente que maneja la navegación y el acceso al contexto de autenticación */}
-        <AppInner />
+        <PedidosProvider>
+          <AppInner />
+        </PedidosProvider>
       </CartProvider>
     </AuthProvider>
   );

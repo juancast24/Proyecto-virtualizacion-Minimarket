@@ -22,17 +22,7 @@ const AdminDashboard = () => {
 
   const { filteredData } = ProductsAdmin;
 
-  useEffect(() => {
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      () => {
-        navigation.navigate("AdminDashboard"); // Redirige siempre al AdminDashboard
-        return true; // Evita el comportamiento predeterminado
-      }
-    );
 
-    return () => backHandler.remove();
-  }, [navigation]);
 
   const handleCreateProductPress = () => {
     navigation.navigate("CreateProduct"); // Navegar a la pantalla de creación de productos.

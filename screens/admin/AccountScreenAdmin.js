@@ -34,8 +34,8 @@ const AccountScreen = ({ navigation }) => {
   // Función para cerrar sesión y navegar a la pantalla de inicio
   const handleLogout = async () => {
     try {
-      onLogout();
-      navigation.navigate("Home");
+      onLogout(); // Esto actualiza authState.authenticated a false
+      // No haces navegación aquí
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
     }
@@ -67,10 +67,10 @@ const AccountScreen = ({ navigation }) => {
             <Text style={styles.avatarText}>
               {userData.nombre
                 ? userData.nombre
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
-                    .toUpperCase()
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .toUpperCase()
                 : "US"}
             </Text>
           </View>

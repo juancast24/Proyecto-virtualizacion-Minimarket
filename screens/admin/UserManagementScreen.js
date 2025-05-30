@@ -64,7 +64,10 @@ const UserManagementScreen = () => {
 
   // Filtra los usuarios según el texto de búsqueda (por nombre)
   const filteredData = users.filter((item) =>
-    (item.nombre || "").toLowerCase().includes(searchText.toLowerCase())
+    (item.nombre || "").toLowerCase().includes(searchText.toLowerCase()) ||
+    (item.correo || "").toLowerCase().includes(searchText.toLowerCase()) ||
+    (item.telefono || "").toLowerCase().includes(searchText.toLowerCase()) ||
+    (item.rol || "").toLowerCase().includes(searchText.toLowerCase())
   );
 
   // Elimina un usuario de Firestore y del estado local
