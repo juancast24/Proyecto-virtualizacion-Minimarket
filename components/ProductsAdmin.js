@@ -2,24 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Image,
-  Pressable,
-  TextInput,
-  Alert,
-  ActivityIndicator,
-} from "react-native";
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  deleteDoc,
-  doc,
-} from "firebase/firestore";
+import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput, Alert, ActivityIndicator } from "react-native";
+import { getFirestore, collection, getDocs, deleteDoc, doc, onSnapshot, query, where } from "firebase/firestore";
 import { firebaseApp } from "../firebase.config";
 
 // Inicializa la instancia de Firestore
@@ -36,23 +20,22 @@ const ProductsAdmin = () => {
 
   // Obtener productos de Firestore al montar el componente
   useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      try {
-        const querySnapshot = await getDocs(collection(db, "products"));
-        const productsArray = [];
-        querySnapshot.forEach((doc) => {
-          productsArray.push({ id: doc.id, ...doc.data() });
-        });
-        setProducts(productsArray);
-      } catch (error) {
-        console.error("Error al obtener productos:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProducts();
-  }, []);
+  setLoading(true);
+  const unsubscribe = onSnapshot(collection(db, "products"), (querySnapshot) => {
+    const productsArray = [];
+    querySnapshot.forEach((doc) => {
+      productsArray.push({ id: doc.id, ...doc.data() });
+    });
+    setProducts(productsArray);
+    setLoading(false);
+  }, (error) => {
+    console.error("Error al obtener productos:", error);
+    setLoading(false);
+  });
+
+  // Limpia el listener al desmontar
+  return () => unsubscribe();
+}, []);
 
   // Filtrar los productos según el texto de búsqueda
   const filteredData = products.filter((product) => {
