@@ -3,6 +3,7 @@ import SearchAndCategory from '../../components/SearchAndCategory';
 import Layout from '../../components/Layout';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import ProductCard from '../../components/ProductCard';
+import { showMessage } from "react-native-flash-message";
 
 const HomeScreen = () => {
     // Estado para la categoría seleccionada

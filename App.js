@@ -8,6 +8,8 @@ import { PedidosProvider } from './context/PedidosContext';
 import PublicNavigator from './navigation/PublicNavigator';
 import AdminNavigator from './navigation/AdminNavigator';
 import UserNavigator from './navigation/UserNavigator';
+import FlashMessage from "react-native-flash-message";
+
 
 // Componente interno que utiliza el contexto de autenticación
 const AppInner = () => {
@@ -37,6 +39,7 @@ export default function App() {
       <CartProvider>
         <PedidosProvider>
           <AppInner />
+          <FlashMessage position="top" />
         </PedidosProvider>
       </CartProvider>
     </AuthProvider>
