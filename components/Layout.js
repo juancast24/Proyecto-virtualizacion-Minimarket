@@ -134,12 +134,7 @@ const Layout = ({ children }) => {
             icon="log-in-outline"
             label="Iniciar Sesión"
             onPress={() => navigateTo("Login")}
-          />
-          <MenuItem
-            icon="information-circle-outline"
-            label="Acerca de"
-            onPress={() => navigateTo("About")}
-          />
+          /> 
         </>
       );
     } else if (isAdmin) {
@@ -219,7 +214,7 @@ const Layout = ({ children }) => {
   return (
     <View style={styles.container}>
       {/* Barra de estado */}
-      <StatusBar style="dark" />
+      <StatusBar style="dark" hidden={menuVisible} />
       {/* Header con botones de menú y perfil */}
       <Header
         onMenuPress={handleMenuPress}

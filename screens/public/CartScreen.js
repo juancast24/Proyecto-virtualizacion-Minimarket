@@ -4,11 +4,13 @@ import Layout from '../../components/Layout';
 import { useCart } from '../../context/CartContext';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { AuthContext, useAuth } from '../../context/AuthContext';
 
 const CartScreen = () => {
   // Obtiene funciones y datos del contexto del carrito
   const { cartItems, clearCart, updateItemQuantity, removeItemFromCart, calculateCartTotal } = useCart();
   const navigation = useNavigation();
+  const { authState } = useAuth();
   // Calcula el total del carrito
   const totalCartPrice = calculateCartTotal ? calculateCartTotal() : cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
@@ -98,7 +100,7 @@ const CartScreen = () => {
         <View style={styles.emptyCartContainer}>
           <Image source={{ uri: 'https://i.imgur.com/kRhJKyd.png' }} style={styles.emptyCartImage} />
           <Text style={styles.emptyCartText}>Tu carrito está vacío.</Text>
-          <Pressable onPress={() => navigation.navigate('ProductsScreen')} style={styles.shopButton}>
+          <Pressable onPress={() => authState.authenticated ? navigation.navigate('ProductsScreen') : navigation.navigate('Home')} style={styles.shopButton}>
             <Text style={styles.shopButtonText}>Ir a la tienda</Text>
           </Pressable>
         </View>

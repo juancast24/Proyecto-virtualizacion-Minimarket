@@ -54,7 +54,7 @@ const AccountScreen = ({ navigation }) => {
                         </Text>
                     </View>
                     <Text style={styles.title}>{authState.user.nombre || "Usuario"}</Text>
-                    <Text style={styles.subtitle}>{authState.user.rol || "Rol"}</Text>
+                    
                 </View>
 
                 {/* Tarjeta con información personal */}

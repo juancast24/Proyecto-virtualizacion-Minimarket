@@ -36,7 +36,7 @@ const CreateUserScreen = ({ navigation }) => {
       const ok = await onRegister(correo, password, telefono, rol, nombre, "");
       if (ok) {
         Alert.alert("Éxito", "Usuario creado correctamente.");
-        navigation.goBack(); // Vuelve a la pantalla anterior si se crea el usuario
+        navigation.navigate("UserManagement"); // Vuelve a la pantalla anterior si se crea el usuario
       } else {
         Alert.alert("Error", "No se pudo crear el usuario.");
       }
@@ -52,6 +52,7 @@ const CreateUserScreen = ({ navigation }) => {
         {/* Título de la pantalla */}
         <Text style={styles.title}>Crear Usuario</Text>
         {/* Campo para el nombre */}
+        <Text style={styles.label}>Nombre</Text>
         <TextInput
           style={styles.input}
           placeholder="Nombre"
@@ -59,6 +60,7 @@ const CreateUserScreen = ({ navigation }) => {
           onChangeText={setNombre}
         />
         {/* Campo para el correo electrónico */}
+       <Text style={styles.label}>Corrreo electrónico</Text>
         <TextInput
           style={styles.input}
           placeholder="Correo"
@@ -67,6 +69,7 @@ const CreateUserScreen = ({ navigation }) => {
           autoCapitalize="none"
         />
         {/* Campo para la contraseña */}
+        <Text style={styles.label}>Contraseña</Text>
         <TextInput
           style={styles.input}
           placeholder="Contraseña"
@@ -75,6 +78,7 @@ const CreateUserScreen = ({ navigation }) => {
           secureTextEntry
         />
         {/* Campo para el teléfono */}
+        <Text style={styles.label}>Teléfono</Text>
         <TextInput
           style={styles.input}
           placeholder="Teléfono"
@@ -82,6 +86,7 @@ const CreateUserScreen = ({ navigation }) => {
           onChangeText={setTelefono}
         />
         {/* Selector de rol */}
+        <Text style={styles.label}>Rol</Text>
         <Picker
           selectedValue={rol}
           style={styles.picker}
@@ -114,6 +119,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     marginBottom: 12,
+  },
+  label: {
+    fontWeight: "bold",
+    marginBottom: 4,
+    marginLeft: 2,
+    color: "#333",
   },
   picker: {
     borderWidth: 1,
