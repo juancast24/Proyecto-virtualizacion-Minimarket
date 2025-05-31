@@ -1,28 +1,50 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, FlatList, Pressable, Platform, ScrollView } from 'react-native';
-import { useRoute, useNavigation } from '@react-navigation/native';
-import { Picker } from '@react-native-picker/picker';
-import Layout from '../../components/Layout';
-import { Ionicons } from '@expo/vector-icons';
-import { useAuth } from '../../context/AuthContext';
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
-import { firebaseApp } from '../../firebase.config';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  FlatList,
+  Pressable,
+  Platform,
+  ScrollView,
+} from "react-native";
+import { useRoute, useNavigation } from "@react-navigation/native";
+import { Picker } from "@react-native-picker/picker";
+import Layout from "../../components/Layout";
+import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "../../context/AuthContext";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  setDoc,
+  doc,
+  addDoc,
+  updateDoc,
+  getDoc,
+} from "firebase/firestore";
+import { firebaseApp } from "../../firebase.config";
+import { showMessage } from "react-native-flash-message";
+import { useCart } from "../../context/CartContext";
 
 const db = getFirestore(firebaseApp);
 const FormPay = () => {
   const route = useRoute();
+  const navigation = useNavigation();
   // Obtiene los productos del carrito desde los parámetros de navegación
   const { cartItems } = route.params || { cartItems: [] };
+  const { clearCart } = useCart();
   const { authState } = useAuth();
 
   // Estado para el formulario de datos de envío y pago
   const [form, setForm] = useState({
-    nombre: '',
-    telefono: '',
-    correo: '',
-    barrio: '',
-    direccion: '',
-    metodoPago: 'contra_entrega'
+    nombre: "",
+    telefono: "",
+    correo: "",
+    barrio: "",
+    direccion: "",
+    metodoPago: "contra_entrega",
   });
 
   // Maneja los cambios en los campos del formulario
@@ -38,9 +60,13 @@ const FormPay = () => {
         <Text style={styles.itemName}>{item.name}</Text>
         <View style={styles.itemRow}>
           <Text style={styles.itemDetailText}>Cantidad: {item.quantity}</Text>
-          <Text style={styles.itemDetailText}>Precio/u: ${item.price.toLocaleString('es-CL')}</Text>
+          <Text style={styles.itemDetailText}>
+            Precio/u: ${item.price.toLocaleString("es-CL")}
+          </Text>
         </View>
-        <Text style={styles.itemSubtotal}>Subtotal: ${totalItemPrice.toLocaleString('es-CL')}</Text>
+        <Text style={styles.itemSubtotal}>
+          Subtotal: ${totalItemPrice.toLocaleString("es-CL")}
+        </Text>
       </View>
     );
   };
@@ -50,16 +76,68 @@ const FormPay = () => {
     return cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   };
 
-  // Maneja la confirmación del pedido
-  const handleConfirmOrder = () => {
-    // Aquí podrías guardar el pedido en la base de datos
-    console.log('Pedido confirmado con los siguientes datos:', form, 'y productos:', cartItems);
-    alert('¡Pedido confirmado con éxito!');
-  };
+  const handleConfirmOrder = async () => {
+    try {
+      const userData = authState.user
+        ? {
+            uid: authState.user.uid, // Agrega el UID aquí
+            nombre: authState.user.nombre,
+            telefono: authState.user.telefono,
+            correo: authState.user.correo,
+            barrio: form.barrio,
+            direccion: authState.user.direccion || form.direccion,
+            metodoPago: form.metodoPago,
+          }
+        : { ...form };
 
+      const orderData = {
+        usuario: userData,
+        productos: cartItems,
+        total: calcularTotalGeneral(),
+        fecha: new Date().toISOString(),
+      };
+
+      // Siempre usa addDoc para generar un ID único, tanto para usuarios logueados como no logueados
+      await addDoc(collection(db, "pedidos"), orderData);
+
+      // Actualiza el stock de cada producto
+    for (const item of cartItems) {
+      const productRef = doc(db, "products", item.id);
+      const productSnap = await getDoc(productRef);
+      if (productSnap.exists()) {
+        const currentStock = productSnap.data().stock || 0;
+        const newStock = Math.max(currentStock - item.quantity, 0);
+        await updateDoc(productRef, { stock: newStock });
+      }
+    }
+
+      // Limpia el carrito después de confirmar el pedido
+      clearCart();
+
+      showMessage({
+        message: "¡Pedido confirmado y guardado con éxito!",
+        type: "success",
+        duration: 2000,
+        titleStyle: { fontSize: 20, fontWeight: "bold" },
+      });
+
+      navigation.navigate("Home");
+    } catch (error) {
+      console.error("Error al guardar el pedido:", error);
+      showMessage({
+        message: "Hubo un error al guardar el pedido.",
+        type: "danger",
+        duration: 2000,
+        titleStyle: { fontSize: 18, fontWeight: "bold" },
+      });
+    }
+  };
   return (
     <Layout>
-      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Header de la pantalla de pago */}
         <View style={styles.header}>
           <Text style={styles.title}>Resumen del Pedido</Text>
@@ -71,12 +149,16 @@ const FormPay = () => {
           <FlatList
             data={cartItems}
             renderItem={renderItem}
-            keyExtractor={(item, index) => item?.name ? item.name + index : index.toString()}
+            keyExtractor={(item, index) =>
+              item?.name ? item.name + index : index.toString()
+            }
             scrollEnabled={false}
           />
           <View style={styles.totalSummary}>
             <Text style={styles.totalLabel}>Total General:</Text>
-            <Text style={styles.totalAmount}>${calcularTotalGeneral().toLocaleString('es-CL')}</Text>
+            <Text style={styles.totalAmount}>
+              ${calcularTotalGeneral().toLocaleString("es-CL")}
+            </Text>
           </View>
         </View>
         <View style={styles.separator} />
@@ -85,20 +167,25 @@ const FormPay = () => {
         <View style={styles.sectionWrapper}>
           <Text style={styles.sectionTitle}>Datos de Envío</Text>
           <Text style={styles.deliveryInfo}>
-            <Ionicons name="information-circle-outline" size={16} color="#666" /> Solo se realizan envíos a Santander de Quilichao.
+            <Ionicons
+              name="information-circle-outline"
+              size={16}
+              color="#666"
+            />{" "}
+            Solo se realizan envíos a Santander de Quilichao.
           </Text>
           <TextInput
             style={styles.input}
             placeholder="Nombre completo"
             placeholderTextColor="#999"
-            onChangeText={text => handleChange('nombre', text)}
+            onChangeText={(text) => handleChange("nombre", text)}
             value={authState.user ? authState.user.nombre : form.nombre}
           />
           <TextInput
             style={styles.input}
             placeholder="Teléfono"
             placeholderTextColor="#999"
-            onChangeText={text => handleChange('telefono', text)}
+            onChangeText={(text) => handleChange("telefono", text)}
             keyboardType="phone-pad"
             value={authState.user ? authState.user.telefono : form.telefono}
           />
@@ -106,7 +193,7 @@ const FormPay = () => {
             style={styles.input}
             placeholder="Correo electrónico"
             placeholderTextColor="#999"
-            onChangeText={text => handleChange('correo', text)}
+            onChangeText={(text) => handleChange("correo", text)}
             keyboardType="email-address"
             autoCapitalize="none"
             value={authState.user ? authState.user.correo : form.correo}
@@ -115,14 +202,14 @@ const FormPay = () => {
             style={styles.input}
             placeholder="Barrio"
             placeholderTextColor="#999"
-            onChangeText={text => handleChange('barrio', text)}
+            onChangeText={(text) => handleChange("barrio", text)}
             value={form.barrio}
           />
           <TextInput
             style={styles.input}
             placeholder="Dirección (Calle, número de casa/apto)"
             placeholderTextColor="#999"
-            onChangeText={text => handleChange('direccion', text)}
+            onChangeText={(text) => handleChange("direccion", text)}
             value={authState.user ? authState.user.direccion : form.direccion}
           />
         </View>
@@ -135,7 +222,9 @@ const FormPay = () => {
           <View style={styles.pickerWrapper}>
             <Picker
               selectedValue={form.metodoPago}
-              onValueChange={(itemValue) => handleChange('metodoPago', itemValue)}
+              onValueChange={(itemValue) =>
+                handleChange("metodoPago", itemValue)
+              }
               style={styles.picker}
               itemStyle={styles.pickerItem}
             >
@@ -150,7 +239,7 @@ const FormPay = () => {
           onPress={handleConfirmOrder}
           style={({ pressed }) => [
             styles.confirmButton,
-            { backgroundColor: pressed ? '#388E3C' : '#4CAF50' },
+            { backgroundColor: pressed ? "#388E3C" : "#4CAF50" },
           ]}
         >
           <Text style={styles.confirmButtonText}>Confirmar pedido</Text>
@@ -166,8 +255,8 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 20,
   },
   backButton: {
@@ -176,20 +265,20 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 26,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
     flex: 1,
-    textAlign: 'center',
+    textAlign: "center",
     marginRight: 45,
   },
   sectionWrapper: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 12,
     padding: 15,
     marginBottom: 20,
     ...Platform.select({
       ios: {
-        shadowColor: '#000',
+        shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
@@ -201,92 +290,92 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
     marginBottom: 15,
   },
 
   cartItemCard: {
-    backgroundColor: '#F9F9F9',
+    backgroundColor: "#F9F9F9",
     borderRadius: 8,
     padding: 12,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#eee',
+    borderColor: "#eee",
   },
   itemName: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#444',
+    fontWeight: "bold",
+    color: "#444",
     marginBottom: 5,
   },
   itemRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 3,
   },
   itemDetailText: {
     fontSize: 14,
-    color: '#666',
+    color: "#666",
   },
   itemSubtotal: {
     fontSize: 15,
-    fontWeight: '600',
-    color: '#333',
-    textAlign: 'right',
+    fontWeight: "600",
+    color: "#333",
+    textAlign: "right",
     marginTop: 5,
   },
   emptyCartText: {
     fontSize: 16,
-    color: '#999',
-    textAlign: 'center',
+    color: "#999",
+    textAlign: "center",
     paddingVertical: 20,
   },
   totalSummary: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginTop: 15,
     paddingTop: 15,
     borderTopWidth: 1,
-    borderTopColor: '#eee',
+    borderTopColor: "#eee",
   },
   totalLabel: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
   },
   totalAmount: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#4CAF50',
+    fontWeight: "bold",
+    color: "#4CAF50",
   },
 
   separator: {
     height: 2,
-    backgroundColor: '#EEE',
+    backgroundColor: "#EEE",
     marginVertical: 10,
     marginHorizontal: 10,
   },
 
   deliveryInfo: {
     fontSize: 14,
-    color: '#666',
+    color: "#666",
     marginBottom: 15,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
   input: {
     borderWidth: 1,
-    borderColor: '#DDD',
+    borderColor: "#DDD",
     borderRadius: 8,
     padding: 12,
     marginBottom: 15,
     fontSize: 16,
-    color: '#333',
-    backgroundColor: '#FFF',
+    color: "#333",
+    backgroundColor: "#FFF",
     ...Platform.select({
       ios: {
-        shadowColor: '#000',
+        shadowColor: "#000",
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.05,
         shadowRadius: 2,
@@ -298,14 +387,14 @@ const styles = StyleSheet.create({
   },
   pickerWrapper: {
     borderWidth: 1,
-    borderColor: '#DDD',
+    borderColor: "#DDD",
     borderRadius: 8,
     marginBottom: 15,
-    overflow: 'hidden',
-    backgroundColor: '#FFF',
+    overflow: "hidden",
+    backgroundColor: "#FFF",
     ...Platform.select({
       ios: {
-        shadowColor: '#000',
+        shadowColor: "#000",
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.05,
         shadowRadius: 2,
@@ -317,23 +406,23 @@ const styles = StyleSheet.create({
   },
   picker: {
     height: 50,
-    width: '100%',
+    width: "100%",
   },
   pickerItem: {
     fontSize: 16,
-    color: '#333',
+    color: "#333",
   },
 
   confirmButton: {
     paddingVertical: 15,
     borderRadius: 30,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 20,
   },
   confirmButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });
 

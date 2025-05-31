@@ -6,7 +6,7 @@ import {
   FlatList,
   Pressable,
   Modal,
-  TextInput,
+  TextInput, Image
 } from "react-native";
 import Layout from "../../components/Layout";
 import { useAuth } from "../../context/AuthContext";
@@ -44,18 +44,25 @@ const OrdersScreen = () => {
     const fetchOrders = async () => {
       setLoading(true);
       try {
-        // Obtiene todos los documentos de la colección "pedidos"
         const querySnapshot = await getDocs(collection(db, "pedidos"));
         const ordersArray = [];
-        // Recorre cada documento y lo agrega al array de pedidos
         querySnapshot.forEach((doc) => {
-          ordersArray.push({ id: doc.id, ...doc.data() });
+          const data = doc.data();
+          ordersArray.push({
+            id: doc.id,
+            name: data.usuario?.nombre || data.name || "Sin nombre",
+            date: data.fecha || data.date || null,
+            status: data.estado || data.status || "pendiente",
+            address: data.direccion || data.address || "Sin dirección",
+            products: data.productos || data.products || [],
+            total: data.total || 0,
+          });
         });
-        setOrders(ordersArray); // Actualiza el estado con los pedidos obtenidos
+        setOrders(ordersArray);
       } catch (error) {
         console.error("Error al obtener pedidos:", error);
       } finally {
-        setLoading(false); // Oculta el indicador de carga
+        setLoading(false);
       }
     };
     fetchOrders();
@@ -124,8 +131,21 @@ const OrdersScreen = () => {
       <Text style={[styles.cell, styles.nameCell]}>{item.name}</Text>
       <Text style={styles.cell}>
         {item.date && item.date.seconds
-          ? new Date(item.date.seconds * 1000).toLocaleDateString()
-          : item.date || ""}
+          ? (() => {
+              const d = new Date(item.date.seconds * 1000);
+              const day = String(d.getDate()).padStart(2, "0");
+              const month = String(d.getMonth() + 1).padStart(2, "0");
+              const year = d.getFullYear();
+              return `${day}-${month}-${year}`;
+            })()
+          : typeof item.date === "string" &&
+            item.date.match(/^\d{4}-\d{2}-\d{2}/)
+          ? (() => {
+              // Si viene como "yyyy-mm-dd", lo convertimos a "dd-mm-yyyy"
+              const [year, month, day] = item.date.split("T")[0].split("-");
+              return `${day}-${month}-${year}`;
+            })()
+          : ""}
       </Text>
       <View style={styles.statusContainer}>
         <View
@@ -267,12 +287,40 @@ const OrdersScreen = () => {
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>Productos:</Text>
                   <View style={styles.detailProductsList}>
-                    {Array.isArray(selectedOrder.products) && selectedOrder.products.length > 0 ? (
-                      selectedOrder.products.map((prod, idx) => (
-                        <Text key={idx} style={styles.productText}>
-                          • {prod}
-                        </Text>
-                      ))
+                    {Array.isArray(selectedOrder.products) &&
+                    selectedOrder.products.length > 0 ? (
+                      selectedOrder.products.map((prod, idx) =>
+                        typeof prod === "object" && prod !== null ? (
+                          <View
+                            key={idx}
+                            style={{
+                              flexDirection: "row",
+                              alignItems: "center",
+                              marginBottom: 4,
+                            }}
+                          >
+                            {prod.image && (
+                              <Image
+                                source={{ uri: prod.image }}
+                                style={{
+                                  width: 32,
+                                  height: 32,
+                                  borderRadius: 6,
+                                  marginRight: 8,
+                                  backgroundColor: "#eee",
+                                }}
+                              />
+                            )}
+                            <Text style={styles.productText}>
+                              {prod.name} x{prod.quantity}
+                            </Text>
+                          </View>
+                        ) : (
+                          <Text key={idx} style={styles.productText}>
+                            • {prod}
+                          </Text>
+                        )
+                      )
                     ) : (
                       <Text style={styles.productText}>Sin productos</Text>
                     )}
@@ -392,12 +440,12 @@ const styles = StyleSheet.create({
   tableHeader: {
     flexDirection: "row",
     backgroundColor: "#2980b9",
-    padding: 12,
+    padding: 14,
     alignItems: "center",
   },
   headerCell: {
     fontWeight: "bold",
-    fontSize: 11,
+    fontSize: 15, // Más grande
     color: "#fff",
     textAlign: "left",
     flex: 1,
@@ -405,18 +453,21 @@ const styles = StyleSheet.create({
   tableContent: {
     paddingVertical: 5,
   },
-  row: {
-    flexDirection: "row",
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-    alignItems: "center",
-    backgroundColor: "#fff",
-  },
   cell: {
-    fontSize: 6,
+    fontSize: 15,
     color: "#333",
     flex: 1,
+    paddingVertical: 8,
+  },
+  row: {
+    flexDirection: "row",
+    paddingVertical: 14,
+    paddingHorizontal: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e0e0e0",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    minHeight: 54,
   },
   nameCell: {
     flex: 1.5,
@@ -483,7 +534,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#333",
   },
- modalContainer: {
+  modalContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
@@ -528,16 +579,16 @@ const styles = StyleSheet.create({
     flex: 1,
     flexWrap: "wrap",
   },
-  detailProductsList: {
-    flex: 1,
-    flexDirection: "column",
-    gap: 2,
-  },
   productText: {
     fontSize: 15,
     color: "#444",
     marginBottom: 2,
     marginLeft: 2,
+  },
+  detailProductsList: {
+    flex: 1,
+    flexDirection: "column",
+    gap: 2,
   },
   statusBadge: {
     flexDirection: "row",

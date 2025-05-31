@@ -8,6 +8,7 @@ import CartScreen from '../screens/public/CartScreen';
 import ProductDetailsScreen from '../screens/public/ProductDetailsScreen';
 import FormPay from '../screens/public/FormPay';
 import HomeScreen from '../screens/public/HomeScreen';
+import OrderHistory from '../screens/user/OrderHistory';
 
 const Stack = createStackNavigator();
 
@@ -22,6 +23,7 @@ const UserNavigator = () => {
       <Stack.Screen name ="ProductDetails" component={ProductDetailsScreen} />
       <Stack.Screen name="CartScreen" component={CartScreen} />
       <Stack.Screen name="FormPay" component={FormPay} />
+      <Stack.Screen name="OrderHistory" component={OrderHistory} />
     </Stack.Navigator>
   );
 };
