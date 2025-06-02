@@ -1,27 +1,33 @@
-import React, { useState } from 'react';
-import { View, Image, StyleSheet, Text, Pressable } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { View, Image, StyleSheet, Text, Pressable, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { CartContext } from '../../context/CartContext';
 
 const ProductDetails = () => {
   const insets = useSafeAreaInsets();
   const route = useRoute();
   const { product } = route.params;
   const navigation = useNavigation();
+  const { addToCart } = useContext(CartContext);
 
   const handlePressBack = () => {
     navigation.goBack();
   };
 
   const handleCartPress = () => {
-    navigation.navigate('CartScreen');  // ✅ Esto llevará al carrito
+    navigation.navigate('CartScreen');
   };
 
   const [quantity, setQuantity] = useState(1);
 
   const increaseQuantity = () => {
-    setQuantity(prev => prev + 1);
+    if (quantity < product.stock) {
+      setQuantity(prev => prev + 1);
+    } else {
+      alert('No hay más stock disponible.');
+    }
   };
 
   const decreaseQuantity = () => {
@@ -32,49 +38,94 @@ const ProductDetails = () => {
 
   const totalPrice = quantity * product.price;
 
+  const handleAddToCart = () => {
+    addToCart(product, quantity, totalPrice);
+    navigation.navigate('CartScreen');
+  };
+
   return (
     <View style={styles.container}>
-      <View style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
-        <View style={styles.headerProductWrapper}>
-          <View style={styles.header}>
-            <Pressable onPress={handlePressBack} style={styles.backButton}>
-              <Ionicons name="chevron-back-outline" size={24} color="black" />
-            </Pressable>
-            <Pressable onPress={handleCartPress} style={styles.cartButton}>
-              <Ionicons name="cart" size={24} color="black" />
-            </Pressable>
+      <View style={[styles.headerProductWrapper, { paddingTop: insets.top }]}>
+        <View style={styles.header}>
+          <Pressable onPress={handlePressBack} style={styles.headerButton}>
+            <Ionicons name="chevron-back-outline" size={28} color="black" />
+          </Pressable>
+          <Pressable onPress={handleCartPress} style={styles.headerButton}>
+            <Ionicons name="cart-outline" size={28} color="black" />
+          </Pressable>
+        </View>
+
+        <View style={styles.productContainer}>
+          {/* Imagen con lógica de sin stock, en promoción y pocos en stock */}
+          <View style={styles.imageWrapper}>
+            <Image
+              source={{ uri: product.image }}
+              style={[styles.image, product.stock === 0 && styles.imageOutOfStock]}
+            />
+            {product.stock === 0 && (
+              <View style={styles.overlay}>
+                <Text style={styles.outOfStockText}>Sin stock</Text>
+              </View>
+            )}
+            {product.stock < 5 && product.stock > 0 && (
+              <View style={styles.overlay}>
+                <Text style={styles.lowStockText}>¡Ultimas unidades!</Text>
+              </View>
+            )}
           </View>
 
-          <View style={styles.productContainer}>
-            <View>
-              <Image source={{ uri: product.image }} style={styles.image} />
-            </View>
-            <Text style={styles.name}>{product.name}</Text>
+          <Text style={styles.productName}>{product.name}</Text>
 
-            <View style={styles.quantity}>
-              <Pressable onPress={decreaseQuantity} style={styles.minusQuantity}>
-                <Ionicons name="remove-outline" size={24} color="black" />
-              </Pressable>
-              <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{quantity}</Text>
-              <Pressable onPress={increaseQuantity} style={styles.plusQuantity}>
-                <Ionicons name="add-outline" size={24} color="black" />
-              </Pressable>
-            </View>
+          <View style={styles.quantityControl}>
+            <Pressable onPress={decreaseQuantity} style={styles.quantityButton} disabled={product.stock === 0}>
+              <Ionicons name="remove-outline" size={24} color={product.stock === 0 ? '#aaa' : '#333'} />
+            </Pressable>
+            <Text style={styles.quantityText}>{quantity}</Text>
+            <Pressable onPress={increaseQuantity} style={styles.quantityButton} disabled={product.stock === 0}>
+              <Ionicons name="add-outline" size={24} color={product.stock === 0 ? '#aaa' : '#333'} />
+            </Pressable>
           </View>
         </View>
       </View>
 
-      <View style={styles.infoContainer}>
-        <Text style={styles.description}>Descripcion</Text>
-        <Text style={styles.descriptionProduct}>{product.description}</Text>
-      </View>
+      <ScrollView style={styles.infoContainer}>
+        <View style={styles.infoHeader}>
+          <View style={styles.sectionHeader}>
+            <Image source={{ uri: 'https://i.imgur.com/H9LTHyB.png' }} style={styles.imageSectionHeader} />
+            <Text style={styles.sectionContent}>{product.quantity_per_unit} {product.unit}</Text>
+          </View>
+          <View style={styles.sectionHeader}>
+            <Image source={{ uri: 'https://i.imgur.com/PRWE0fh.png' }} style={styles.imageSectionHeader} />
+            <Text style={styles.sectionContent}>Disponible: {product.stock}</Text>
+          </View>
+        </View>
+        <Text style={styles.sectionTitle}>Descripción</Text>
+        <Text style={styles.sectionContent}>{product.description}</Text>
+      </ScrollView>
 
-      <View style={styles.addToCart}>
-        <Text style={styles.price}>${totalPrice}</Text>
-        <Pressable style={styles.buttonAddToCart}>
-          <Text style={{ fontSize: 20, fontWeight: '900', color: 'white' }}>
-            Agregar al carrito
-          </Text>
+      <View style={[styles.sectionBottom, { paddingBottom: insets.bottom }]}>
+        <Text style={styles.totalPriceText}>${totalPrice.toLocaleString('es-CL')}</Text>
+        <Pressable
+          onPress={handleAddToCart}
+          style={({ pressed }) => [
+            styles.addToCartButton,
+            {
+              backgroundColor:
+                product.stock === 0 ? '#ccc' : pressed ? '#2563EB' : '#4A90E2',
+              flexDirection: 'row',
+              gap: 6,
+            },
+          ]}
+          disabled={product.stock === 0}
+        >
+          {product.stock === 0 ? (
+            <>
+              <Ionicons name="sad-outline" size={20} color="white" />
+              <Text style={styles.addToCartButtonText}>Sin stock</Text>
+            </>
+          ) : (
+            <Text style={styles.addToCartButtonText}>Agregar al carrito</Text>
+          )}
         </Pressable>
       </View>
     </View>
@@ -84,102 +135,147 @@ const ProductDetails = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'grey',
+    backgroundColor: '#F6FDFF',
   },
   headerProductWrapper: {
-    backgroundColor: '#fff',
-    borderBottomLeftRadius: 70,
-    borderBottomRightRadius: 70,
+    backgroundColor: 'white',
+    borderBottomLeftRadius: 60,
+    borderBottomRightRadius: 60,
+    elevation: 12,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 20,
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
+    paddingBottom: 5,
   },
-  backButton: {
+  headerButton: {
     padding: 10,
-    borderRadius: 10,
-    backgroundColor: '#E0E7FF',
-  },
-  cartButton: {
-    padding: 10,
-    borderRadius: 10,
-    backgroundColor: '#E0E7FF',
+    borderRadius: 50,
   },
   productContainer: {
-    paddingTop: 5,
     alignItems: 'center',
-    paddingBottom: 60,
+    paddingBottom: 70,
+  },
+  imageWrapper: {
+    position: 'relative',
+    width: 250,
+    height: 250,
+    marginBottom: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   image: {
-    marginBottom: 10,
-    width: 220,
-    height: 220,
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
   },
-  name: {
-    fontSize: 30,
-    fontWeight: '900',
+  imageOutOfStock: {
+    opacity: 0.3,
   },
-  quantity: {
+  overlay: {
     position: 'absolute',
-    bottom: -18,
+    bottom: 0,
+    backgroundColor: "rgba(255, 255, 255, 0.7)",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 10,
+  },
+  outOfStockText: {
+    color: 'red',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  lowStockText: {
+    color: '#FFA51F',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  productName: {
+    fontSize: 34,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    paddingHorizontal: 20,
+  },
+  quantityControl: {
+    position: 'absolute',
+    bottom: -20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 30,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    elevation: 10,
+  },
+  quantityButton: {
+    padding: 8,
+    marginHorizontal: 10,
+  },
+  quantityText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+    minWidth: 30,
+    textAlign: 'center',
+  },
+  infoHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+  },
+  imageSectionHeader: {
+    width: 55,
+    height: 45,
+  },
+  sectionHeader: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  infoContainer: {
+    flex: 1,
+    paddingHorizontal: 25,
+    paddingTop: 35,
+  },
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    marginTop: 15,
+  },
+  sectionContent: {
+    fontSize: 16,
+    color: '#555',
+    marginBottom: 10,
+  },
+  sectionBottom: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderColor: 'black',
-    borderRadius: 15,
     backgroundColor: 'white',
+    paddingHorizontal: 25,
+    paddingVertical: 10,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    elevation: 15,
   },
-  plusQuantity: {
-    padding: 10,
-    marginLeft: 10,
-    backgroundColor: '#E0E7FF',
-    borderRadius: 15,
-  },
-  minusQuantity: {
-    padding: 10,
-    marginRight: 10,
-    backgroundColor: '#E0E7FF',
-    borderRadius: 15,
-  },
-  infoContainer: {
-    marginTop: 30,
-    paddingTop: 20,
-    paddingHorizontal: 20,
-  },
-  description: {
-    paddingBottom: 10,
-    fontSize: 28,
+  totalPriceText: {
+    fontSize: 32,
     fontWeight: 'bold',
-  },
-  descriptionProduct: {
-    fontSize: 16,
-  },
-  addToCart: {
-    position: 'absolute',
-    bottom: 30,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  price: {
-    flex: 1,
-    fontSize: 30,
-    fontWeight: '900',
     color: '#4A90E2',
+    maxWidth: '50%',
   },
-  buttonAddToCart: {
-    backgroundColor: '#4A90E2',
-    paddingTop: 10,
-    paddingHorizontal: 30,
-    paddingBottom: 10,
-    borderRadius: 10,
+  addToCartButton: {
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 30,
     alignItems: 'center',
-    marginLeft: 'auto',
+    justifyContent: 'center',
+  },
+  addToCartButtonText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
   },
 });
 

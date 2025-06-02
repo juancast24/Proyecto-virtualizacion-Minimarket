@@ -1,70 +1,239 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  Button,
-  StyleSheet,
-  Alert,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, TextInput, StyleSheet, Alert, Image, Pressable } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 
 const LoginScreen = () => {
-  const [username, setUsername] = useState('');
+  // Estado para alternar entre login y registro
+  const [isLogin, setIsLogin] = useState(true);
+  // Estados para los campos del formulario
+  const [email, setemail] = useState('');
   const [password, setPassword] = useState('');
-  const { onLogin } = useAuth();
-  const navigation = useNavigation();
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [phone, setPhone] = useState('');
+  const [name, setName] = useState('');
+  const [address, setAddress] = useState('');
+  const [barrio, setBarrio] = useState('');
 
+  // Obtiene funciones de autenticación del contexto
+  const { onLogin, onRegister } = useAuth();
+
+  // Maneja el inicio de sesión
   const handleLogin = async () => {
-    console.log('▶ handleLogin fired', { username, password });
-    const user = await onLogin(username.trim(), password);
-    if (!user || !password) {
-      return Alert.alert('Error', 'Usuario o contraseña incorrectos');
+    if (email.trim() === '' || password.trim() === '') {
+      return Alert.alert('Error', 'Hay campos sin rellenar');
     }
 
-    if (user.role === 'admin') {
-      navigation.navigate('AdminDashboard');
-    } else {
-      navigation.navigate('UserDashboard');
+    const user = await onLogin(email.trim(), password);
+    if (!user) {
+      return Alert.alert('Error', 'Email o contraseña incorrectos');
     }
   };
+
+  // Maneja el registro de usuario
+  const handleRegister = async () => {
+    if (!name || !phone || !address || !email || !password || !confirmPassword) {
+      return Alert.alert('Error', 'Todos los campos son obligatorios');
+    }
+
+    if (password !== confirmPassword) {
+      return Alert.alert('Error', 'Las contraseñas no coinciden');
+    }
+
+    const success = await onRegister(
+      email.trim(),
+      password,
+      phone.trim(),
+      'user',
+      name.trim(),
+      address.trim(),
+      barrio.trim()
+    );
+
+    if (success) {
+      // Limpia los campos y cambia a modo login
+      setIsLogin(true);
+      setemail('');
+      setPassword('');
+      setConfirmPassword('');
+      setPhone('');
+      setName('');
+      setAddress('');
+      setBarrio('');
+    } else {
+      Alert.alert('Error', 'No se pudo crear la cuenta');
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+    <View style={styles.bg}>
+      <View style={styles.container}>
+        {/* Logo y título */}
+        <Image source={require('../../assets/logo-market.png')} style={styles.logo} />
+        <Text style={styles.title}>{isLogin ? 'Bienvenido' : 'Crea tu cuenta'}</Text>
 
-      {/* Inputs */}
-      <TextInput
-        placeholder="Usuario"
-        autoCapitalize="none"
-        value={username}
-        onChangeText={setUsername}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Contraseña"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-        style={styles.input}
-      />
+        {/* Botones para alternar entre login y registro */}
+        <View style={styles.toggleContainer}>
+          <Pressable
+            style={[styles.toggleButton, isLogin && styles.activeToggle]}
+            onPress={() => setIsLogin(true)}
+          >
+            <Text style={[styles.toggleText, isLogin && styles.activeText]}>Iniciar Sesión</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.toggleButton, !isLogin && styles.activeToggle]}
+            onPress={() => setIsLogin(false)}
+          >
+            <Text style={[styles.toggleText, !isLogin && styles.activeText]}>Registrarse</Text>
+          </Pressable>
+        </View>
 
-      {/* Botón real de Login */}
-      <Button title="Iniciar Sesión" onPress={handleLogin} />
-       <View style={styles.space} />
-      <Button title="Registrarse" onPress={() => navigation.navigate('RegisterScreen')}/>
+        {/* Formulario de login o registro */}
+        <View style={styles.form}>
+          {/* Campos adicionales solo para registro */}
+          {!isLogin && (
+            <>
+              <TextInput
+                placeholder="Nombre completo"
+                value={name}
+                onChangeText={setName}
+                style={styles.input}
+              />
+              <TextInput
+                placeholder="Teléfono"
+                keyboardType="phone-pad"
+                value={phone}
+                onChangeText={setPhone}
+                style={styles.input}
+              />
+              <TextInput
+                placeholder="Dirección"
+                value={address}
+                onChangeText={setAddress}
+                style={styles.input}
+              />
+              <TextInput
+                placeholder="Barrio"
+                value={barrio}
+                onChangeText={setBarrio}
+                style={styles.input}
+              />
+            </>
+          )}
 
-      
+          {/* Campo de email */}
+          <TextInput
+            placeholder="Email"
+            autoCapitalize="none"
+            value={email}
+            onChangeText={setemail}
+            style={styles.input}
+          />
+          {/* Campo de contraseña */}
+          <TextInput
+            placeholder="Contraseña"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+            style={styles.input}
+          />
+          {/* Confirmar contraseña solo en registro */}
+          {!isLogin && (
+            <TextInput
+              placeholder="Confirmar Contraseña"
+              secureTextEntry
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              style={styles.input}
+            />
+          )}
+
+          {/* Botón principal para login o registro */}
+          <Pressable style={styles.mainButton} onPress={isLogin ? handleLogin : handleRegister}>
+            <Text style={styles.mainButtonText}>{isLogin ? 'Entrar' : 'Crear cuenta'}</Text>
+          </Pressable>
+        </View>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 20 },
-  title: { fontSize: 24, marginBottom: 20, textAlign: 'center' },
-  input: { borderWidth: 1, marginBottom: 15, padding: 10, borderRadius: 5 },
-  space: {
-    marginBottom: 20, // Ajusta el espacio entre los botones
+  bg: {
+    flex: 1,
+    backgroundColor: '#F6FDFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  container: {
+    width: '85%',
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 25,
+    alignItems: 'center',
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+  },
+  logo: {
+    width: 130,
+    height: 130,
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: '900',
+    color: '#4A90E2',
+    marginBottom: 20,
+  },
+  toggleContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
+    borderRadius: 20,
+    overflow: 'hidden',
+    backgroundColor: '#e0e0e0',
+  },
+  toggleButton: {
+    flex: 1,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  toggleText: {
+    color: '#666',
+    fontWeight: '600',
+  },
+  activeToggle: {
+    backgroundColor: '#4A90E2',
+  },
+  activeText: {
+    color: '#fff',
+    textAlign: 'center',
+  },
+  form: {
+    width: '100%',
+  },
+  input: {
+    backgroundColor: '#F2F4F7',
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    fontSize: 16,
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    color: '#333',
+  },
+  mainButton: {
+    backgroundColor: '#4A90E2',
+    paddingVertical: 14,
+    marginTop: 10,
+    marginHorizontal: 30,
+    borderRadius: 30,
+    alignItems: 'center',
+  },
+  mainButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 
