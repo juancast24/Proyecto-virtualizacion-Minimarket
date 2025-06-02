@@ -2,8 +2,29 @@ import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
-import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput, Alert, ActivityIndicator } from "react-native";
-import { getFirestore, collection, getDocs, deleteDoc, doc, onSnapshot, query, where } from "firebase/firestore";
+import { AntDesign } from "@expo/vector-icons";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Image,
+  Pressable,
+  TextInput,
+  Alert,
+  ActivityIndicator,
+  Modal,
+} from "react-native";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  query,
+  where,
+} from "firebase/firestore";
 import { firebaseApp } from "../firebase.config";
 
 // Inicializa la instancia de Firestore
@@ -14,28 +35,58 @@ const ProductsAdmin = () => {
   const navigation = useNavigation(); // Hook para navegación entre pantallas
   const [searchText, setSearchText] = useState(""); // Estado para el texto de búsqueda
   const [currentPage, setCurrentPage] = useState(1); // Página actual para la paginación
-  const [itemsPerPage, setItemsPerPage] = useState(3); // Cantidad de productos por página
+  const [itemsPerPage, setItemsPerPage] = useState(4); // Cantidad de productos por página
   const [products, setProducts] = useState([]); // Lista de productos obtenidos de Firestore
   const [loading, setLoading] = useState(true); // Estado de carga
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   // Obtener productos de Firestore al montar el componente
   useEffect(() => {
-  setLoading(true);
-  const unsubscribe = onSnapshot(collection(db, "products"), (querySnapshot) => {
-    const productsArray = [];
-    querySnapshot.forEach((doc) => {
-      productsArray.push({ id: doc.id, ...doc.data() });
-    });
-    setProducts(productsArray);
-    setLoading(false);
-  }, (error) => {
-    console.error("Error al obtener productos:", error);
-    setLoading(false);
-  });
+    setLoading(true);
+    const unsubscribe = onSnapshot(
+      collection(db, "products"),
+      (querySnapshot) => {
+        const productsArray = [];
+        querySnapshot.forEach((doc) => {
+          productsArray.push({ id: doc.id, ...doc.data() });
+        });
+        setProducts(productsArray);
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Error al obtener productos:", error);
+        setLoading(false);
+      }
+    );
 
-  // Limpia el listener al desmontar
-  return () => unsubscribe();
-}, []);
+    // Limpia el listener al desmontar
+    return () => unsubscribe();
+  }, []);
+
+  const handleViewProduct = (product) => {
+    setSelectedProduct(product);
+    setModalVisible(true);
+  };
+
+  // Cerrar modal
+  const handleCloseModal = () => {
+    setModalVisible(false);
+    setSelectedProduct(null);
+  };
+
+  // Botón editar desde modal
+  const handleEditFromModal = () => {
+    setModalVisible(false);
+    navigation.navigate("EditProductScreen", {
+      productId: selectedProduct.id,
+    });
+  };
+  // Botón eliminar desde modal
+  const handleDeleteFromModal = () => {
+    setModalVisible(false);
+    handleDelete(selectedProduct.id, selectedProduct.name);
+  };
 
   // Filtrar los productos según el texto de búsqueda
   const filteredData = products.filter((product) => {
@@ -93,11 +144,6 @@ const ProductsAdmin = () => {
     );
   };
 
-  // Navegar a la pantalla de edición de producto
-  const handleEdit = (productId) => {
-    navigation.navigate("EditProductScreen", { productId });
-  };
-
   // Cambiar de página en la paginación
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
@@ -108,23 +154,6 @@ const ProductsAdmin = () => {
   return (
     <View style={styles.container}>
       {/* Barra de búsqueda */}
-      <View style={styles.searchContainer}>
-        <View style={styles.search}>
-          <Ionicons
-            name="search"
-            size={24}
-            color="gray"
-            style={styles.searchIcon}
-          />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Buscar por nombre del producto"
-            value={searchText}
-            onChangeText={(text) => setSearchText(text)}
-          />
-        </View>
-      </View>
-      {/* Indicador de carga mientras se obtienen los productos */}
       {loading ? (
         <ActivityIndicator
           size="large"
@@ -139,12 +168,6 @@ const ProductsAdmin = () => {
               <Text style={[styles.columna, styles.columnaHeader]}>
                 Producto
               </Text>
-              <Text style={[styles.columna, styles.columnaHeader]}>
-                Categoria
-              </Text>
-              <Text style={[styles.columna, styles.columnaHeader]}>
-                Descripción
-              </Text>
               <Text style={[styles.columna, styles.columnaHeader]}>Precio</Text>
               <Text style={[styles.columna, styles.columnaHeader]}>Stock</Text>
               <Text style={[styles.columna, styles.columnaHeader]}>Imagen</Text>
@@ -154,33 +177,33 @@ const ProductsAdmin = () => {
             </View>
 
             {/* Filas de productos paginados */}
-            {getCurrentItems().map((item, index) => (
+            {getCurrentItems().map((item) => (
               <View key={item.id} style={styles.fila}>
                 <Text style={styles.columna}>{item.name}</Text>
-                <Text style={styles.columna}>{item.category}</Text>
-                <Text style={styles.columna}>{item.description}</Text>
-                <Text style={styles.columna}>{item.price}</Text>
+                <Text style={styles.columna}>
+                  {`$${Number(item.price).toLocaleString("es-CL", {
+                    minimumFractionDigits: 0,
+                  })}`}
+                </Text>
                 <Text style={styles.columna}>{item.stock}</Text>
                 <View style={styles.columna}>
                   <Image
                     source={{ uri: item.image }}
-                    style={{ width: 50, height: 50 }}
+                    style={{ width: 50, height: 50, borderRadius: 6 }}
                   />
                 </View>
-                <View style={styles.columna}>
-                  {/* Botón para editar producto */}
+                <View
+                  style={[
+                    styles.columna,
+                    { flexDirection: "row", justifyContent: "center" },
+                  ]}
+                >
+                  {/* Botón Ver */}
                   <Pressable
-                    onPress={() =>
-                      navigation.navigate("EditProductScreen", {
-                        productId: item.id,
-                      })
-                    }
+                    style={styles.actionButton}
+                    onPress={() => handleViewProduct(item)}
                   >
-                    <Feather name="edit" size={24} color="#2980b9" />
-                  </Pressable>
-                  {/* Botón para eliminar producto */}
-                  <Pressable onPress={() => handleDelete(item.id, item.name)}>
-                    <Ionicons name="trash-outline" size={24} color="#e74c3c" />
+                    <Feather name="search" size={22} color="#fff" />
                   </Pressable>
                 </View>
               </View>
@@ -189,15 +212,131 @@ const ProductsAdmin = () => {
         </ScrollView>
       )}
 
+      {/* Modal de información del producto */}
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={handleCloseModal}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            {/* Botón cerrar (equis) */}
+            <Pressable style={styles.closeButton} onPress={handleCloseModal}>
+              <AntDesign name="close" size={26} color="#333" />
+            </Pressable>
+            <Text style={styles.modalTitle}>Información del Producto</Text>
+            {selectedProduct && (
+              <View style={styles.modalFields}>
+                <View style={styles.modalField}>
+                  <Text style={styles.modalLabel}>Nombre:</Text>
+                  <TextInput
+                    style={styles.modalInput}
+                    value={selectedProduct.name}
+                    editable={false}
+                  />
+                </View>
+                <View style={styles.modalField}>
+                  <Text style={styles.modalLabel}>Categoría:</Text>
+                  <TextInput
+                    style={styles.modalInput}
+                    value={selectedProduct.category}
+                    editable={false}
+                  />
+                </View>
+                <View style={styles.modalField}>
+                  <Text style={styles.modalLabel}>Descripción:</Text>
+                  <TextInput
+                    style={[styles.modalInput, { height: 60 }]}
+                    value={selectedProduct.description}
+                    editable={false}
+                    multiline
+                  />
+                </View>
+                <View style={{ flexDirection: "row", gap: 10 }}>
+                  <View style={[styles.modalField, { flex: 1 }]}>
+                    <Text style={styles.modalLabel}>Unidad:</Text>
+                    <TextInput
+                      style={styles.modalInput}
+                      value={
+                        selectedProduct.unit ? String(selectedProduct.unit) : ""
+                      }
+                      editable={false}
+                    />
+                  </View>
+                  <View style={[styles.modalField, { flex: 1 }]}>
+                    <Text style={styles.modalLabel}>Cantidad por unidad:</Text>
+                    <TextInput
+                      style={styles.modalInput}
+                      value={
+                        selectedProduct.quantity_per_unit
+                          ? String(selectedProduct.quantity_per_unit)
+                          : ""
+                      }
+                      editable={false}
+                    />
+                  </View>
+                </View>
+                <View style={styles.modalField}>
+                  <Text style={styles.modalLabel}>Precio:</Text>
+                  <TextInput
+                    style={styles.modalInput}
+                    value={`$${Number(selectedProduct.price).toLocaleString(
+                      "es-CL",
+                      { minimumFractionDigits: 0 }
+                    )}`}
+                    editable={false}
+                  />
+                </View>
+                <View style={styles.modalField}>
+                  <Text style={styles.modalLabel}>Stock:</Text>
+                  <TextInput
+                    style={styles.modalInput}
+                    value={String(selectedProduct.stock)}
+                    editable={false}
+                  />
+                </View>
+                <View style={styles.modalField}>
+                  <Text style={styles.modalLabel}>Imagen:</Text>
+                  <Image
+                    source={{ uri: selectedProduct.image }}
+                    style={{
+                      width: 100,
+                      height: 100,
+                      borderRadius: 8,
+                      alignSelf: "center",
+                    }}
+                  />
+                </View>
+              </View>
+            )}
+            <View style={styles.modalButtons}>
+              <Pressable
+                style={styles.editButton}
+                onPress={handleEditFromModal}
+              >
+                <Text style={styles.editButtonText}>Editar</Text>
+              </Pressable>
+              <Pressable
+                style={styles.deleteButton}
+                onPress={handleDeleteFromModal}
+              >
+                <Text style={styles.deleteButtonText}>Eliminar</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       {/* Controles de paginación */}
       <View style={styles.paginationContainer}>
         <View style={styles.paginationInfo}>
           <Text>
             {filteredData.length > 0
               ? `Mostrando ${(currentPage - 1) * itemsPerPage + 1}-${Math.min(
-                currentPage * itemsPerPage,
-                filteredData.length
-              )} de ${filteredData.length} productos`
+                  currentPage * itemsPerPage,
+                  filteredData.length
+                )} de ${filteredData.length} productos`
               : "No hay productos que coincidan con la búsqueda"}
           </Text>
         </View>
@@ -226,8 +365,9 @@ const ProductsAdmin = () => {
           </Pressable>
 
           {/* Información de la página actual */}
-          <Text style={styles.pageInfo}>{`${currentPage} de ${totalPages || 1
-            }`}</Text>
+          <Text style={styles.pageInfo}>{`${currentPage} de ${
+            totalPages || 1
+          }`}</Text>
 
           {/* Botón para ir a la página siguiente */}
           <Pressable
@@ -236,7 +376,7 @@ const ProductsAdmin = () => {
             style={[
               styles.paginationButton,
               (currentPage === totalPages || totalPages === 0) &&
-              styles.disabledButton,
+                styles.disabledButton,
             ]}
           >
             <Text style={styles.paginationText}>{">"}</Text>
@@ -248,7 +388,7 @@ const ProductsAdmin = () => {
             style={[
               styles.paginationButton,
               (currentPage === totalPages || totalPages === 0) &&
-              styles.disabledButton,
+                styles.disabledButton,
             ]}
           >
             <Text style={styles.paginationText}>{">>"}</Text>
@@ -287,34 +427,49 @@ const styles = StyleSheet.create({
   tabla: {
     borderColor: "transparent",
   },
+  tabla: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 5,
+    elevation: 3,
+    marginVertical: 10,
+  },
   fila: {
     flexDirection: "row",
-    padding: 10,
-    borderColor: "trnsparent",
-    borderRadius: 8,
-    textAlign: "center",
     alignItems: "center",
+    paddingVertical: 14,
+    paddingHorizontal: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e0e0e0",
     backgroundColor: "#fff",
+    minHeight: 54,
   },
   encabezado: {
-    backgroundColor: "white",
-    borderBottomWidth: 2,
-    borderTopWidth: 2,
-    borderTopColor: "#2980b9",
-    borderBottomColor: "#2980b9",
+    flexDirection: "row",
+    backgroundColor: "#2980b9",
+    paddingVertical: 14,
+    paddingHorizontal: 8,
+    alignItems: "center",
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
   columna: {
     flex: 1,
-    fontSize: 10,
+    fontSize: 15,
+    color: "#333",
     textAlign: "center",
-    alignItems: "center",
-    borderColor: "transparent",
-    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 4,
   },
   columnaHeader: {
     fontWeight: "bold",
-    fontSize: 7,
-    color: "#2980b9",
+    fontSize: 15,
+    color: "#fff",
+    textAlign: "center",
   },
   paginationContainer: {
     padding: 10,
@@ -372,6 +527,99 @@ const styles = StyleSheet.create({
   },
   selectedItemsText: {
     color: "white",
+  },
+  actionButton: {
+    backgroundColor: "#2980b9",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 5,
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 2,
+  },
+  actionButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 13,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.25)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 14,
+    padding: 24,
+    width: "90%",
+    elevation: 8,
+    position: "relative",
+  },
+  closeButton: {
+    position: "absolute",
+    top: 12,
+    right: 12,
+    zIndex: 10,
+    padding: 4,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 18,
+    textAlign: "center",
+    color: "#2980b9",
+  },
+  modalFields: {
+    marginBottom: 18,
+  },
+  modalField: {
+    marginBottom: 12,
+  },
+  modalLabel: {
+    fontWeight: "bold",
+    marginBottom: 3,
+    color: "#333",
+  },
+  modalInput: {
+    backgroundColor: "#f2f2f2",
+    borderRadius: 6,
+    padding: 8,
+    fontSize: 15,
+    color: "#333",
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+  },
+  editButton: {
+    backgroundColor: "#2980b9",
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    borderRadius: 6,
+    alignItems: "center",
+    flex: 1,
+    marginRight: 8,
+  },
+  editButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  deleteButton: {
+    backgroundColor: "#e74c3c",
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    borderRadius: 6,
+    alignItems: "center",
+    flex: 1,
+    marginLeft: 8,
+  },
+  deleteButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });
 

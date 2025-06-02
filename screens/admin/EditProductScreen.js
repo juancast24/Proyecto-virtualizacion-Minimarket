@@ -1,8 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Pressable, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  StyleSheet,
+  Alert,
+  ScrollView,
+} from "react-native";
 import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 import { firebaseApp } from "../../firebase.config";
 import Layout from "../../components/Layout";
+import { Picker } from "@react-native-picker/picker";
 
 // Inicializa la instancia de Firestore
 const db = getFirestore(firebaseApp);
@@ -53,7 +62,7 @@ const EditProductScreen = ({ route, navigation }) => {
         category,
         price: parseFloat(price), // Convierte el precio a número
         stock: parseInt(stock, 10), // Convierte el stock a número entero
-        quantity_per_unit: quantityPerUnit,
+        quantity_per_unit: parseInt(quantityPerUnit, 10),
         unit,
         image,
       });
@@ -69,67 +78,249 @@ const EditProductScreen = ({ route, navigation }) => {
 
   return (
     <Layout>
-      <View style={styles.container}>
-        {/* Título de la pantalla */}
-        <Text style={styles.title}>Editar Producto</Text>
-        {/* Campo para el nombre */}
-        <TextInput style={styles.input} placeholder="Nombre" value={name} onChangeText={setName} />
-        {/* Campo para la descripción */}
-        <TextInput style={styles.input} placeholder="Descripción" value={description} onChangeText={setDescription} />
-        {/* Campo para la categoría */}
-        <TextInput style={styles.input} placeholder="Categoría" value={category} onChangeText={setCategory} />
-        {/* Campo para el precio */}
-        <TextInput style={styles.input} placeholder="Precio" value={price} onChangeText={setPrice} keyboardType="numeric" />
-        {/* Campo para el stock */}
-        <TextInput style={styles.input} placeholder="Stock" value={stock} onChangeText={setStock} keyboardType="numeric" />
-        {/* Campo para la cantidad por unidad */}
-        <TextInput style={styles.input} placeholder="Cantidad por unidad" value={quantityPerUnit} onChangeText={setQuantityPerUnit} keyboardType="numeric" />
-        {/* Campo para la unidad de medida */}
-        <TextInput style={styles.input} placeholder="Unidad" value={unit} onChangeText={setUnit} />
-        {/* Campo para la URL de la imagen */}
-        <TextInput style={styles.input} placeholder="URL Imagen" value={image} onChangeText={setImage} />
-        {/* Botón para actualizar el producto */}
-        <Pressable style={styles.button} onPress={handleUpdate}>
-          <Text style={styles.buttonText}>Actualizar</Text>
-        </Pressable>
-      </View>
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.container}>
+          <Text style={styles.title}>Editar Producto</Text>
+
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Nombre</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Nombre"
+              value={name}
+              onChangeText={setName}
+            />
+          </View>
+
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Descripción</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Descripción"
+              value={description}
+              onChangeText={setDescription}
+              multiline
+              numberOfLines={4}
+            />
+          </View>
+
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Categoría</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Categoría"
+              value={category}
+              onChangeText={setCategory}
+            />
+          </View>
+
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Precio</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Precio"
+              value={price}
+              onChangeText={setPrice}
+              keyboardType="numeric"
+            />
+          </View>
+
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Stock</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Stock"
+              value={stock}
+              onChangeText={setStock}
+              keyboardType="numeric"
+            />
+          </View>
+
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Cantidad por unidad</Text>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <TextInput
+                style={[
+                  styles.input,
+                  { width: 200, textAlign: "center", marginHorizontal: 8 },
+                ]}
+                value={quantityPerUnit}
+                onChangeText={(text) => {
+                  // Solo permitir números
+                  if (/^\d*$/.test(text)) setQuantityPerUnit(text);
+                }}
+                keyboardType="numeric"
+                maxLength={3}
+              />
+              <Pressable
+                style={styles.counterButton}
+                onPress={() => {
+                  const value = parseInt(quantityPerUnit) || 0;
+                  setQuantityPerUnit(String(value + 1));
+                }}
+              >
+                <Text style={styles.counterButtonText}>+</Text>
+              </Pressable>
+              <Pressable
+                style={styles.counterButton}
+                onPress={() => {
+                  const value = parseInt(quantityPerUnit) || 0;
+                  if (value > 1) setQuantityPerUnit(String(value - 1));
+                }}
+              >
+                <Text style={styles.counterButtonText}>-</Text>
+              </Pressable>
+            </View>
+          </View>
+
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Unidad</Text>
+            <Picker
+              selectedValue={unit}
+              style={styles.Picker}
+              onValueChange={(itemValue) => setUnit(itemValue)}
+            >
+              <Picker.Item label="Selecciona unidad de medida" value="" />
+              <Picker.Item label="unidad" value="unidad" />
+              <Picker.Item label="unidades" value="unidades" />
+              <Picker.Item label="Kg" value="kg" />
+              <Picker.Item label="Ml" value="ml" />
+              <Picker.Item label="Lb" value="lb" />
+              <Picker.Item label="g" value="g" />
+              <Picker.Item label="L" value="l" />
+            </Picker>
+          </View>
+
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>URL Imagen</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="URL Imagen"
+              value={image}
+              onChangeText={setImage}
+            />
+          </View>
+
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              marginTop: 10,
+              marginBottom: 30,
+            }}
+          >
+            <Pressable
+              style={[
+                styles.button,
+                { marginBottom: 0, marginRight: 10, width: 140 },
+              ]}
+              onPress={handleUpdate}
+            >
+              <Text style={styles.buttonText}>Actualizar</Text>
+            </Pressable>
+            <Pressable
+              style={[
+                styles.button,
+                {
+                  backgroundColor: "#e74c3c",
+                  marginBottom: 0,
+                  marginLeft: 10,
+                  width: 140,
+                },
+              ]}
+              onPress={() => navigation.navigate("AdminDashboard")}
+            >
+              <Text style={styles.buttonText}>Cancelar</Text>
+            </Pressable>
+          </View>
+        </View>
+      </ScrollView>
     </Layout>
   );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 20,
-        backgroundColor: '#fff',
-    },
-    label: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 5,
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 5,
-        padding: 10,
-        marginBottom: 15,
-    },
-    button: {
-        backgroundColor: '#2980b9',
-        padding: 10,
-        borderRadius: 5,
-        marginTop: 10,
-        width: '50%',
-        alignSelf: 'center',
-        justifyContent: 'center',
-        alignItems: 'center',
-      },
-      buttonText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
-      },
+  container: {
+    flex: 1,
+    padding: 24,
+    backgroundColor: "#F6FDFF",
+  },
+  counterButton: {
+    backgroundColor: "#dfe6e9",
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+    borderRadius: 6,
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 4,
+  },
+  counterButtonText: {
+    fontSize: 30,
+    fontWeight: "bold",
+    color: "#2980b9",
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: "center",
+  },
+  Picker: {
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#b2bec3",
+    borderRadius: 8,
+    marginTop: 2,
+    marginBottom: 2,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#2980b9",
+    marginBottom: 24,
+    alignSelf: "center",
+  },
+  formGroup: {
+    marginBottom: 18,
+  },
+  label: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#34495e",
+    marginBottom: 6,
+    marginLeft: 2,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#b2bec3",
+    borderRadius: 8,
+    padding: 12,
+    backgroundColor: "#fff",
+    fontSize: 15,
+  },
+  button: {
+    backgroundColor: "#2980b9",
+    padding: 14,
+    borderRadius: 8,
+    marginTop: 5,
+    marginBottom: 30,
+    width: "60%",
+    alignSelf: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#2980b9",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 17,
+    fontWeight: "bold",
+    letterSpacing: 1,
+  },
 });
 
 export default EditProductScreen;
