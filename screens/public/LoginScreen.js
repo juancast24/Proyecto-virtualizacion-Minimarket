@@ -12,6 +12,7 @@ const LoginScreen = () => {
   const [phone, setPhone] = useState('');
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
+  const [barrio, setBarrio] = useState('');
 
   // Obtiene funciones de autenticación del contexto
   const { onLogin, onRegister } = useAuth();
@@ -44,7 +45,8 @@ const LoginScreen = () => {
       phone.trim(),
       'user',
       name.trim(),
-      address.trim()
+      address.trim(),
+      barrio.trim()
     );
 
     if (success) {
@@ -56,6 +58,7 @@ const LoginScreen = () => {
       setPhone('');
       setName('');
       setAddress('');
+      setBarrio('');
     } else {
       Alert.alert('Error', 'No se pudo crear la cuenta');
     }
@@ -106,6 +109,12 @@ const LoginScreen = () => {
                 placeholder="Dirección"
                 value={address}
                 onChangeText={setAddress}
+                style={styles.input}
+              />
+              <TextInput
+                placeholder="Barrio"
+                value={barrio}
+                onChangeText={setBarrio}
                 style={styles.input}
               />
             </>

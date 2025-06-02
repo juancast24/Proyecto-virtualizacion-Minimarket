@@ -17,6 +17,7 @@
     "@mui/material": "^7.1.0",
     "@mui/styled-engine-sc": "^7.1.0",
     "@react-native-async-storage/async-storage": "^2.1.2",
+    "@react-native-community/checkbox": "^0.5.20",
     "@react-native-picker/picker": "^2.11.0",
     "@react-navigation/bottom-tabs": "^7.3.12",
     "@react-navigation/drawer": "^7.3.12",
