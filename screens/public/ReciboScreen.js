@@ -17,6 +17,8 @@ import { useNavigation } from "@react-navigation/native";
 const db = getFirestore(firebaseApp);
 
 const generarHTMLRecibo = (pedido, pedidoId) => {
+  const impuesto = pedido?.total ? pedido.total * 0.19 : 0;
+  const subtotal = pedido?.total ? pedido.total - impuesto : 0;
   const productosHtml = Array.isArray(pedido.productos)
     ? pedido.productos
         .map(
@@ -132,6 +134,8 @@ const generarHTMLRecibo = (pedido, pedidoId) => {
             </tbody>
           </table>
           <div class="separator"></div>
+          <div class="total">SUBTOTAL: $${subtotal.toLocaleString("es-CL")}</div>
+          <div class="total">IVA (19%): $${impuesto.toLocaleString("es-CL")}</div>
           <div class="total">TOTAL: $${pedido.total?.toLocaleString("es-CL") || "0"}</div>
           <div class="info"><b>Estado:</b> ${pedido.estado || ""}</div>
           <div class="footer">¡Gracias por su compra!</div>
@@ -167,14 +171,14 @@ const ReciboScreen = () => {
   }, [pedidoId]);
 
   const handleDescargarPDF = async () => {
-  if (!pedido) return;
-  const html = generarHTMLRecibo(pedido, pedidoId);
-  const { uri } = await Print.printToFileAsync({
-  html,
-  pageSize: { width: 80, height: 200, unit: "mm" },
-});
-  await Sharing.shareAsync(uri);
-};
+    if (!pedido) return;
+    const html = generarHTMLRecibo(pedido, pedidoId);
+    const { uri } = await Print.printToFileAsync({
+      html,
+      pageSize: { width: 80, height: 200, unit: "mm" },
+    });
+    await Sharing.shareAsync(uri);
+  };
 
   if (loading) {
     return (
@@ -193,80 +197,97 @@ const ReciboScreen = () => {
     );
   }
 
+  // Calcular impuestos y subtotal
+  const impuesto = pedido?.total ? pedido.total * 0.19 : 0;
+  const subtotal = pedido?.total ? pedido.total - impuesto : 0;
+
   return (
-   
-      <ScrollView contentContainerStyle={styles.container}>
-        <View style={{ borderRadius: 30, backgroundColor: "#fff", elevation: 8, shadowColor: "#0288D1", shadowOpacity: 0.1, shadowRadius: 30, marginBottom: 20, marginHorizontal: 10 }}>
-  <View style={styles.unic}>
-      <Text style={styles.title}>Recibo de compra</Text>
-      <Text style={styles.label}>Codigo del Recibo: <Text style={styles.value}>{pedidoId}</Text></Text>
-      <Text style={styles.label}>
-        Cliente:{" "}
-        <Text style={styles.value}>{pedido.usuario?.nombre || ""}</Text>
-      </Text>
-      <Text style={styles.label}>
-        Teléfono:{" "}
-        <Text style={styles.value}>{pedido.usuario?.telefono || ""}</Text>
-      </Text>
-      <Text style={styles.label}>
-        Correo: <Text style={styles.value}>{pedido.usuario?.correo || ""}</Text>
-      </Text>
-      <Text style={styles.label}>
-        Barrio: <Text style={styles.value}>{pedido.usuario?.barrio || ""}</Text>
-      </Text>
-      <Text style={styles.label}>
-        Dirección:{" "}
-        <Text style={styles.value}>{pedido.usuario?.direccion || ""}</Text>
-      </Text>
-      <Text style={styles.label}>
-        Método de pago:{" "}
-        <Text style={styles.value}>{pedido.usuario?.metodoPago || ""}</Text>
-      </Text>
-      <Text style={styles.label}>
-        Fecha:{" "}
-        <Text style={styles.value}>
-          {pedido.fecha ? new Date(pedido.fecha).toLocaleString() : ""}
-        </Text>
-      </Text>
-      <Text style={[styles.label, { marginTop: 16 }]}>Productos:</Text>
-      <View style={styles.tableHeader}>
-        <Text style={[styles.tableCell, styles.headerCell]}>Producto</Text>
-        <Text style={[styles.tableCell, styles.headerCell]}>Cantidad</Text>
-        <Text style={[styles.tableCell, styles.headerCell]}>Precio/u</Text>
-        <Text style={[styles.tableCell, styles.headerCell]}>Subtotal</Text>
-      </View>
-      {Array.isArray(pedido.productos) &&
-        pedido.productos.map((item, idx) => (
-          <View key={idx} style={styles.tableRow}>
-            <Text style={styles.tableCell}>{item.name}</Text>
-            <Text style={styles.tableCell}>{item.quantity}</Text>
-            <Text style={styles.tableCell}>
-              ${item.price.toLocaleString("es-CL")}
-            </Text>
-            <Text style={styles.tableCell}>
-              ${(item.price * item.quantity).toLocaleString("es-CL")}
-            </Text>
-          </View>
-        ))}
-      <Text style={styles.total}>
-        Total: ${pedido.total?.toLocaleString("es-CL") || "0"}
-      </Text>
-      <Text style={styles.label}>
-        Estado: <Text style={styles.value}>{pedido.estado || ""}</Text>
-      </Text>
-      <Pressable style={styles.button} onPress={handleDescargarPDF}>
-        <Text style={styles.buttonText}>Descargar PDF</Text>
-      </Pressable>
-      <Pressable
-        style={[styles.button, { backgroundColor: "#1976D2", marginTop: 12 }]}
-        onPress={() => navigation.navigate("Home")}
+    <ScrollView contentContainerStyle={styles.container}>
+      <View
+        style={{
+          borderRadius: 30,
+          backgroundColor: "#fff",
+          elevation: 8,
+          shadowColor: "#0288D1",
+          shadowOpacity: 0.1,
+          shadowRadius: 30,
+          marginBottom: 20,
+          marginHorizontal: 10,
+        }}
       >
-        <Text style={styles.buttonText}>Volver a inicio</Text>
-      </Pressable>
+        <View style={styles.unic}>
+          <Text style={styles.title}>Recibo de compra</Text>
+          <Text style={styles.label}>
+            Codigo del Recibo: <Text style={styles.value}>{pedidoId}</Text>
+          </Text>
+          <Text style={styles.label}>
+            Cliente: <Text style={styles.value}>{pedido.usuario?.nombre || ""}</Text>
+          </Text>
+          <Text style={styles.label}>
+            Teléfono: <Text style={styles.value}>{pedido.usuario?.telefono || ""}</Text>
+          </Text>
+          <Text style={styles.label}>
+            Correo: <Text style={styles.value}>{pedido.usuario?.correo || ""}</Text>
+          </Text>
+          <Text style={styles.label}>
+            Barrio: <Text style={styles.value}>{pedido.usuario?.barrio || ""}</Text>
+          </Text>
+          <Text style={styles.label}>
+            Dirección: <Text style={styles.value}>{pedido.usuario?.direccion || ""}</Text>
+          </Text>
+          <Text style={styles.label}>
+            Método de pago: <Text style={styles.value}>{pedido.usuario?.metodoPago || ""}</Text>
+          </Text>
+          <Text style={styles.label}>
+            Fecha:{" "}
+            <Text style={styles.value}>
+              {pedido.fecha ? new Date(pedido.fecha).toLocaleString() : ""}
+            </Text>
+          </Text>
+          <Text style={[styles.label, { marginTop: 16 }]}>Productos:</Text>
+          <View style={styles.tableHeader}>
+            <Text style={[styles.tableCell, styles.headerCell]}>Producto</Text>
+            <Text style={[styles.tableCell, styles.headerCell]}>Cantidad</Text>
+            <Text style={[styles.tableCell, styles.headerCell]}>Precio/u</Text>
+            <Text style={[styles.tableCell, styles.headerCell]}>Subtotal</Text>
+          </View>
+          {Array.isArray(pedido.productos) &&
+            pedido.productos.map((item, idx) => (
+              <View key={idx} style={styles.tableRow}>
+                <Text style={styles.tableCell}>{item.name}</Text>
+                <Text style={styles.tableCell}>{item.quantity}</Text>
+                <Text style={styles.tableCell}>
+                  ${item.price.toLocaleString("es-CL")}
+                </Text>
+                <Text style={styles.tableCell}>
+                  ${(item.price * item.quantity).toLocaleString("es-CL")}
+                </Text>
+              </View>
+            ))}
+          <Text style={styles.total}>
+            Subtotal: ${subtotal.toLocaleString("es-CL")}
+          </Text>
+          <Text style={styles.total}>
+            IVA (19%): ${impuesto.toLocaleString("es-CL")}
+          </Text>
+          <Text style={styles.total}>
+            Total: ${pedido.total?.toLocaleString("es-CL") || "0"}
+          </Text>
+          <Text style={styles.label}>
+            Estado: <Text style={styles.value}>{pedido.estado || ""}</Text>
+          </Text>
+          <Pressable style={styles.button} onPress={handleDescargarPDF}>
+            <Text style={styles.buttonText}>Descargar PDF</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.button, { backgroundColor: "#1976D2", marginTop: 12 }]}
+            onPress={() => navigation.navigate("Home")}
+          >
+            <Text style={styles.buttonText}>Volver al inicio</Text>
+          </Pressable>
+        </View>
       </View>
-    </View>
     </ScrollView>
-    
   );
 };
 
@@ -344,6 +365,3 @@ const styles = StyleSheet.create({
 });
 
 export default ReciboScreen;
-
-
-

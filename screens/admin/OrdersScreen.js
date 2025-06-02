@@ -8,6 +8,8 @@ import {
   Modal,
   TextInput,
   Image,
+  Linking,
+  Alert,
 } from "react-native";
 import Layout from "../../components/Layout";
 import { useAuth } from "../../context/AuthContext";
@@ -67,6 +69,19 @@ const OrdersScreen = () => {
             address: data.direccion || data.address || "Sin dirección",
             products: data.productos || data.products || [],
             total: data.total || 0,
+            products: data.productos || data.products || [],
+            total: data.total || 0,
+            // Asegura que el teléfono sea string y sin espacios
+            telefono: (
+              data.telefono ||
+              data.phone ||
+              (data.usuario && data.usuario.telefono) ||
+              (Array.isArray(data.productos) && data.productos[0]?.telefono) ||
+              (Array.isArray(data.products) && data.products[0]?.telefono) ||
+              ""
+            )
+              .toString()
+              .replace(/\s+/g, ""),
           });
         });
         setOrders(ordersArray);
@@ -78,6 +93,30 @@ const OrdersScreen = () => {
     };
     fetchOrders();
   }, []);
+
+  const sendWhatsAppNotification = (order, newStatus) => {
+    // Intenta obtener el teléfono del pedido
+    const phone =
+      order.telefono ||
+      order.phone ||
+      (order.usuario && order.usuario.telefono) ||
+      (order.products && order.products[0] && order.products[0].telefono);
+
+    if (!phone) {
+      Alert.alert("Error", "No se encontró el número de teléfono del cliente.");
+      return;
+    }
+
+    const message = `Hola ${order.name}, tu pedido (${order.id}) ha cambiado de estado a: ${newStatus}. ¡Gracias por tu compra!`;
+    const url = `https://wa.me/${phone.replace(
+      /[^0-9]/g,
+      ""
+    )}?text=${encodeURIComponent(message)}`;
+
+    Linking.openURL(url).catch(() =>
+      Alert.alert("Error", "No se pudo abrir WhatsApp.")
+    );
+  };
 
   // Función para actualizar el estado en Firestore
   const updateOrderStatus = async () => {
@@ -97,6 +136,8 @@ const OrdersScreen = () => {
       );
       setSelectedOrder((prev) => ({ ...prev, status: newStatus }));
       setEditingStatus(false);
+      // Notifica por WhatsApp
+      sendWhatsAppNotification(selectedOrder, newStatus);
     } catch (error) {
       console.error("Error al actualizar el estado:", error);
     }
