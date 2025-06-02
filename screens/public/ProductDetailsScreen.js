@@ -63,13 +63,13 @@ const ProductDetails = () => {
               style={[styles.image, product.stock === 0 && styles.imageOutOfStock]}
             />
             {product.stock === 0 && (
-              <View style={styles.outOfStockOverlay}>
+              <View style={styles.overlay}>
                 <Text style={styles.outOfStockText}>Sin stock</Text>
               </View>
             )}
             {product.stock < 5 && product.stock > 0 && (
-              <View style={styles.lowStockOverlay}>
-                <Text style={styles.lowStockText}>¡Quedan pocos!</Text>
+              <View style={styles.overlay}>
+                <Text style={styles.lowStockText}>¡Ultimas unidades!</Text>
               </View>
             )}
           </View>
@@ -174,29 +174,21 @@ const styles = StyleSheet.create({
   imageOutOfStock: {
     opacity: 0.3,
   },
-  outOfStockOverlay: {
+  overlay: {
     position: 'absolute',
-    top: 10,
-    backgroundColor: 'red',
+    bottom: 0,
+    backgroundColor: "rgba(255, 255, 255, 0.7)",
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 10,
   },
   outOfStockText: {
-    color: 'white',
+    color: 'red',
     fontWeight: 'bold',
     fontSize: 16,
   },
-  lowStockOverlay: {
-    position: 'absolute',
-    bottom: 10,
-    backgroundColor: 'orange',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 10,
-  },
   lowStockText: {
-    color: 'white',
+    color: '#FFA51F',
     fontWeight: 'bold',
     fontSize: 16,
   },
