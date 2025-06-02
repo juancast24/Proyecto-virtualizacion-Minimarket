@@ -95,6 +95,7 @@ const FormPay = () => {
         productos: cartItems,
         total: calcularTotalGeneral(),
         fecha: new Date().toISOString(),
+        estado:"Pendiente"
       };
 
       // Siempre usa addDoc para generar un ID único, tanto para usuarios logueados como no logueados
@@ -251,7 +252,7 @@ const FormPay = () => {
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 16,
+    marginHorizontal: 10,
     paddingBottom: 20,
   },
   header: {
@@ -269,7 +270,6 @@ const styles = StyleSheet.create({
     color: "#333",
     flex: 1,
     textAlign: "center",
-    marginRight: 45,
   },
   sectionWrapper: {
     backgroundColor: "white",
@@ -289,10 +289,11 @@ const styles = StyleSheet.create({
     }),
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
-    color: "#333",
+    color: "#555",
     marginBottom: 15,
+
   },
 
   cartItemCard: {
@@ -341,12 +342,12 @@ const styles = StyleSheet.create({
     borderTopColor: "#eee",
   },
   totalLabel: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
     color: "#333",
   },
   totalAmount: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: "bold",
     color: "#4CAF50",
   },

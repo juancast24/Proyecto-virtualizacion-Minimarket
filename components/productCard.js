@@ -36,6 +36,7 @@ export default function ProductCard({ selectedCategory, searchQuery }) {
       duration: 1500,
       titleStyle: { fontSize: 20, fontWeight: "bold" },
       style: {
+      marginTop: 20,
       paddingVertical: 24,
       paddingHorizontal: 32,
       minWidth: 350,

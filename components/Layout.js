@@ -214,7 +214,7 @@ const Layout = ({ children }) => {
   return (
     <View style={styles.container}>
       {/* Barra de estado */}
-      <StatusBar style="dark" hidden={menuVisible} />
+      <StatusBar style="dark"/>
       {/* Header con botones de menú y perfil */}
       <Header
         onMenuPress={handleMenuPress}

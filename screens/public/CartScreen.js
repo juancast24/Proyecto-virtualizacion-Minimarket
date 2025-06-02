@@ -100,7 +100,8 @@ const CartScreen = () => {
         <View style={styles.emptyCartContainer}>
           <Image source={{ uri: 'https://i.imgur.com/kRhJKyd.png' }} style={styles.emptyCartImage} />
           <Text style={styles.emptyCartText}>Tu carrito está vacío.</Text>
-          <Pressable onPress={() => authState.authenticated ? navigation.navigate('ProductsScreen') : navigation.navigate('Home')} style={styles.shopButton}>
+          <Pressable onPress={() => authState.authenticated ? navigation.navigate('ProductsScreen') : navigation.navigate('Home')} 
+          style={({pressed})=>[styles.shopButton,{backgroundColor: pressed ? "#2563EB" : "#4A90E2" }]}>
             <Text style={styles.shopButtonText}>Ir a la tienda</Text>
           </Pressable>
         </View>
@@ -143,14 +144,14 @@ const CartScreen = () => {
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: 'bold',
     textAlign: 'center',
     color: '#222',
   },
   list: {
     paddingBottom: 20,
-    paddingHorizontal: 16,
+    paddingHorizontal: 10,
   },
   cartItem: {
     flexDirection: 'row',
@@ -247,7 +248,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   shopButton: {
-    backgroundColor: '#4A90E2',
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 30,

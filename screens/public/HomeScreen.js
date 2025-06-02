@@ -52,8 +52,8 @@ const styles = StyleSheet.create({
     },
     containerTitle: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
+        justifyContent: 'space-between',
     },
     logo: {
         width: 120,
@@ -61,58 +61,7 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 45,
-        paddingBottom: 20,
         fontWeight: '900',
-    },
-    searchContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#fff',
-        borderRadius: 10,
-        paddingHorizontal: 10,
-        paddingVertical: 6,
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowOffset: { width: 0, height: 2 },
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    searchIcon: {
-        marginRight: 8,
-    },
-    searchInput: {
-        fontSize: 16,
-        color: '#000',
-    },
-    categoryList: {
-        marginTop: 15,
-        marginBottom: 15,
-    },
-    categoryButton: {
-        borderRadius: 20,
-        marginRight: 10,
-        padding: 8,
-    },
-    imageContainer: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 5,
-    },
-    categoryImage: {
-        width: 40,
-        height: 40,
-    },
-    categoryText: {
-        fontSize: 15,
-        fontWeight: '600',
-        color: '#374151',
-    },
-    selectedCategoryButton: {
-        backgroundColor: '#4A90E2',
-    },
-
-    selectedCategoryText: {
-        color: '#fff',
     },
 });
 
