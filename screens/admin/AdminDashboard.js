@@ -7,9 +7,8 @@ import {
   TextInput,  
 } from "react-native";
 import { useAuth } from "../../context/AuthContext";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import ProductsAdmin from "../../components/ProductsAdmin";
-import Header from "../../components/Header";
 import Layout from "../../components/Layout";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -94,6 +93,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#000",
   },
+  
 });
 
 export default AdminDashboard;
