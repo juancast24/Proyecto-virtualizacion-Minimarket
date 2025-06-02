@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, Image, Pressable, Platform, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Layout from '../../components/Layout';
 import { useCart } from '../../context/CartContext';
 import { useNavigation } from '@react-navigation/native';
@@ -25,17 +26,23 @@ const CartScreen = () => {
 
     const totalPriceForItem = item.price * item.quantity;
 
+    // Navega al detalle del producto
+    const handlePressItem = () => {
+      navigation.navigate('ProductDetails', { product: item });
+    };
+
     return (
-      <View style={styles.cartItem}>
-        <Image source={{ uri: item.image }} style={styles.image} />
-        {/* Centro: Información del Producto */}
-        <View style={styles.itemInfoContainer}>
-          <Text style={styles.itemName} numberOfLines={2} ellipsizeMode="tail">{item.name}</Text>
-          <Text style={styles.itemPriceUnit}>Precio: ${item.price?.toLocaleString('es-CL') || 'N/A'}</Text>
-          <Text style={styles.itemTotalPrice}>Subtotal: ${totalPriceForItem?.toLocaleString('es-CL') || 'N/A'}</Text>
-        </View>
-        {/* Derecha: Controles de cantidad y eliminar */}
-        <View style={styles.itemDetails}>
+      <Pressable onPress={handlePressItem} style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}>
+        <View style={styles.cartItem}>
+          <Image source={{ uri: item.image }} style={styles.image} />
+          {/* Centro: Información del Producto */}
+          <View style={styles.itemInfoContainer}>
+            <Text style={styles.itemName} numberOfLines={2} ellipsizeMode="tail">{item.name}</Text>
+            <Text style={styles.itemPriceUnit}>Precio: ${item.price?.toLocaleString('es-CL') || 'N/A'}</Text>
+            <Text style={styles.itemTotalPrice}>Subtotal: ${totalPriceForItem?.toLocaleString('es-CL') || 'N/A'}</Text>
+          </View>
+          {/* Derecha: Controles de cantidad y eliminar */}
+          <View style={styles.itemDetails}>
             <View style={styles.quantityButtons}>
               {/* Botón para disminuir cantidad */}
               <Pressable
@@ -74,6 +81,7 @@ const CartScreen = () => {
           </Pressable>
         </View>
       </View>
+    </Pressable>
     );
   };
 
@@ -84,59 +92,61 @@ const CartScreen = () => {
 
   return (
     <Layout>
-      <Text style={styles.title}>Mi Carrito</Text>
+      <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom', 'left', 'right']}>
+        <Text style={styles.title}>Mi Carrito</Text>
 
-      {/* Si hay productos en el carrito, muestra la lista */}
-      {cartItems.length > 0 ? (
-        <FlatList
-          data={cartItems}
-          renderItem={renderItem}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={(item, index) => item?.name ? item.name + index : index.toString()}
-          contentContainerStyle={styles.list}
-        />
-      ) : (
-        // Si el carrito está vacío, muestra mensaje e imagen
-        <View style={styles.emptyCartContainer}>
-          <Image source={{ uri: 'https://i.imgur.com/kRhJKyd.png' }} style={styles.emptyCartImage} />
-          <Text style={styles.emptyCartText}>Tu carrito está vacío.</Text>
-          <Pressable onPress={() => authState.authenticated ? navigation.navigate('ProductsScreen') : navigation.navigate('Home')} style={styles.shopButton}>
-            <Text style={styles.shopButtonText}>Ir a la tienda</Text>
-          </Pressable>
-        </View>
-      )}
-
-      {/* Si hay productos, muestra el resumen y botones de acción */}
-      {cartItems.length > 0 && (
-        <View style={styles.containerBottom}>
-          <View style={styles.summaryContainer}>
-            <Text style={styles.summaryText}>Total:</Text>
-            <Text style={styles.summaryPrice}>${totalCartPrice.toLocaleString('es-CL')}</Text>
-          </View>
-          <View style={styles.buttonGroup}>
-            {/* Botón para limpiar el carrito */}
-            <Pressable
-              onPress={clearCart}
-              style={({ pressed }) => [
-                styles.clearCartButton,
-                { backgroundColor: pressed ? '#C62828' : '#EF5350' }
-              ]}
-            >
-              <Text style={styles.buttonText}>Limpiar carrito</Text>
-            </Pressable>
-            {/* Botón para finalizar compra */}
-            <Pressable
-              onPress={handleCheckout}
-              style={({ pressed }) => [
-                styles.checkoutButton,
-                { backgroundColor: pressed ? '#388E3C' : '#4CAF50' }
-              ]}
-            >
-              <Text style={styles.buttonText}>Finalizar compra</Text>
+        {/* Si hay productos en el carrito, muestra la lista */}
+        {cartItems.length > 0 ? (
+          <FlatList
+            data={cartItems}
+            renderItem={renderItem}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(item, index) => item?.name ? item.name + index : index.toString()}
+            contentContainerStyle={styles.list}
+          />
+        ) : (
+          // Si el carrito está vacío, muestra mensaje e imagen
+          <View style={styles.emptyCartContainer}>
+            <Image source={{ uri: 'https://i.imgur.com/kRhJKyd.png' }} style={styles.emptyCartImage} />
+            <Text style={styles.emptyCartText}>Tu carrito está vacío.</Text>
+            <Pressable onPress={() => authState.authenticated ? navigation.navigate('ProductsScreen') : navigation.navigate('Home')} style={styles.shopButton}>
+              <Text style={styles.shopButtonText}>Ir a la tienda</Text>
             </Pressable>
           </View>
-        </View>
-      )}
+        )}
+
+        {/* Si hay productos, muestra el resumen y botones de acción */}
+        {cartItems.length > 0 && (
+          <View style={styles.containerBottom}>
+            <View style={styles.summaryContainer}>
+              <Text style={styles.summaryText}>Total:</Text>
+              <Text style={styles.summaryPrice}>${totalCartPrice.toLocaleString('es-CL')}</Text>
+            </View>
+            <View style={styles.buttonGroup}>
+              {/* Botón para limpiar el carrito */}
+              <Pressable
+                onPress={clearCart}
+                style={({ pressed }) => [
+                  styles.clearCartButton,
+                  { backgroundColor: pressed ? '#C62828' : '#EF5350' }
+                ]}
+              >
+                <Text style={styles.buttonText}>Limpiar carrito</Text>
+              </Pressable>
+              {/* Botón para finalizar compra */}
+              <Pressable
+                onPress={handleCheckout}
+                style={({ pressed }) => [
+                  styles.checkoutButton,
+                  { backgroundColor: pressed ? '#388E3C' : '#4CAF50' }
+                ]}
+              >
+                <Text style={styles.buttonText}>Finalizar compra</Text>
+              </Pressable>
+            </View>
+          </View>
+        )}
+      </SafeAreaView>
     </Layout>
   );
 };
@@ -264,11 +274,6 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 10,
   },
   summaryContainer: {
     flexDirection: 'row',

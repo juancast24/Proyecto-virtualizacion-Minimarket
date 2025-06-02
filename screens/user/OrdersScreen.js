@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { View, Text, StyleSheet, Button, FlatList } from 'react-native';
-import Layout from '../../components/Layout';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import BottomBarLayout from '../../components/BottomBarLayout';
 import { CartContext } from '../../context/CartContext';
 
 // Lista de pedidos de ejemplo (mock)
@@ -43,21 +44,23 @@ const OrdersScreen = ({ navigation }) => {
     );
 
     return (
-        <Layout>
-            <Text style={styles.title}>Mis Pedidos</Text>
+        <BottomBarLayout>
+            <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom', 'left', 'right']}>
+                <Text style={styles.title}>Mis Pedidos</Text>
 
-            {/* Lista de pedidos o mensaje si no hay pedidos */}
-            {orders.length > 0 ? (
-                <FlatList
-                    data={orders}
-                    renderItem={renderItem}
-                    keyExtractor={item => item.id}
-                    contentContainerStyle={styles.list}
-                />
-            ) : (
-                <Text style={styles.emptyText}>Aún no tienes pedidos.</Text>
-            )}
-        </Layout>
+                {/* Lista de pedidos o mensaje si no hay pedidos */}
+                {orders.length > 0 ? (
+                    <FlatList
+                        data={orders}
+                        renderItem={renderItem}
+                        keyExtractor={item => item.id}
+                        contentContainerStyle={styles.list}
+                    />
+                ) : (
+                    <Text style={styles.emptyText}>Aún no tienes pedidos.</Text>
+                )}
+            </SafeAreaView>
+        </BottomBarLayout>
     );
 };
 

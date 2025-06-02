@@ -3,6 +3,7 @@ import 'react-native-gesture-handler';
 import { useAuth } from './context/AuthContext';
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthProvider } from './context/AuthContext';
+
 import { CartProvider } from './context/CartContext';
 import { PedidosProvider } from './context/PedidosContext';
 import PublicNavigator from './navigation/PublicNavigator';

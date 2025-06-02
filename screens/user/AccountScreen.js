@@ -5,6 +5,7 @@ import { MaterialIcons, Feather } from "@expo/vector-icons";
 import { useAuth } from '../../context/AuthContext';
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { firebaseApp } from "../../firebase.config";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Inicializa la instancia de Firestore
 const db = getFirestore(firebaseApp);
@@ -12,6 +13,8 @@ const db = getFirestore(firebaseApp);
 const AccountScreen = ({ navigation }) => {
     // Obtiene el estado de autenticación y la función de logout
     const { authState, onLogout } = useAuth();
+    const insets = useSafeAreaInsets();
+
     // Maneja el cierre de sesión
     const handleLogout = () => {
         onLogout();
@@ -122,7 +125,13 @@ const AccountScreen = ({ navigation }) => {
                 </View>
 
                 {/* Botón para cerrar sesión */}
-                <Pressable style={styles.logoutButton} onPress={handleLogout}>
+                <Pressable
+                    style={[
+                        styles.logoutButton,
+                        { marginBottom: Math.max(insets.bottom, 25) + 12 } // 12 extra para separación visual
+                    ]}
+                    onPress={handleLogout}
+                >
                     <MaterialIcons
                         name="logout"
                         size={20}

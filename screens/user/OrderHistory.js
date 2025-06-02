@@ -5,9 +5,9 @@ import {
   FlatList,
   ActivityIndicator,
   StyleSheet,
-  SafeAreaView,
   Image,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   getFirestore,
   collection,
@@ -17,6 +17,7 @@ import {
 } from "firebase/firestore";
 import { firebaseApp } from "../../firebase.config";
 import { useAuth } from "../../context/AuthContext";
+import BottomBarLayout from "../../components/BottomBarLayout";
 
 const db = getFirestore(firebaseApp);
 
@@ -47,56 +48,65 @@ const OrderHistory = () => {
 
   if (loading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#4CAF50" />
-      </View>
+      <BottomBarLayout>
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color="#4CAF50" />
+        </View>
+      </BottomBarLayout>
     );
   }
 
   if (orders.length === 0) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.emptyText}>No tienes pedidos aún.</Text>
-      </View>
+      <BottomBarLayout>
+        <View style={styles.centered}>
+          <Text style={styles.emptyText}>No tienes pedidos aún.</Text>
+        </View>
+      </BottomBarLayout>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Mis Pedidos</Text>
-      </View>
-      <FlatList
-        data={orders}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.orderCard}>
-            <Text style={styles.orderProductsTitle}>Productos:</Text>
-            {item.productos.map((prod, idx) => (
-              <View key={idx} style={styles.productRow}>
-                {prod.image && (
-                  <Image
-                    source={{ uri: prod.image }}
-                    style={styles.productImage}
-                  />
-                )}
-                <Text style={styles.productItem}>
-                  {prod.name} x{prod.quantity}
-                </Text>
-              </View>
-            ))}
-            <Text style={styles.orderDate}>
-              Fecha: {new Date(item.fecha).toLocaleString()}
-            </Text>
-            <Text style={styles.orderTotal}>
-              Total: ${item.total.toLocaleString("es-CL")}
-            </Text>
-          </View>
-        )}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-      />
-    </SafeAreaView>
+    <BottomBarLayout>
+      <SafeAreaView
+        style={styles.safeArea}
+        edges={["top", "bottom", "left", "right"]}
+      >
+        <View style={styles.header}>
+          <Text style={styles.title}>Mis Pedidos</Text>
+        </View>
+        <FlatList
+          data={orders}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={styles.orderCard}>
+              <Text style={styles.orderProductsTitle}>Productos:</Text>
+              {item.productos.map((prod, idx) => (
+                <View key={idx} style={styles.productRow}>
+                  {prod.image && (
+                    <Image
+                      source={{ uri: prod.image }}
+                      style={styles.productImage}
+                    />
+                  )}
+                  <Text style={styles.productItem}>
+                    {prod.name} x{prod.quantity}
+                  </Text>
+                </View>
+              ))}
+              <Text style={styles.orderDate}>
+                Fecha: {new Date(item.fecha).toLocaleString()}
+              </Text>
+              <Text style={styles.orderTotal}>
+                Total: ${item.total.toLocaleString("es-CL")}
+              </Text>
+            </View>
+          )}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+        />
+      </SafeAreaView>
+    </BottomBarLayout>
   );
 };
 

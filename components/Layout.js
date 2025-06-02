@@ -211,47 +211,49 @@ const Layout = ({ children }) => {
     }
   };
 
+  const isAdmin =
+    userRole &&
+    (userRole === "admin" ||
+      userRole.toLowerCase() === "admin" ||
+      userRole === "ADMIN");
+
   return (
     <View style={styles.container}>
       {/* Barra de estado */}
-      <StatusBar style="dark" hidden={menuVisible} />
-      {/* Header con botones de menú y perfil */}
-      <Header
-        onMenuPress={handleMenuPress}
-        onProfilePress={handleProfilePress}
-      />
+      <StatusBar style="dark" hidden={menuVisible && isAdmin} />
+
+      {/* Header solo para admin */}
+      {isAdmin && (
+        <Header
+          onMenuPress={handleMenuPress}
+          onProfilePress={handleProfilePress}
+        />
+      )}
+
       {/* Contenido principal de la pantalla */}
       <View style={styles.content}>{children}</View>
 
       {/* Overlay para cerrar el menú al tocar fuera */}
-      {menuVisible && (
+      {menuVisible && isAdmin && (
         <TouchableWithoutFeedback onPress={closeMenu}>
           <View style={styles.overlay} />
         </TouchableWithoutFeedback>
       )}
 
       {/* Menú lateral animado */}
-      {menuVisible && (
+      {menuVisible && isAdmin && (
         <Animated.View
           style={[styles.drawer, { transform: [{ translateX: slideAnim }] }]}
         >
           <View style={styles.drawerHeader}>
             <Text style={styles.drawerTitle}>La Economia</Text>
             <Image
-              source={require("../assets/logo-market.png")} // Ajusta la ruta si tu logo está en otra carpeta
+              source={require("../assets/logo-market.png")}
               style={styles.logo}
               resizeMode="contain"
             />
             <Text style={styles.drawerSubtitle}>
-              {/* Mensaje de bienvenida según autenticación y rol */}
-              {!authState.authenticated
-                ? "Bienvenido, Invitado"
-                : userRole &&
-                  (userRole === "admin" ||
-                    userRole.toLowerCase() === "admin" ||
-                    userRole === "ADMIN")
-                  ? `Bienvenido, `
-                  : `Bienvenido, `}
+              Bienvenido, 
             </Text>
           </View>
           <View style={styles.drawerContent}>{renderMenuItems()}</View>
