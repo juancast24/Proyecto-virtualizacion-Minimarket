@@ -114,15 +114,7 @@ const FormPay = () => {
 
       // Limpia el carrito después de confirmar el pedido
       clearCart();
-
-      showMessage({
-        message: "¡Pedido confirmado y guardado con éxito!",
-        type: "success",
-        duration: 2000,
-        titleStyle: { fontSize: 20, fontWeight: "bold" },
-      });
-
-      navigation.navigate("Home");
+      navigation.navigate("SuccessScreen");
     } catch (error) {
       console.error("Error al guardar el pedido:", error);
       showMessage({
