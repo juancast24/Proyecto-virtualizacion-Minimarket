@@ -6,14 +6,22 @@ import {
   FlatList,
   Pressable,
   Modal,
-  TextInput, Image
+  TextInput,
+  Image,
 } from "react-native";
 import Layout from "../../components/Layout";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import { Feather, Ionicons, AntDesign } from "@expo/vector-icons";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import { firebaseApp } from "../../firebase.config";
+import { Picker } from "@react-native-picker/picker";
 
 // Inicializa la instancia de Firestore
 const db = getFirestore(firebaseApp);
@@ -34,6 +42,9 @@ const OrdersScreen = () => {
   const [orders, setOrders] = useState([]);
   // Estado para mostrar indicador de carga mientras se obtienen los pedidos
   const [loading, setLoading] = useState(true);
+
+  const [editingStatus, setEditingStatus] = useState(false);
+  const [newStatus, setNewStatus] = useState("pendiente");
 
   // Estados para la paginación
   const [currentPage, setCurrentPage] = useState(1); // Página actual
@@ -67,6 +78,29 @@ const OrdersScreen = () => {
     };
     fetchOrders();
   }, []);
+
+  // Función para actualizar el estado en Firestore
+  const updateOrderStatus = async () => {
+    if (!selectedOrder) return;
+    try {
+      const db = getFirestore(firebaseApp);
+      const orderDocRef = doc(db, "pedidos", selectedOrder.id);
+      await updateDoc(orderDocRef, { estado: newStatus });
+
+      // Actualiza el estado localmente
+      setOrders((prev) =>
+        prev.map((order) =>
+          order.id === selectedOrder.id
+            ? { ...order, status: newStatus }
+            : order
+        )
+      );
+      setSelectedOrder((prev) => ({ ...prev, status: newStatus }));
+      setEditingStatus(false);
+    } catch (error) {
+      console.error("Error al actualizar el estado:", error);
+    }
+  };
 
   // Filtra los pedidos según el texto de búsqueda (por nombre)
   const filteredOrders = orders.filter((order) =>
@@ -366,12 +400,41 @@ const OrdersScreen = () => {
                 </View>
 
                 {/* Botón para editar el estado del pedido (a implementar) */}
-                <Pressable
-                  style={styles.editButton}
-                  onPress={() => setModalVisible(false)}
-                >
-                  <Text style={styles.editButtonText}>Editar estado</Text>
-                </Pressable>
+                {editingStatus ? (
+                  <>
+                    <Picker
+                      selectedValue={newStatus}
+                      onValueChange={setNewStatus}
+                      style={{ marginVertical: 10 }}
+                    >
+                      <Picker.Item label="Pendiente" value="pendiente" />
+                      <Picker.Item label="Enviado" value="enviado" />
+                      <Picker.Item label="Entregado" value="entregado" />
+                    </Picker>
+                    <Pressable
+                      style={styles.editButton}
+                      onPress={updateOrderStatus}
+                    >
+                      <Text style={styles.editButtonText}>Guardar estado</Text>
+                    </Pressable>
+                    <Pressable
+                      style={styles.closeButton}
+                      onPress={() => setEditingStatus(false)}
+                    >
+                      <Text style={styles.closeButtonText}>Cancelar</Text>
+                    </Pressable>
+                  </>
+                ) : (
+                  <Pressable
+                    style={styles.editButton}
+                    onPress={() => {
+                      setNewStatus(selectedOrder.status || "pendiente");
+                      setEditingStatus(true);
+                    }}
+                  >
+                    <Text style={styles.editButtonText}>Editar estado</Text>
+                  </Pressable>
+                )}
 
                 {/* Botón para cerrar el modal */}
                 <Pressable
@@ -653,7 +716,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#2980b9",
     padding: 12,
     borderRadius: 8,
-    marginTop: 20,
+    marginTop: 22,
     width: "50%",
     alignSelf: "center",
     justifyContent: "center",
