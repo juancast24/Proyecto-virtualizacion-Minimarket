@@ -10,6 +10,7 @@ import FormPay from '../screens/public/FormPay';
 import HomeScreen from '../screens/public/HomeScreen';
 import OrderHistory from '../screens/user/OrderHistory';
 import SuccessScreen from '../screens/public/SuccessScreen';
+import ReciboScreenUser from '../screens/user/ReciboScreenUser';
 
 const Stack = createStackNavigator();
 
@@ -26,6 +27,7 @@ const UserNavigator = () => {
       <Stack.Screen name="FormPay" component={FormPay} />
       <Stack.Screen name="OrderHistory" component={OrderHistory} />
       <Stack.Screen name="SuccessScreen" component={SuccessScreen} />
+      <Stack.Screen name="ReciboScreen" component={ReciboScreenUser} />
     </Stack.Navigator>
   );
 };

@@ -119,8 +119,13 @@ const FormPay = () => {
         fecha: new Date().toISOString(),
         estado: "Pendiente"
       };
+
+      // Guarda el pedido y obtén el ID
+    const docRef = await addDoc(collection(db, "pedidos"), orderData);
+    const pedidoId = docRef.id;
       // Siempre usa addDoc para generar un ID único, tanto para usuarios logueados como no logueados
       await addDoc(collection(db, "pedidos"), orderData);
+
 
       // Actualiza el stock de cada producto
       for (const item of cartItems) {
@@ -134,7 +139,7 @@ const FormPay = () => {
       }
       // Limpia el carrito después de confirmar el pedido
       clearCart();
-      navigation.navigate("SuccessScreen");
+      navigation.navigate("SuccessScreen", { pedidoId });
     } catch (error) {
       console.error("Error al guardar el pedido:", error);
       showMessage({

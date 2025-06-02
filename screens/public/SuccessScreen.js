@@ -7,11 +7,13 @@ import {
     Pressable,
     Easing,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 
 const SuccessScreen = () => {
     const navigation = useNavigation();
+    const route = useRoute();
+    const { pedidoId } = route.params || {};
     const [progress] = useState(new Animated.Value(0));
     const [completed, setCompleted] = useState(false);
     const [scale] = useState(new Animated.Value(0));
@@ -83,7 +85,7 @@ const SuccessScreen = () => {
                                 shadowOpacity: pressed ? 0.2 : 0.3,
                             },
                         ]}
-                        onPress={() => navigation.navigate("ReciboScreen")}
+                        onPress={() => navigation.navigate("ReciboScreen", { pedidoId })}
                     >
                         <Text style={styles.buttonText}>Generar recibo</Text>
                     </Pressable>

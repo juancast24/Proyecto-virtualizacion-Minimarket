@@ -11,9 +11,11 @@ import Layout from "../../components/Layout";
 import { useRoute } from "@react-navigation/native";
 import { format } from "date-fns";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useNavigation } from "@react-navigation/native";
 
 const OrdersScreen = () => {
   const route = useRoute();
+  const navigation = useNavigation();
   const { order } = route.params;
 
   const getStatusStyle = (estado) => ({
@@ -92,10 +94,16 @@ const OrdersScreen = () => {
           </View>
 
           {/* Botón Generar recibo */}
-          <Pressable style={({ pressed }) => [styles.generateReceiptButton,                    { backgroundColor: pressed ? "#2563EB" : "#4A90E2" }]}>
-            <Icon name="receipt" size={22} color="#fff" />
-            <Text style={styles.generateReceiptText}>Generar recibo</Text>
-          </Pressable>
+          <Pressable
+          style={({ pressed }) => [
+            styles.generateReceiptButton,
+            { backgroundColor: pressed ? "#2563EB" : "#4A90E2" }
+          ]}
+          onPress={() => navigation.navigate("ReciboScreen", { pedidoId: order.id })}
+        >
+          <Icon name="receipt" size={22} color="#fff" />
+          <Text style={styles.generateReceiptText}>Generar recibo</Text>
+        </Pressable>
         </View>
 
         {/* Lista de productos */}
