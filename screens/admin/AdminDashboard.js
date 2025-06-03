@@ -5,6 +5,7 @@ import {
   StyleSheet,
   BackHandler,
   TextInput,  
+  ScrollView,
 } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import { useState, useEffect } from "react";
@@ -32,15 +33,17 @@ const AdminDashboard = () => {
     <>
       <StatusBar backgroundColor="#F6FDFF" barStyle="dark-content" />
       <BottomBarLayout> 
-        <View style={styles.container}>
-          <Text style={styles.title}>Productos</Text>
-          <ProductsAdmin />
-          <View style={styles.buttonContainer}>
-            <Pressable style={styles.button} onPress={handleCreateProductPress}>
-              <Text style={styles.buttonText}>Crear Producto</Text>
-            </Pressable>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <View style={styles.container}>
+            <Text style={styles.title}>Productos</Text>
+            <ProductsAdmin />
+            <View style={styles.buttonContainer}>
+              <Pressable style={styles.button} onPress={handleCreateProductPress}>
+                <Text style={styles.buttonText}>Crear Producto</Text>
+              </Pressable>
+            </View>
           </View>
-        </View>
+        </ScrollView>
       </BottomBarLayout>
     </>
   );
