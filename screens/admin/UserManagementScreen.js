@@ -21,6 +21,7 @@ import {
   doc,
 } from "firebase/firestore";
 import { firebaseApp } from "../../firebase.config";
+import BottomBarLayout from "../../components/BottomBarLayout";
 
 // Inicializa la instancia de Firestore
 const db = getFirestore(firebaseApp);
@@ -123,7 +124,7 @@ const UserManagementScreen = () => {
   };
 
   return (
-    <Layout>
+    <BottomBarLayout> 
       <View style={styles.container}>
         {/* Título de la pantalla */}
         <Text style={styles.title}>Gestión de Usuarios</Text>
@@ -245,7 +246,7 @@ const UserManagementScreen = () => {
           </Text>
         </Pressable>
       </View>
-    </Layout>
+    </BottomBarLayout>
   );
 };
 
@@ -304,6 +305,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
     elevation: 3,
+    marginBottom: 10,
+    marginTop: 10,
   },
   searchIcon: {
     marginRight: 8,
@@ -315,6 +318,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    marginTop: 20,
+    backgroundColor: "#F6FDFF",
   },
 });
 

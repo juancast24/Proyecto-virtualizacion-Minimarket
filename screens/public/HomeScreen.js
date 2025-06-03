@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import SearchAndCategory from '../../components/SearchAndCategory';
 import Layout from '../../components/Layout';
-import { View, Text, StyleSheet, Image } from 'react-native';
-import ProductCard from '../../components/productCard';
+import { View, Text, StyleSheet, Image, StatusBar } from 'react-native';
+import ProductCard from '../../components/ProductCard';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import BottomBarLayout from '../../components/BottomBarLayout';
@@ -15,6 +15,8 @@ const HomeScreen = () => {
     const insets = useSafeAreaInsets(); // <-- aquí
 
     return (
+         <>
+            <StatusBar backgroundColor="#F6FDFF"  barStyle="dark-content" /> {/* Cambia el color aquí */}
         <BottomBarLayout>
             <Layout>
                 <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
@@ -43,6 +45,7 @@ const HomeScreen = () => {
                 </SafeAreaView>
             </Layout>
         </BottomBarLayout>
+        </>
     );
 };
 
@@ -50,7 +53,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#F6FDFF',
-        // Espacio para los botones del sistema
+        marginTop: -10, 
     },
     content: {
         paddingHorizontal: 10,

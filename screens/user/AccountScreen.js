@@ -16,6 +16,7 @@ import { getFirestore, doc, updateDoc } from "firebase/firestore";
 import { firebaseApp } from "../../firebase.config";
 import { getAuth, updatePassword } from "firebase/auth";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import BottomBarLayout from "../../components/BottomBarLayout";
 
 // Inicializa la instancia de Firestore
 const db = getFirestore(firebaseApp);
@@ -135,6 +136,7 @@ const AccountScreen = ({ navigation }) => {
   }
 
   return (
+    <BottomBarLayout> 
     <Layout>
       {/* MODAL PARA CAMBIO DE CONTRASEÑA */}
       <Modal
@@ -446,6 +448,7 @@ const AccountScreen = ({ navigation }) => {
                 </Pressable>
             </View>
         </Layout>
+        </BottomBarLayout>
     );
 };
 
@@ -453,10 +456,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    marginTop: 30,
   },
   profileHeader: {
     alignItems: "center",
-    marginBottom: 25,
+    marginBottom: 15,
   },
   avatarContainer: {
     width: 80,

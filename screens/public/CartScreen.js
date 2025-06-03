@@ -6,6 +6,7 @@ import { useCart } from '../../context/CartContext';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext, useAuth } from '../../context/AuthContext';
+import BottomBarLayout from '../../components/BottomBarLayout';
 
 const CartScreen = () => {
   // Obtiene funciones y datos del contexto del carrito
@@ -91,6 +92,7 @@ const CartScreen = () => {
   };
 
   return (
+    <BottomBarLayout>   
     <Layout>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom', 'left', 'right']}>
         <Text style={styles.title}>Mi Carrito</Text>
@@ -148,6 +150,7 @@ const CartScreen = () => {
         )}
       </SafeAreaView>
     </Layout>
+    </BottomBarLayout>  
   );
 };
 
@@ -267,7 +270,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   containerBottom: {
-    backgroundColor: '#fff',
+    backgroundColor: '#F6FDFF',
+    marginBottom: -40,
     paddingHorizontal: 20,
     paddingTop: 20,
     paddingBottom: 20,

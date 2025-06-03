@@ -12,6 +12,7 @@ import ProductsAdmin from "../../components/ProductsAdmin";
 import Layout from "../../components/Layout";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import BottomBarLayout from "../../components/BottomBarLayout";
 
 const AdminDashboard = () => {
   const { authState } = useAuth();
@@ -32,7 +33,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <Layout>
+    <BottomBarLayout> 
       <View style={styles.container}>
         <Text style={styles.title}>Productos</Text>
 
@@ -43,10 +44,22 @@ const AdminDashboard = () => {
           </Pressable>
         </View>
       </View>
-    </Layout>
+    </BottomBarLayout>
   );
 };
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 10,
+    marginTop: 1,
+    backgroundColor: "#F6FDFF",
+    borderRadius: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 8,
+  },
   buttonContainer: {
     flexDirection: "row", // Alineación horizontal
     justifyContent: "space-between", // Espaciado entre los botones
@@ -71,7 +84,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 5,
     textAlign: "center",
-    marginTop: 10,
+    marginTop: 25,
   },
   searchContainer: {
     flexDirection: "row",

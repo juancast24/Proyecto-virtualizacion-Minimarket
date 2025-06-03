@@ -9,12 +9,12 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import Layout from "../../components/Layout";
 import { useAuth } from "../../context/AuthContext";
 import { MaterialIcons, Feather } from "@expo/vector-icons";
 import { getFirestore, doc, updateDoc } from "firebase/firestore";
 import { firebaseApp } from "../../firebase.config";
 import { getAuth, updatePassword } from "firebase/auth";
+import BottomBarLayout from "../../components/BottomBarLayout";
 
 // Inicializa la instancia de Firestore
 const db = getFirestore(firebaseApp);
@@ -110,16 +110,17 @@ const AccountScreen = ({ navigation }) => {
 
   if (!authState.user) {
     return (
-      <Layout>
+      <BottomBarLayout>
         <View style={styles.container}>
           <ActivityIndicator size="large" color="#0077B6" />
         </View>
-      </Layout>
+      </BottomBarLayout>
     );
   }
 
   return (
-    <Layout>
+    <BottomBarLayout>
+      <> 
       {/* MODAL PARA CAMBIO DE CONTRASEÑA */}
       <Modal
         visible={modalVisible}
@@ -184,6 +185,7 @@ const AccountScreen = ({ navigation }) => {
           </View>
         </View>
       </Modal>
+      
       {/* FIN MODAL */}
 
       {/* MODAL PARA EDITAR INFORMACIÓN */}
@@ -306,6 +308,7 @@ const AccountScreen = ({ navigation }) => {
           </View>
         </View>
       </Modal>
+      
       {/* FIN MODAL */}
 
       <View style={styles.container}>
@@ -430,7 +433,9 @@ const AccountScreen = ({ navigation }) => {
           <Text style={styles.logoutText}>Cerrar sesión</Text>
         </Pressable>
       </View>
-    </Layout>
+      </>
+      </BottomBarLayout>
+    
   );
 };
 
@@ -438,10 +443,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    marginTop: 1,
+    backgroundColor: "#F6FDFF",
   },
   profileHeader: {
     alignItems: "center",
-    marginBottom: 25,
+    marginBottom: 15,
   },
   avatarContainer: {
     width: 80,
@@ -451,6 +458,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 12,
+    marginTop: 20,
     elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
