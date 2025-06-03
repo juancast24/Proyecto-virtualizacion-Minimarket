@@ -123,7 +123,8 @@ const UserManagementScreen = () => {
   };
 
   return (
-    <BottomBarLayout> 
+    <BottomBarLayout>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <View style={styles.container}>
         {/* Título de la pantalla */}
         <Text style={styles.title}>Gestión de Usuarios</Text>
@@ -203,7 +204,14 @@ const UserManagementScreen = () => {
         </View>
         {/* Controles de paginación */}
         {totalPages > 1 && (
-          <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center", marginVertical: 8 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              marginVertical: 8,
+            }}
+          >
             <Pressable
               onPress={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
@@ -218,7 +226,9 @@ const UserManagementScreen = () => {
               Página {currentPage} de {totalPages}
             </Text>
             <Pressable
-              onPress={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              onPress={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
               disabled={currentPage === totalPages}
               style={{
                 padding: 8,
@@ -245,6 +255,7 @@ const UserManagementScreen = () => {
           </Text>
         </Pressable>
       </View>
+      </ScrollView>
     </BottomBarLayout>
   );
 };

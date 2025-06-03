@@ -8,6 +8,7 @@ import {
   Modal,
   TextInput,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import { MaterialIcons, Feather } from "@expo/vector-icons";
@@ -310,7 +311,7 @@ const AccountScreen = ({ navigation }) => {
       </Modal>
       
       {/* FIN MODAL */}
-
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <View style={styles.container}>
         {/* Encabezado del perfil con avatar, nombre y rol */}
         <View style={styles.profileHeader}>
@@ -433,6 +434,7 @@ const AccountScreen = ({ navigation }) => {
           <Text style={styles.logoutText}>Cerrar sesión</Text>
         </Pressable>
       </View>
+      </ScrollView>
       </>
       </BottomBarLayout>
     
