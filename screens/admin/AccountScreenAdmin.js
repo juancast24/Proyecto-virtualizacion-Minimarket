@@ -120,7 +120,7 @@ const AccountScreen = ({ navigation }) => {
   }
 
   return (
-    <BottomBarLayout>
+    
       <> 
       {/* MODAL PARA CAMBIO DE CONTRASEÑA */}
       <Modal
@@ -311,6 +311,7 @@ const AccountScreen = ({ navigation }) => {
       </Modal>
       
       {/* FIN MODAL */}
+      <BottomBarLayout>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <View style={styles.container}>
         {/* Encabezado del perfil con avatar, nombre y rol */}
@@ -435,8 +436,9 @@ const AccountScreen = ({ navigation }) => {
         </Pressable>
       </View>
       </ScrollView>
-      </>
       </BottomBarLayout>
+      </>
+      
     
   );
 };
@@ -450,7 +452,7 @@ const styles = StyleSheet.create({
   },
   profileHeader: {
     alignItems: "center",
-    marginBottom: 15,
+    marginBottom: 10,
   },
   avatarContainer: {
     width: 80,
@@ -459,8 +461,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#0077B6",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 12,
-    marginTop: 20,
+    marginBottom: 10,
+    marginTop: 1,
     elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -487,7 +489,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 12,
     padding: 16,
-    marginBottom: 20,
+    marginBottom: 10,
     elevation: 3,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
