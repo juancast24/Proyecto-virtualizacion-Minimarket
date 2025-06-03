@@ -11,38 +11,34 @@ const HomeScreen = () => {
     const [selectedCategory, setSelectedCategory] = useState(null);
     // Estado para la búsqueda
     const [searchQuery, setSearchQuery] = useState('');
-    const insets = useSafeAreaInsets(); 
+    const insets = useSafeAreaInsets();
 
     return (
-         <>
-         <BottomBarLayout>
+        <BottomBarLayout>
             <StatusBar backgroundColor="#F6FDFF" barStyle="dark-content" />
-                <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-                    <View style={styles.content}>
-                        {/* Encabezado con título y logo */}
-                        <View style={styles.containerTitle}>
-                            <Text style={styles.title}>
-                                Empieza{"\n"}
-                                <Text style={{ color: '#4A90E2' }}>Elije, </Text>
-                                lleva
-                            </Text>
-                            <View style={styles.imageContainer}>
-                                <Image source={require('../../assets/logo-market.png')} style={styles.logo} />
-                            </View>
-                        </View>
-                        {/* Barra de categorías al fondo */}
-                        <SearchAndCategory
-                            selectedCategory={selectedCategory}
-                            setSelectedCategory={setSelectedCategory}
-                            searchQuery={searchQuery}
-                            setSearchQuery={setSearchQuery}
-                        />
+            <View style={styles.content}>
+                {/* Encabezado con título y logo */}
+                <View style={styles.containerTitle}>
+                    <Text style={styles.title}>
+                        Empieza{"\n"}
+                        <Text style={{ color: '#4A90E2' }}>Elije, </Text>
+                        lleva
+                    </Text>
+                    <View style={styles.imageContainer}>
+                        <Image source={require('../../assets/logo-market.png')} style={styles.logo} />
                     </View>
-                    {/* Muestra los productos filtrados por categoría y búsqueda */}
-                    <ProductCard selectedCategory={selectedCategory} searchQuery={searchQuery} />
-                </SafeAreaView>
+                </View>
+                {/* Barra de categorías al fondo */}
+                <SearchAndCategory
+                    selectedCategory={selectedCategory}
+                    setSelectedCategory={setSelectedCategory}
+                    searchQuery={searchQuery}
+                    setSearchQuery={setSearchQuery}
+                />
+            </View>
+            {/* Muestra los productos filtrados por categoría y búsqueda */}
+            <ProductCard selectedCategory={selectedCategory} searchQuery={searchQuery} />
         </BottomBarLayout>
-        </>
     );
 };
 
@@ -54,7 +50,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
     },
     bottomBar: {
-        height: 'auto', 
+        height: 'auto',
         backgroundColor: 'auto',
         width: '100%',
     },

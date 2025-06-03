@@ -57,12 +57,12 @@ const OrderHistory = () => {
   const getStatusStyle = (estado) => ({
     backgroundColor:
       estado === "Entregado"
-        ? "#28a745" 
+        ? "#28a745"
         : estado === "Pendiente"
-          ? "#ffc107" 
+          ? "#ffc107"
           : estado === "En camino"
-            ? "#009688" 
-            : "#6c757d", 
+            ? "#009688"
+            : "#6c757d",
   });
   const getStatusIcon = (estado) => {
     switch (estado) {
@@ -91,7 +91,7 @@ const OrderHistory = () => {
     return (
       <BottomBarLayout>
         <View style={styles.centered}>
-            <Text style={styles.emptyTitle}>¡Haz tu primera compra!</Text>
+          <Text style={styles.emptyTitle}>¡Haz tu primera compra!</Text>
           <Text style={styles.emptyText}>Aquí podrás ver tus compras y hacer seguimiento de tus pedidos.</Text>
           <Pressable
             onPress={() => navigation.navigate("ProductsScreen")}
@@ -101,7 +101,7 @@ const OrderHistory = () => {
             ]}
           >
             <Text style={styles.shopButtonText}>Ver productos</Text>
-            </Pressable>
+          </Pressable>
         </View>
       </BottomBarLayout>
     );
@@ -109,72 +109,67 @@ const OrderHistory = () => {
 
   return (
     <BottomBarLayout>
-    <SafeAreaView
-        style={styles.safeArea}
-        edges={["top", "bottom", "left", "right"]}
-      >
-      <View style={styles.header}>
-        <Text style={styles.title}>Mis Pedidos</Text>
-      </View>
-      <FlatList
-        data={orders}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <Pressable onPress={() => navigation.navigate("OrderScreen", { order: item })}>
-            <View style={styles.orderCard}>
-              <View style={styles.orderHeaderRow}>
-                <Text style={styles.orderDate}><Icon name="calendar-month" size={20} color={"gray"} /> {format(new Date(item.fecha), "dd/MM/yyyy")}</Text>
-                <Text style={styles.orderTotal}><Icon name="cash-multiple" size={20} color={"gray"} /> ${item.total.toLocaleString("es-CL")}</Text>
-              </View>
+        <View style={styles.header}>
+          <Text style={styles.title}>Mis Pedidos</Text>
+        </View>
+        <FlatList
+          data={orders}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <Pressable onPress={() => navigation.navigate("OrdersScreen", { order: item })}>
+              <View style={styles.orderCard}>
+                <View style={styles.orderHeaderRow}>
+                  <Text style={styles.orderDate}><Icon name="calendar-month" size={20} color={"gray"} /> {format(new Date(item.fecha), "dd/MM/yyyy")}</Text>
+                  <Text style={styles.orderTotal}><Icon name="cash-multiple" size={20} color={"gray"} /> ${item.total.toLocaleString("es-CL")}</Text>
+                </View>
 
-              <View style={styles.productsContainer}>
-                {item.productos.slice(0, 2).map((prod, idx) => (
-                  <View key={idx} style={styles.productRow}>
-                    <Image
-                      source={{ uri: prod.image }}
-                      style={styles.productImage}
-                    />
-                    <View>
-                      <Text style={styles.productItem}>{prod.name}</Text>
-                      <Text>Cantidad: {prod.quantity}</Text>
+                <View style={styles.productsContainer}>
+                  {item.productos.slice(0, 2).map((prod, idx) => (
+                    <View key={idx} style={styles.productRow}>
+                      <Image
+                        source={{ uri: prod.image }}
+                        style={styles.productImage}
+                      />
+                      <View>
+                        <Text style={styles.productItem}>{prod.name}</Text>
+                        <Text>Cantidad: {prod.quantity}</Text>
+                      </View>
                     </View>
-                  </View>
-                ))}
-                {item.productos.length > 2 && (
-                  <Text style={styles.moreItemsText}>+ {item.productos.length - 2} productos</Text>
-                )}
-              </View>
+                  ))}
+                  {item.productos.length > 2 && (
+                    <Text style={styles.moreItemsText}>+ {item.productos.length - 2} productos</Text>
+                  )}
+                </View>
 
-              <View style={styles.footerRow}>
-                {item.estado && (
-                  <Text style={[styles.badge, getStatusStyle(item.estado)]}>
-                    <Icon
-                      name={getStatusIcon(item.estado)}
-                      size={16}
-                      color="#fff"
-                    />{" "}
-                    {item.estado}
-                  </Text>
-                )}
+                <View style={styles.footerRow}>
+                  {item.estado && (
+                    <Text style={[styles.badge, getStatusStyle(item.estado)]}>
+                      <Icon
+                        name={getStatusIcon(item.estado)}
+                        size={16}
+                        color="#fff"
+                      />{" "}
+                      {item.estado}
+                    </Text>
+                  )}
 
-                <Pressable
-                  onPress={() => navigation.navigate("OrdersScreen", { order: item })}
-                  style={({ pressed }) => [
-                    styles.detailButton,
-                    { backgroundColor: pressed ? "#2563EB" : "#4A90E2" },
-                  ]}
-                >
-                  <Text style={styles.detailButtonText}>Ver detalles</Text>
-                </Pressable>
+                  <Pressable
+                    onPress={() => navigation.navigate("OrdersScreen", { order: item })}
+                    style={({ pressed }) => [
+                      styles.detailButton,
+                      { backgroundColor: pressed ? "#2563EB" : "#4A90E2" },
+                    ]}
+                  >
+                    <Text style={styles.detailButtonText}>Ver detalles</Text>
+                  </Pressable>
+                </View>
               </View>
-            </View>
-          </Pressable>
-        )}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-      />
-      </SafeAreaView>
-  </BottomBarLayout>
+            </Pressable>
+          )}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+        />
+    </BottomBarLayout>
   );
 };
 

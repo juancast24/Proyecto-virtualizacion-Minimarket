@@ -28,7 +28,8 @@ const BottomBarLayout = ({ children }) => {
   const isGuest = !authState?.authenticated;
   const isUser = !isGuest && !isAdmin;
 
-  const goTo = (screen) => navigation.navigate(screen);
+  const goTo = (screen) => navigation.navigate("Tabs", { screen });
+
   const isActive = (screen) => route.name === screen;
 
   const tabsByRole = {
@@ -59,8 +60,8 @@ const BottomBarLayout = ({ children }) => {
       : tabsByRole.guest;
 
   return (
-    <View style={{ flex: 1 }}>
-      <View style={{ flex: 1, backgroundColor: '#F6FDFF', }}>{children}</View>
+    <View style={{ flex: 1, paddingTop: insets.top, backgroundColor: '#F6FDFF', }}>
+      <View style={{ flex: 1 }}>{children}</View>
       <View
         style={[
           styles.tabBar,

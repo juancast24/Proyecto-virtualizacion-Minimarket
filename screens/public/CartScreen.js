@@ -83,8 +83,6 @@ const CartScreen = () => {
 
   return (
     <BottomBarLayout>   
-    
-      <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom', 'left', 'right']}>
         <Text style={styles.title}>Mi Carrito</Text>
         {cartItems.length > 0 ? (
           <FlatList
@@ -132,7 +130,6 @@ const CartScreen = () => {
             </View>
           </View>
         )}
-      </SafeAreaView>
     </BottomBarLayout>  
   );
 };
