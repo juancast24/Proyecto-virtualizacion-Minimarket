@@ -17,6 +17,7 @@ import { getFirestore, doc, updateDoc } from "firebase/firestore";
 import { firebaseApp } from "../../firebase.config";
 import { getAuth, updatePassword } from "firebase/auth";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import BottomBarLayout from "../../components/BottomBarLayout";
 
 // Inicializa la instancia de Firestore
 const db = getFirestore(firebaseApp);
@@ -140,6 +141,22 @@ const AccountScreen = ({ navigation }) => {
   const insets = useSafeAreaInsets();
 
   return (
+    <BottomBarLayout> 
+    <Layout>
+      {/* MODAL PARA CAMBIO DE CONTRASEÑA */}
+      <Modal
+        visible={modalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={closePasswordModal}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.4)",
+          }}
     <BottomBarLayout>
       <Layout>
         {/* MODAL PARA CAMBIO DE CONTRASEÑA */}
@@ -457,6 +474,21 @@ const AccountScreen = ({ navigation }) => {
             <Text style={styles.logoutText}>Cerrar sesión</Text>
           </Pressable>
         </View>
+
+                {/* Botón para cerrar sesión */}
+                <Pressable style={styles.logoutButton} onPress={handleLogout}>
+                    <MaterialIcons
+                        name="logout"
+                        size={20}
+                        color="#ffffff"
+                        style={styles.logoutIcon}
+                    />
+                    <Text style={styles.logoutText}>Cerrar sesión</Text>
+                </Pressable>
+            </View>
+        </Layout>
+        </BottomBarLayout>
+    );
       </Layout>
     </BottomBarLayout>
   );
@@ -466,10 +498,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    marginTop: 30,
   },
   profileHeader: {
     alignItems: "center",
-    marginBottom: 25,
+    marginBottom: 15,
   },
   avatarContainer: {
     width: 80,

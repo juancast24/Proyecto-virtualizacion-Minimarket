@@ -24,6 +24,7 @@ import {
 } from "firebase/firestore";
 import { firebaseApp } from "../../firebase.config";
 import { Picker } from "@react-native-picker/picker";
+import BottomBarLayout from "../../components/BottomBarLayout";
 
 // Inicializa la instancia de Firestore
 const db = getFirestore(firebaseApp);
@@ -249,7 +250,7 @@ const OrdersScreen = () => {
   );
 
   return (
-    <Layout>
+    <BottomBarLayout>
       <View style={styles.container}>
         {/* Título de la pantalla */}
         <Text style={styles.title}>Pedidos</Text>
@@ -497,7 +498,7 @@ const OrdersScreen = () => {
           <Text style={styles.buttonText}>Atrás</Text>
         </Pressable>
       </View>
-    </Layout>
+    </BottomBarLayout>
   );
 };
 
@@ -505,9 +506,16 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 15,
+    marginBottom: 10,
+    marginTop: 30,
     textAlign: "center",
     color: "#333",
+  },
+  container: {
+    flex: 1,
+    padding: 10,
+    marginTop: 1,
+    backgroundColor: "#F6FDFF",
   },
   searchContainer: {
     flexDirection: "row",
@@ -549,7 +557,7 @@ const styles = StyleSheet.create({
   },
   headerCell: {
     fontWeight: "bold",
-    fontSize: 15, // Más grande
+    fontSize: 15, 
     color: "#fff",
     textAlign: "left",
     flex: 1,
@@ -558,7 +566,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   cell: {
-    fontSize: 15,
+    fontSize: 11,
     color: "#333",
     flex: 1,
     paddingVertical: 8,
@@ -757,7 +765,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#2980b9",
     padding: 12,
     borderRadius: 8,
-    marginTop: 10,
+    marginTop: 20,
     marginBottom: 30,
     width: "50%",
     alignSelf: "center",

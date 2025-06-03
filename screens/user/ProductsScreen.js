@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import Layout from '../../components/Layout';
-import ProductCard from '../../components/productCard';
+import ProductCard from '../../components/ProductCard';
 import SearchAndCategory from '../../components/SearchAndCategory';
+import BottomBarLayout from '../../components/BottomBarLayout';
 
 export default function ProductsScreen() {
     // Estado para la categoría seleccionada
@@ -10,7 +12,8 @@ export default function ProductsScreen() {
     const [searchQuery, setSearchQuery] = useState('');
 
     return (
-        <Layout>
+        <BottomBarLayout>   
+        <Layout style={{ marginTop: 20 }}>
             {/* Componente de búsqueda y selección de categorías */}
             <SearchAndCategory
                 selectedCategory={selectedCategory}
@@ -21,12 +24,6 @@ export default function ProductsScreen() {
             {/* Muestra los productos filtrados por categoría y búsqueda */}
             <ProductCard selectedCategory={selectedCategory} searchQuery={searchQuery} />
         </Layout>
+        </BottomBarLayout>
     );
 }
-
-// const styles = StyleSheet.create({
-//     container: {
-//         flex: 1,
-//         backgroundColor: '#F6FDFF',
-//     },
-// });

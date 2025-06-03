@@ -26,6 +26,7 @@ const KeyboardAwareLayout = ({
             {
               flexGrow: 1,
               paddingBottom: adjustedPadding,
+              backgroundColor: '#F6FDFF', 
             },
             contentContainerStyle,
           ]}

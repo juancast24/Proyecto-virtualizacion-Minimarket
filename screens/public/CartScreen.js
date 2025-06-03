@@ -5,6 +5,8 @@ import BottomBarLayout from '../../components/BottomBarLayout';
 import { useCart } from '../../context/CartContext';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { AuthContext, useAuth } from '../../context/AuthContext';
+import BottomBarLayout from '../../components/BottomBarLayout';
 import { useAuth } from '../../context/AuthContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -82,6 +84,8 @@ const CartScreen = () => {
   };
 
   return (
+    <BottomBarLayout>   
+    <Layout>
     <BottomBarLayout>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom', 'left', 'right']}>
         <Text style={styles.title}>Mi Carrito</Text>
@@ -132,6 +136,8 @@ const CartScreen = () => {
           </View>
         )}
       </SafeAreaView>
+    </Layout>
+    </BottomBarLayout>  
     </BottomBarLayout>
   );
 };
@@ -251,6 +257,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+
+  containerBottom: {
+    backgroundColor: '#F6FDFF',
+    marginBottom: -40,
   containerBottomFixed: {
     position: 'absolute',
     left: 0,
