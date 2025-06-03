@@ -50,7 +50,7 @@ const OrdersScreen = () => {
 
   // Estados para la paginación
   const [currentPage, setCurrentPage] = useState(1); // Página actual
-  const [itemsPerPage, setItemsPerPage] = useState(5); // Cantidad de pedidos por página
+  const [itemsPerPage, setItemsPerPage] = useState(4); // Cantidad de pedidos por página
 
   // useEffect para obtener los pedidos de Firestore al montar el componente
   useEffect(() => {
