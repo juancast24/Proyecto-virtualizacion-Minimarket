@@ -82,39 +82,72 @@ const EditUserScreen = ({ route, navigation }) => {
   return (
     <Layout>
       <View style={styles.container}>
-        {/* Título de la pantalla */}
         <Text style={styles.title}>Editar Usuario</Text>
-        {/* Campo para el nombre */}
-        <TextInput
-          style={styles.input}
-          placeholder="Nombre"
-          value={nombre}
-          onChangeText={setNombre}
-        />
-        {/* Campo para el correo */}
-        <TextInput
-          style={styles.input}
-          placeholder="Correo"
-          value={correo}
-          onChangeText={setCorreo}
-        />
-        {/* Campo para el teléfono */}
-        <TextInput
-          style={styles.input}
-          placeholder="Teléfono"
-          value={telefono}
-          onChangeText={setTelefono}
-        />
-        {/* Campo para el rol */}
-        <TextInput
-          style={styles.input}
-          placeholder="Rol (user/admin)"
-          value={rol}
-          onChangeText={setRol}
-        />
-        {/* Botón para actualizar el usuario */}
-        <Pressable style={styles.button} onPress={handleUpdate}>
+
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Nombre</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Nombre"
+            value={nombre}
+            onChangeText={setNombre}
+            placeholderTextColor="#aaa"
+          />
+        </View>
+
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Correo</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Correo"
+            value={correo}
+            onChangeText={setCorreo}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            placeholderTextColor="#aaa"
+          />
+        </View>
+
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Teléfono</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Teléfono"
+            value={telefono}
+            onChangeText={setTelefono}
+            keyboardType="phone-pad"
+            placeholderTextColor="#aaa"
+          />
+        </View>
+
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Rol</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Rol (user/admin)"
+            value={rol}
+            onChangeText={setRol}
+            placeholderTextColor="#aaa"
+          />
+        </View>
+
+        <Pressable
+          style={({ pressed }) => [
+            styles.button,
+            pressed && { backgroundColor: "#206090" },
+          ]}
+          onPress={handleUpdate}
+        >
           <Text style={styles.buttonText}>Actualizar</Text>
+        </Pressable>
+        <Pressable
+          style={({ pressed }) => [
+            styles.cancelButton,
+            pressed && { backgroundColor: "#b71c1c" },
+          ]}
+          onPress={() => navigation.navigate("UserManagement")}
+        >
+          <Text style={styles.cancelButtonText}>Cancelar</Text>
         </Pressable>
       </View>
     </Layout>
@@ -122,27 +155,66 @@ const EditUserScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { padding: 20 },
+  container: {
+    padding: 20,
+    backgroundColor: "#f7fafd",
+    flex: 1,
+  },
   title: {
     fontSize: 22,
     fontWeight: "bold",
-    marginBottom: 16,
+    marginBottom: 24,
     textAlign: "center",
+    color: "#2980b9",
+    letterSpacing: 1,
+  },
+  fieldGroup: {
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 15,
+    color: "#2980b9",
+    marginBottom: 4,
+    fontWeight: "600",
+    marginLeft: 2,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#b5c9d6",
     borderRadius: 8,
     padding: 10,
-    marginBottom: 12,
+    backgroundColor: "#fff",
+    fontSize: 15,
+    color: "#222",
   },
   button: {
     backgroundColor: "#2980b9",
-    padding: 12,
+    padding: 14,
     borderRadius: 8,
     alignItems: "center",
+    marginTop: 10,
+    elevation: 2,
   },
-  buttonText: { color: "#fff", fontWeight: "bold" },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+    letterSpacing: 1,
+  },
+  cancelButton: {
+    backgroundColor: "#e74c3c",
+    padding: 14,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 12,
+    elevation: 2,
+  },
+  cancelButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+    letterSpacing: 1,
+  },
 });
 
 export default EditUserScreen;

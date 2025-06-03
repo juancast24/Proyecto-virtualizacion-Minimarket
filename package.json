@@ -50,7 +50,8 @@
     "react-native-web": "~0.20.0",
     "react-native-webview": "13.13.5",
     "styled-components": "^6.1.17",
-    "yet": "^0.1.0"
+    "yet": "^0.1.0",
+    "expo-camera": "~16.1.6"
   },
   "devDependencies": {
     "@babel/core": "^7.27.1",

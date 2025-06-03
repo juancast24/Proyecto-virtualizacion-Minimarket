@@ -491,7 +491,7 @@ const OrdersScreen = () => {
 
         {/* Botón para regresar al dashboard de administrador */}
         <Pressable
-          style={[styles.button, { backgroundColor: "red", marginTop: 20 }]}
+          style={[styles.button, { backgroundColor: "red"}]}
           onPress={() => navigation.navigate("AdminDashboard")}
         >
           <Text style={styles.buttonText}>Atrás</Text>
@@ -757,7 +757,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#2980b9",
     padding: 12,
     borderRadius: 8,
-    marginTop: 22,
+    marginTop: 10,
+    marginBottom: 30,
     width: "50%",
     alignSelf: "center",
     justifyContent: "center",
