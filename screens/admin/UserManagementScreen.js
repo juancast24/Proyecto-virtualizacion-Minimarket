@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {  
+import {
   View,
   Text,
   StyleSheet,
@@ -34,6 +34,10 @@ const UserManagementScreen = () => {
   // Estado para mostrar indicador de carga mientras se obtienen los usuarios
   const [loading, setLoading] = useState(true);
 
+  // Estados para paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 4;
+
   // Obtiene el estado de autenticación del usuario
   const { authState } = useAuth();
   // Hook de navegación para cambiar de pantalla
@@ -63,12 +67,25 @@ const UserManagementScreen = () => {
   }, []);
 
   // Filtra los usuarios según el texto de búsqueda (por nombre)
-  const filteredData = users.filter((item) =>
-    (item.nombre || "").toLowerCase().includes(searchText.toLowerCase()) ||
-    (item.correo || "").toLowerCase().includes(searchText.toLowerCase()) ||
-    (item.telefono || "").toLowerCase().includes(searchText.toLowerCase()) ||
-    (item.rol || "").toLowerCase().includes(searchText.toLowerCase())
+  const filteredData = users.filter(
+    (item) =>
+      (item.nombre || "").toLowerCase().includes(searchText.toLowerCase()) ||
+      (item.correo || "").toLowerCase().includes(searchText.toLowerCase()) ||
+      (item.telefono || "").toLowerCase().includes(searchText.toLowerCase()) ||
+      (item.rol || "").toLowerCase().includes(searchText.toLowerCase())
   );
+
+  // Paginación: calcula los datos a mostrar en la página actual
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Reinicia la página si el filtro cambia
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchText]);
 
   // Elimina un usuario de Firestore y del estado local
   const handleDelete = async (userId, userName) => {
@@ -129,11 +146,31 @@ const UserManagementScreen = () => {
         <View style={styles.tabla}>
           {/* Encabezado de la tabla */}
           <View style={[styles.fila, styles.encabezado]}>
-            <Text style={[styles.columna]}>Nombre</Text>
-            <Text style={[styles.columna]}>Correo</Text>
-            <Text style={[styles.columna]}>Teléfono</Text>
-            <Text style={[styles.columna]}>Rol</Text>
-            <Text style={[styles.columna]}>Acciones</Text>
+            <Text
+              style={[styles.columna, { color: "white", fontWeight: "bold" }]}
+            >
+              Nombre
+            </Text>
+            <Text
+              style={[styles.columna, { color: "white", fontWeight: "bold" }]}
+            >
+              Correo
+            </Text>
+            <Text
+              style={[styles.columna, { color: "white", fontWeight: "bold" }]}
+            >
+              Teléfono
+            </Text>
+            <Text
+              style={[styles.columna, { color: "white", fontWeight: "bold" }]}
+            >
+              Rol
+            </Text>
+            <Text
+              style={[styles.columna, { color: "white", fontWeight: "bold" }]}
+            >
+              Acciones
+            </Text>
           </View>
           {/* Muestra mensaje de carga, sin usuarios o la lista filtrada */}
           {loading ? (
@@ -144,7 +181,7 @@ const UserManagementScreen = () => {
             </Text>
           ) : (
             // Renderiza cada usuario en una fila con acciones de editar y eliminar
-            filteredData.map((item, index) => (
+            paginatedData.map((item, index) => (
               <View key={item.id} style={styles.fila}>
                 <Text style={styles.columna}>{item.nombre}</Text>
                 <Text style={styles.columna}>{item.correo}</Text>
@@ -164,6 +201,34 @@ const UserManagementScreen = () => {
             ))
           )}
         </View>
+        {/* Controles de paginación */}
+        {totalPages > 1 && (
+          <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center", marginVertical: 8 }}>
+            <Pressable
+              onPress={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              style={{
+                padding: 8,
+                opacity: currentPage === 1 ? 0.5 : 1,
+              }}
+            >
+              <Ionicons name="chevron-back" size={24} color="#2980b9" />
+            </Pressable>
+            <Text style={{ marginHorizontal: 12 }}>
+              Página {currentPage} de {totalPages}
+            </Text>
+            <Pressable
+              onPress={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              style={{
+                padding: 8,
+                opacity: currentPage === totalPages ? 0.5 : 1,
+              }}
+            >
+              <Ionicons name="chevron-forward" size={24} color="#2980b9" />
+            </Pressable>
+          </View>
+        )}
         {/* Botón para navegar a la pantalla de creación de usuario */}
         <Pressable
           style={{
@@ -188,40 +253,44 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "bold",
-    marginBottom: 16,
+    marginBottom: 10,
+    marginTop: 10,
     textAlign: "center",
+    letterSpacing: 1,
   },
   tabla: {
     margin: 5,
-    borderColor: "transparent",
-    borderRadius: 10,
+    borderRadius: 12,
+    backgroundColor: "#f4f8fb",
+    overflow: "hidden",
+    elevation: 2,
   },
   fila: {
     flexDirection: "row",
-    padding: 10,
-    borderColor: "trnsparent",
-    borderRadius: 8,
-    textAlign: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e0e7ef",
     alignItems: "center",
     backgroundColor: "#fff",
   },
   encabezado: {
-    backgroundColor: "white",
+    backgroundColor: "#2980b9",
     borderBottomWidth: 2,
-    borderBottomColor: "#2980b9",
   },
   columna: {
     flex: 1,
-    fontSize: 10,
+    fontSize: 13,
     textAlign: "center",
-    alignItems: "center",
-    borderColor: "transparent",
-    borderRadius: 8,
+    fontWeight: "500",
+    paddingHorizontal: 4,
   },
   actions: {
     flexDirection: "row",
-    gap: 5,
-    width: 60,
+    gap: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    width: 70,
   },
   searchContainer: {
     flexDirection: "row",
@@ -242,6 +311,10 @@ const styles = StyleSheet.create({
   searchInput: {
     fontSize: 16,
     color: "#000",
+  },
+  container: {
+    flex: 1,
+    padding: 10,
   },
 });
 

@@ -8,65 +8,100 @@ import {
   Image,
   Alert,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker"; // Para acceder a la cámara y galería
-import { Picker } from "@react-native-picker/picker"; // Selector de opciones (categoría, unidad)
-import { useNavigation } from "@react-navigation/native"; // Navegación entre pantallas
-import { MaterialIcons } from "@expo/vector-icons"; // Iconos para el botón de cámara
-import { getFirestore, collection, addDoc } from "firebase/firestore"; // Firestore para guardar productos
-import { firebaseApp } from "../../firebase.config"; // Configuración de Firebase
+import * as ImagePicker from "expo-image-picker";
+import { Picker } from "@react-native-picker/picker";
+import { useNavigation } from "@react-navigation/native";
+import { MaterialIcons } from "@expo/vector-icons";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { firebaseApp } from "../../firebase.config";
+import { Camera, CameraView } from "expo-camera";
 
-const db = getFirestore(firebaseApp); // Instancia de Firestore
+const db = getFirestore(firebaseApp);
 
 const CreateProduct = () => {
-  const navigation = useNavigation(); // Hook para navegación
-  // Estados para los campos del formulario
+  const navigation = useNavigation();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
   const [stock, setStock] = useState("");
-  const [image, setImage] = useState(""); // URL de la imagen seleccionada/capturada
+  const [image, setImage] = useState("");
   const [quantityPerUnit, setQuantityPerUnit] = useState("");
   const [unit, setUnit] = useState("");
+  const [hasPermission, setHasPermission] = useState(null);
+  const [scanning, setScanning] = useState(false);
+  const [barcode, setBarcode] = useState("");
+  const [cameraRef, setCameraRef] = useState(null);
+  const [scanned, setScanned] = useState(false);
 
-  // Solicita permisos de cámara al montar el componente
   useEffect(() => {
-    const getCameraPermission = async () => {
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert(
-          "Se requieren permisos",
-          "Necesitas dar permisos para usar la cámara"
-        );
-      }
-    };
-    getCameraPermission();
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      setHasPermission(status === "granted");
+    })();
   }, []);
 
-  // Abre la cámara y permite capturar una imagen
-  const handleOpenCamera = async () => {
-    try {
-      const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images, // Solo imágenes
-        allowsEditing: true, // Permite recortar
-        aspect: [4, 3], // Relación de aspecto
-        quality: 0.7, // Calidad de la imagen
-      });
+  const handleBarCodeScanned = async ({ data }) => {
+    if (scanned) return;
+    setScanned(true);
+    setScanning(false);
+    setBarcode(data);
 
-      if (!result.canceled) {
-        // Si el usuario toma una foto, guarda la URI local en el estado
-        setImage(result.assets[0].uri);
-        Alert.alert("Éxito", "Imagen capturada correctamente");
+    // 1. Consultar Open Food Facts
+    try {
+      const response = await fetch(
+        `https://co.openfoodfacts.org/api/v0/product/${data}.json`
+      );
+      const result = await response.json();
+      if (result.status === 1) {
+        setName(result.product.product_name || "");
+        setDescription(result.product.generic_name || "");
+        Alert.alert(
+          "Producto encontrado",
+          "Nombre y descripción rellenados automáticamente (Open Food Facts)."
+        );
+        setTimeout(() => setScanned(false), 1000);
+        return;
       }
     } catch (error) {
-      Alert.alert("Error", "No se pudo abrir la cámara");
-      console.error(error);
+      // Si hay error, sigue con el siguiente API
     }
+
+    // 2. Consultar UPCitemdb (requiere API Key gratuita)
+    try {
+      const upcApiKey = "TU_API_KEY"; 
+      const upcResponse = await fetch(
+        `https://api.upcitemdb.com/prod/trial/lookup?upc=${data}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            user_key: upcApiKey,
+          },
+        }
+      );
+      const upcResult = await upcResponse.json();
+      if (upcResult && upcResult.items && upcResult.items.length > 0) {
+        const item = upcResult.items[0];
+        setName(item.title || "");
+        setDescription(item.description || "");
+        Alert.alert(
+          "Producto encontrado",
+          "Nombre y descripción rellenados automáticamente (UPCitemdb)."
+        );
+      } else {
+        Alert.alert(
+          "No encontrado",
+          "No se encontró el producto en ninguna base de datos."
+        );
+      }
+    } catch (error) {
+      Alert.alert("Error", "No se pudo buscar el producto en internet.");
+    }
+
+    setTimeout(() => setScanned(false), 1000);
   };
 
-  // Maneja la creación del producto en Firestore
   const handleCreateProduct = async () => {
-    // Valida que todos los campos estén completos
     if (
       !name ||
       !description ||
@@ -81,7 +116,6 @@ const CreateProduct = () => {
       return;
     }
 
-    // Construye el objeto producto
     const newProduct = {
       name,
       description,
@@ -91,13 +125,12 @@ const CreateProduct = () => {
       image,
       quantity_per_unit: quantityPerUnit,
       unit,
+      barcode,
     };
 
     try {
-      // Guarda el producto en la colección "products" de Firestore
       await addDoc(collection(db, "products"), newProduct);
       Alert.alert("Éxito", "Producto creado exitosamente.");
-      // Limpia los campos después de crear el producto
       setName("");
       setDescription("");
       setCategory("");
@@ -106,13 +139,13 @@ const CreateProduct = () => {
       setImage("");
       setQuantityPerUnit("");
       setUnit("");
+      setBarcode("");
     } catch (error) {
       Alert.alert("Error", "Hubo un problema al crear el producto.");
       console.error(error);
     }
   };
 
-  // Opciones de categorías disponibles
   const categories = [
     "Aseo hogar",
     "Despensa",
@@ -122,16 +155,50 @@ const CreateProduct = () => {
     "Higiene Personal",
   ];
 
+  if (scanning) {
+    const cameraType = Camera.Constants?.Type?.back ?? "back";
+    const barCodeTypes = [
+      Camera.Constants?.BarCodeType?.ean13 ?? "ean13",
+      Camera.Constants?.BarCodeType?.ean8 ?? "ean8",
+      Camera.Constants?.BarCodeType?.upc_a ?? "upc_a",
+      Camera.Constants?.BarCodeType?.upc_e ?? "upc_e",
+      Camera.Constants?.BarCodeType?.code39 ?? "code39",
+      Camera.Constants?.BarCodeType?.code128 ?? "code128",
+    ];
+
+    return (
+      <View style={{ flex: 1 }}>
+        <CameraView
+          style={{ flex: 1 }}
+          facing={cameraType}
+          onBarcodeScanned={handleBarCodeScanned}
+          barcodeScannerSettings={{
+            barcodeTypes: barCodeTypes,
+          }}
+          ref={(ref) => setCameraRef(ref)}
+        />
+        <Pressable
+          style={[
+            styles.button,
+            { position: "absolute", bottom: 40, alignSelf: "center" },
+          ]}
+          onPress={() => setScanning(false)}
+        >
+          <Text style={styles.buttonText}>Cancelar</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       {/* Botón flotante para abrir la cámara */}
-      <Pressable style={styles.scanButton} onPress={handleOpenCamera}>
-        <MaterialIcons name="camera-alt" size={24} color="white" />
+      <Pressable style={styles.scanButton} onPress={() => setScanning(true)}>
+        <MaterialIcons name="qr-code-scanner" size={24} color="white" />
       </Pressable>
 
-      {/* Título de la pantalla */}
       <Text style={styles.title}>Crear Nuevo Producto</Text>
-      {/* Campo para el nombre */}
+
       <Text style={styles.label}>Nombre del producto</Text>
       <TextInput
         style={styles.input}
@@ -139,7 +206,7 @@ const CreateProduct = () => {
         value={name}
         onChangeText={setName}
       />
-      {/* Campo para la descripción */}
+
       <Text style={styles.label}>Descripción del producto</Text>
       <TextInput
         style={[styles.input]}
@@ -147,7 +214,7 @@ const CreateProduct = () => {
         value={description}
         onChangeText={setDescription}
       />
-      {/* Selector de categoría */}
+
       <Text style={styles.label}>Categoría</Text>
       <Picker
         selectedValue={category}
@@ -159,7 +226,7 @@ const CreateProduct = () => {
           <Picker.Item key={index} label={cat} value={cat} />
         ))}
       </Picker>
-      {/* Campos Precio y Stock*/}
+
       <View style={{ flexDirection: "row", gap: 10, marginBottom: 15 }}>
         <View style={{ flex: 1 }}>
           <Text style={styles.label}>Precio</Text>
@@ -182,7 +249,7 @@ const CreateProduct = () => {
           />
         </View>
       </View>
-      {/* Campos Cantidad por unidad y Unidad de medida en una fila */}
+
       <View style={{ flexDirection: "row", gap: 10, marginBottom: 15 }}>
         <View style={{ flex: 1 }}>
           <Text style={styles.label}>Cantidad por unidad</Text>
@@ -213,26 +280,30 @@ const CreateProduct = () => {
         </View>
       </View>
 
-      <View style={{ flexDirection: "column", gap: 10, marginBottom: 1, marginTop: -25 }}>
-      {/* Campo para la URL de la imagen (rellenado automáticamente al tomar foto) */}
-      <Text style={styles.label}>Imagen</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="URL de la Imagen"
-        value={image}
-        onChangeText={setImage}
-      />
-      {/* Vista previa de la imagen seleccionada o mensaje si no hay imagen */}
-      {image ? (
-        <Image
-          source={{ uri: `${image}?timestamp=${new Date().getTime()}` }}
-          style={styles.imagePreview}
+      <View
+        style={{
+          flexDirection: "column",
+          gap: 10,
+          marginBottom: 1,
+          marginTop: -25,
+        }}
+      >
+        <Text style={styles.label}>Imagen</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="URL de la Imagen"
+          value={image}
+          onChangeText={setImage}
         />
-      ) : (
-        <Text style={styles.imagePlaceholder}>Vista previa de la imagen</Text>
-      )}
+        {image ? (
+          <Image
+            source={{ uri: `${image}?timestamp=${new Date().getTime()}` }}
+            style={styles.imagePreview}
+          />
+        ) : (
+          <Text style={styles.imagePlaceholder}>Vista previa de la imagen</Text>
+        )}
       </View>
-      {/* Botones para crear producto o volver atrás */}
       <View
         style={{
           flexDirection: "row",
@@ -331,8 +402,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     zIndex: 10,
-    elevation: 3, // para sombra en Android
-    shadowColor: "#000", // para sombra en iOS
+    elevation: 3,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
