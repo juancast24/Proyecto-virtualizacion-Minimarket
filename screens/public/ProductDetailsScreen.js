@@ -4,6 +4,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { CartContext } from '../../context/CartContext';
+import BottomBarLayout from '../../components/BottomBarLayout';
 
 const ProductDetails = () => {
   const insets = useSafeAreaInsets();
@@ -44,72 +45,84 @@ const ProductDetails = () => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Header con SafeArea */}
-      <View style={[styles.headerProductWrapper, { paddingTop: insets.top }]}>
-        <View style={styles.header}>
-          {/* Botón para volver atrás */}
-          <Pressable onPress={handlePressBack} style={styles.headerButton}>
-            <Ionicons name="chevron-back-outline" size={28} color="black" />
-          </Pressable>
-          {/* Botón para ir al carrito */}
-          <Pressable onPress={handleCartPress} style={styles.headerButton}>
-            <Ionicons name="cart-outline" size={28} color="black" />
-          </Pressable>
-        </View>
-
-        {/* Contenido principal del producto (imagen, nombre, cantidad) */}
-        <View style={styles.productContainer}>
-          <Image source={{ uri: product.image }} style={styles.image} />
-          <Text style={styles.productName}>{product.name}</Text>
-
-          <View style={styles.quantityControl}>
-            {/* Botón para disminuir cantidad */}
-            <Pressable onPress={decreaseQuantity} style={styles.quantityButton}>
-              <Ionicons name="remove-outline" size={24} color="#333" />
+    <BottomBarLayout>
+      <SafeAreaView style={styles.container} edges={['top', 'bottom', 'left', 'right']}>
+        {/* Header con SafeArea */}
+        <View style={[styles.headerProductWrapper, { paddingTop: insets.top }]}>
+          <View style={styles.header}>
+            {/* Botón para volver atrás */}
+            <Pressable onPress={handlePressBack} style={styles.headerButton}>
+              <Ionicons name="chevron-back-outline" size={28} color="black" />
             </Pressable>
-            <Text style={styles.quantityText}>{quantity}</Text>
-            {/* Botón para aumentar cantidad */}
-            <Pressable onPress={increaseQuantity} style={styles.quantityButton}>
-              <Ionicons name="add-outline" size={24} color="#333" />
+            {/* Botón para ir al carrito */}
+            <Pressable onPress={handleCartPress} style={styles.headerButton}>
+              <Ionicons name="cart-outline" size={28} color="black" />
             </Pressable>
           </View>
-        </View>
-      </View>
 
-      {/* Información del producto (Presentación y Descripción) */}
-      <ScrollView style={styles.infoContainer}>
-        <View style={styles.infoHeader}>
-          {/* Presentación del producto */}
-          <View style={styles.sectionHeader}>
-            <Image source={{ uri: 'https://i.imgur.com/H9LTHyB.png' }} style={styles.imageSectionHeader} />
-            <Text style={styles.sectionContent}>{product.quantity_per_unit} {product.unit}</Text>
-          </View>
-          {/* Stock disponible */}
-          <View style={styles.sectionHeader}>
-            <Image source={{ uri: 'https://i.imgur.com/PRWE0fh.png' }} style={styles.imageSectionHeader} />
-            <Text style={styles.sectionContent}>Disponible: {product.stock}</Text>
+          {/* Contenido principal del producto (imagen, nombre, cantidad) */}
+          <View style={styles.productContainer}>
+            <View style={styles.imageWrapper}>
+              <Image source={{ uri: product.image }} style={styles.image} />
+            </View>
+            <Text style={styles.productName}>{product.name}</Text>
+
+            <View style={styles.quantityControl}>
+              {/* Botón para disminuir cantidad */}
+              <Pressable onPress={decreaseQuantity} style={styles.quantityButton}>
+                <Ionicons name="remove-outline" size={24} color="#333" />
+              </Pressable>
+              <Text style={styles.quantityText}>{quantity}</Text>
+              {/* Botón para aumentar cantidad */}
+              <Pressable onPress={increaseQuantity} style={styles.quantityButton}>
+                <Ionicons name="add-outline" size={24} color="#333" />
+              </Pressable>
+            </View>
           </View>
         </View>
-        {/* Título y descripción del producto */}
-        <Text style={styles.sectionTitle}>Descripción</Text>
-        <Text style={styles.sectionContent}>{product.description}</Text>
-      </ScrollView>
 
-      {/* Barra inferior de Precio y Añadir al Carrito */}
-      <View style={[styles.sectionBottom, { paddingBottom: insets.bottom }]}>
-        <Text style={styles.totalPriceText}>${totalPrice.toLocaleString('es-CL')}</Text>
-        <Pressable
-          onPress={handleAddToCart}
-          style={({ pressed }) => [
-            styles.addToCartButton,
-            { backgroundColor: pressed ? '#2563EB' : '#4A90E2' },
+        {/* Información del producto (Presentación y Descripción) */}
+        <ScrollView
+          style={[styles.infoContainer, { marginTop: 25 }]} // Ajusta este valor según lo que veas en pantalla
+          contentContainerStyle={{ paddingBottom: 120 + insets.bottom }} // <--- padding extra para que no tape el botón
+        >
+          <View style={styles.infoHeader}>
+            {/* Presentación del producto */}
+            <View style={styles.sectionHeader}>
+              <Image source={{ uri: 'https://i.imgur.com/H9LTHyB.png' }} style={styles.imageSectionHeader} />
+              <Text style={styles.sectionContent}>{product.quantity_per_unit} {product.unit}</Text>
+            </View>
+            {/* Stock disponible */}
+            <View style={styles.sectionHeader}>
+              <Image source={{ uri: 'https://i.imgur.com/PRWE0fh.png' }} style={styles.imageSectionHeader} />
+              <Text style={styles.sectionContent}>Disponible: {product.stock}</Text>
+            </View>
+          </View>
+          {/* Título y descripción del producto */}
+          <Text style={styles.sectionTitle}>Descripción</Text>
+          <Text style={styles.sectionContent}>{product.description}</Text>
+        </ScrollView>
+
+        {/* Barra inferior fija */}
+        <View
+          style={[
+            styles.sectionBottomFixed,
+            { paddingBottom: insets.bottom }
           ]}
         >
-          <Text style={styles.addToCartButtonText}>Agregar al carrito</Text>
-        </Pressable>
-      </View>
-    </View>
+          <Text style={styles.totalPriceText}>${totalPrice.toLocaleString('es-CL')}</Text>
+          <Pressable
+            onPress={handleAddToCart}
+            style={({ pressed }) => [
+              styles.addToCartButton,
+              { backgroundColor: pressed ? '#2563EB' : '#4A90E2' },
+            ]}
+          >
+            <Text style={styles.addToCartButtonText}>Agregar al carrito</Text>
+          </Pressable>
+        </View>
+      </SafeAreaView>
+    </BottomBarLayout>
   );
 };
 
@@ -138,18 +151,21 @@ const styles = StyleSheet.create({
   productContainer: {
     alignItems: 'center',
     paddingBottom: 70,
+    position: 'relative',
+    zIndex: 2, // Por encima de infoHeader
   },
   imageWrapper: {
     position: 'relative',
-    width: 250,
-    height: 250,
+    width: 240,
+    height: 180,
     marginBottom: 15,
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 1, // Por encima de infoHeader
   },
   image: {
     width: '100%',
-    height: 240,
+    height: '100%',
     resizeMode: 'contain',
   },
   imageOutOfStock: {
@@ -189,6 +205,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 5,
     elevation: 10,
+    zIndex: 2, // Por encima de infoHeader
   },
   quantityButton: {
     padding: 8,
@@ -204,14 +221,19 @@ const styles = StyleSheet.create({
   infoHeader: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
-  },
-  imageSectionHeader: {
-    width: 55,
-    height: 45,
+    position: 'relative',
+    zIndex: 0, // Al fondo
   },
   sectionHeader: {
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'relative',
+    zIndex: 0, // Al fondo
+  },
+  imageSectionHeader: {
+    width: 55,
+    height: 45,
+    zIndex: 0, // Al fondo
   },
   infoContainer: {
     flex: 1,
@@ -229,15 +251,25 @@ const styles = StyleSheet.create({
     color: '#555',
     marginBottom: 10,
   },
-  sectionBottom: {
+  sectionBottomFixed: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: -30,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: 'white',
     paddingHorizontal: 25,
-    paddingVertical: 10,
+    paddingTop: 24,      // <-- Aumenta este valor para bajar el contenido
+    paddingBottom: 10,   // <-- Mantén o ajusta según lo necesites
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
+    elevation: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
   },
   totalPriceText: {
     fontSize: 32,

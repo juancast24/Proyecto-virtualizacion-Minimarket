@@ -1,32 +1,29 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, Image, Pressable, Platform, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Layout from '../../components/Layout';
+import BottomBarLayout from '../../components/BottomBarLayout';
 import { useCart } from '../../context/CartContext';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { AuthContext, useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const CartScreen = () => {
-  // Obtiene funciones y datos del contexto del carrito
   const { cartItems, clearCart, updateItemQuantity, removeItemFromCart, calculateCartTotal } = useCart();
   const navigation = useNavigation();
   const { authState } = useAuth();
-  // Calcula el total del carrito
+  const insets = useSafeAreaInsets();
   const totalCartPrice = calculateCartTotal ? calculateCartTotal() : cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-  // Efecto para depuración: muestra los productos en el carrito cada vez que cambian
   useEffect(() => {
     console.log("Renderizando carrito, productos:", cartItems);
   }, [cartItems]);
 
-  // Renderiza cada producto del carrito
   const renderItem = ({ item }) => {
     if (!item?.name) return null;
 
     const totalPriceForItem = item.price * item.quantity;
 
-    // Navega al detalle del producto
     const handlePressItem = () => {
       navigation.navigate('ProductDetails', { product: item });
     };
@@ -35,16 +32,13 @@ const CartScreen = () => {
       <Pressable onPress={handlePressItem} style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}>
         <View style={styles.cartItem}>
           <Image source={{ uri: item.image }} style={styles.image} />
-          {/* Centro: Información del Producto */}
           <View style={styles.itemInfoContainer}>
             <Text style={styles.itemName} numberOfLines={2} ellipsizeMode="tail">{item.name}</Text>
             <Text style={styles.itemPriceUnit}>Precio: ${item.price?.toLocaleString('es-CL') || 'N/A'}</Text>
             <Text style={styles.itemTotalPrice}>Subtotal: ${totalPriceForItem?.toLocaleString('es-CL') || 'N/A'}</Text>
           </View>
-          {/* Derecha: Controles de cantidad y eliminar */}
           <View style={styles.itemDetails}>
             <View style={styles.quantityButtons}>
-              {/* Botón para disminuir cantidad */}
               <Pressable
                 onPress={() =>
                   item.quantity > 1 &&
@@ -55,7 +49,6 @@ const CartScreen = () => {
                 <Text><Ionicons name="remove-outline" size={20} color="#333" /></Text>
               </Pressable>
               <Text style={styles.itemQuantity}>{item.quantity}</Text>
-              {/* Botón para aumentar cantidad */}
               <Pressable
                 onPress={() => {
                   if (item.quantity < item.stock) {
@@ -69,43 +62,38 @@ const CartScreen = () => {
                 <Text><Ionicons name="add-outline" size={20} color="#333" /></Text>
               </Pressable>
             </View>
-            {/* Botón para eliminar producto del carrito */}
-          <Pressable
-            onPress={() => removeItemFromCart(item.name)}
-            style={styles.removeButton}
-          >
-            <View style={styles.removeButtonContent}>
-              <Text style={styles.removeButtonText}>Eliminar </Text>
-              <Ionicons name="trash-outline" size={20} color="white" style={styles.trashIcon} />
-            </View>
-          </Pressable>
+            <Pressable
+              onPress={() => removeItemFromCart(item.name)}
+              style={styles.removeButton}
+            >
+              <View style={styles.removeButtonContent}>
+                <Text style={styles.removeButtonText}>Eliminar </Text>
+                <Ionicons name="trash-outline" size={20} color="white" style={styles.trashIcon} />
+              </View>
+            </Pressable>
+          </View>
         </View>
-      </View>
-    </Pressable>
+      </Pressable>
     );
   };
 
-  // Navega a la pantalla de pago con los productos del carrito
   const handleCheckout = () => {
     navigation.navigate('FormPay', { cartItems });
   };
 
   return (
-    <Layout>
+    <BottomBarLayout>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom', 'left', 'right']}>
         <Text style={styles.title}>Mi Carrito</Text>
-
-        {/* Si hay productos en el carrito, muestra la lista */}
         {cartItems.length > 0 ? (
           <FlatList
             data={cartItems}
             renderItem={renderItem}
             showsVerticalScrollIndicator={false}
             keyExtractor={(item, index) => item?.name ? item.name + index : index.toString()}
-            contentContainerStyle={styles.list}
+            contentContainerStyle={{ ...styles.list, paddingBottom: 160 + insets.bottom }}
           />
         ) : (
-          // Si el carrito está vacío, muestra mensaje e imagen
           <View style={styles.emptyCartContainer}>
             <Image source={{ uri: 'https://i.imgur.com/kRhJKyd.png' }} style={styles.emptyCartImage} />
             <Text style={styles.emptyCartText}>Tu carrito está vacío.</Text>
@@ -115,15 +103,13 @@ const CartScreen = () => {
           </View>
         )}
 
-        {/* Si hay productos, muestra el resumen y botones de acción */}
         {cartItems.length > 0 && (
-          <View style={styles.containerBottom}>
+          <View style={[styles.containerBottomFixed, { paddingBottom: -20 + insets.bottom }]}>
             <View style={styles.summaryContainer}>
               <Text style={styles.summaryText}>Total:</Text>
               <Text style={styles.summaryPrice}>${totalCartPrice.toLocaleString('es-CL')}</Text>
             </View>
             <View style={styles.buttonGroup}>
-              {/* Botón para limpiar el carrito */}
               <Pressable
                 onPress={clearCart}
                 style={({ pressed }) => [
@@ -133,7 +119,6 @@ const CartScreen = () => {
               >
                 <Text style={styles.buttonText}>Limpiar carrito</Text>
               </Pressable>
-              {/* Botón para finalizar compra */}
               <Pressable
                 onPress={handleCheckout}
                 style={({ pressed }) => [
@@ -147,7 +132,7 @@ const CartScreen = () => {
           </View>
         )}
       </SafeAreaView>
-    </Layout>
+    </BottomBarLayout>
   );
 };
 
@@ -266,13 +251,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  containerBottom: {
+  containerBottomFixed: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
     backgroundColor: '#fff',
     paddingHorizontal: 20,
     paddingTop: 20,
-    paddingBottom: 20,
+    paddingBottom: 24, // <-- Añade o aumenta este valor para bajar los elementos
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
+    elevation: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
   },
   summaryContainer: {
     flexDirection: 'row',
