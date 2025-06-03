@@ -9,7 +9,6 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import Layout from "../../components/Layout";
 import BottomBarLayout from "../../components/BottomBarLayout";
 import { MaterialIcons, Feather } from "@expo/vector-icons";
 import { useAuth } from "../../context/AuthContext";
@@ -17,7 +16,6 @@ import { getFirestore, doc, updateDoc } from "firebase/firestore";
 import { firebaseApp } from "../../firebase.config";
 import { getAuth, updatePassword } from "firebase/auth";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import BottomBarLayout from "../../components/BottomBarLayout";
 
 // Inicializa la instancia de Firestore
 const db = getFirestore(firebaseApp);
@@ -129,11 +127,9 @@ const AccountScreen = ({ navigation }) => {
   if (!authState.user) {
     return (
       <BottomBarLayout>
-        <Layout>
           <View style={styles.container}>
             <ActivityIndicator size="large" color="#0077B6" />
           </View>
-        </Layout>
       </BottomBarLayout>
     );
   }
@@ -141,24 +137,8 @@ const AccountScreen = ({ navigation }) => {
   const insets = useSafeAreaInsets();
 
   return (
-    <BottomBarLayout> 
-    <Layout>
-      {/* MODAL PARA CAMBIO DE CONTRASEÑA */}
-      <Modal
-        visible={modalVisible}
-        transparent
-        animationType="slide"
-        onRequestClose={closePasswordModal}
-      >
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "rgba(0,0,0,0.4)",
-          }}
     <BottomBarLayout>
-      <Layout>
+      
         {/* MODAL PARA CAMBIO DE CONTRASEÑA */}
         <Modal
           visible={modalVisible}
@@ -201,7 +181,7 @@ const AccountScreen = ({ navigation }) => {
                 }}
               />
               <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
-                  <Pressable
+                <Pressable
                   onPress={onConfirmChangePassword}
                   style={({ pressed }) => [
                     styles.buttonPrimary,
@@ -224,6 +204,7 @@ const AccountScreen = ({ navigation }) => {
           </View>
         </Modal>
         {/* FIN MODAL */}
+
         {/* MODAL PARA EDITAR INFORMACIÓN */}
         <Modal
           visible={editModalVisible}
@@ -323,7 +304,7 @@ const AccountScreen = ({ navigation }) => {
               />
 
               <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
-                  <Pressable
+                <Pressable
                   onPress={handleSaveEdit}
                   style={({ pressed }) => [
                     styles.buttonPrimary,
@@ -345,6 +326,7 @@ const AccountScreen = ({ navigation }) => {
             </View>
           </View>
         </Modal>
+        {/* FIN MODAL */}
 
         <View style={[styles.container, { paddingBottom: 40 + insets.bottom }]}>
           {/* Encabezado del perfil con avatar, nombre y rol */}
@@ -474,22 +456,6 @@ const AccountScreen = ({ navigation }) => {
             <Text style={styles.logoutText}>Cerrar sesión</Text>
           </Pressable>
         </View>
-
-                {/* Botón para cerrar sesión */}
-                <Pressable style={styles.logoutButton} onPress={handleLogout}>
-                    <MaterialIcons
-                        name="logout"
-                        size={20}
-                        color="#ffffff"
-                        style={styles.logoutIcon}
-                    />
-                    <Text style={styles.logoutText}>Cerrar sesión</Text>
-                </Pressable>
-            </View>
-        </Layout>
-        </BottomBarLayout>
-    );
-      </Layout>
     </BottomBarLayout>
   );
 };
