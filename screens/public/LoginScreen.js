@@ -123,34 +123,6 @@ const LoginScreen = () => {
             </Pressable>
           </View>
 
-<<<<<<< HEAD
-          {/* Formulario de login o registro */}
-          <View style={styles.form}>
-            {/* Campos adicionales solo para registro */}
-            {!isLogin && (
-              <>
-                <TextInput
-                  placeholder="Nombre completo"
-                  value={name}
-                  onChangeText={setName}
-                  style={styles.input}
-                />
-                <TextInput
-                  placeholder="Teléfono"
-                  keyboardType="phone-pad"
-                  value={phone}
-                  onChangeText={setPhone}
-                  style={styles.input}
-                />
-                <TextInput
-                  placeholder="Dirección"
-                  value={address}
-                  onChangeText={setAddress}
-                  style={styles.input}
-                />
-              </>
-            )}
-=======
         {/* Formulario de login o registro */}
         <View style={styles.form}>
           {/* Campos adicionales solo para registro */}
@@ -183,7 +155,6 @@ const LoginScreen = () => {
               />
             </>
           )}
->>>>>>> 1c0ced9b39c7ab6175669668979dea917d05cc74
 
             {/* Campo de email */}
             <TextInput

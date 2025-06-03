@@ -12,8 +12,6 @@ import { useRoute } from "@react-navigation/native";
 import { format } from "date-fns";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from "@react-navigation/native";
-import React, { useContext } from 'react';
-import { View, Text, StyleSheet, Button, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BottomBarLayout from '../../components/BottomBarLayout';
 import { CartContext } from '../../context/CartContext';
