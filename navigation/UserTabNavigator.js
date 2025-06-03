@@ -1,6 +1,4 @@
-import React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-
 import HomeScreen from '../screens/public/HomeScreen';
 import ProductsScreen from '../screens/user/ProductsScreen';
 import OrderHistory from '../screens/user/OrderHistory';
@@ -19,11 +17,11 @@ const UserTabNavigator = () => (
       tabBarIndicatorStyle: { height: 0 },
     }}
   >
-    <Tab.Screen name="Home" component={HomeScreen} />
-    <Tab.Screen name="ProductsScreen" component={ProductsScreen} />
-    <Tab.Screen name="OrderHistory" component={OrderHistory} />
-    <Tab.Screen name="CartScreen" component={CartScreen} />
-    <Tab.Screen name="AccountScreen" component={AccountScreen} />
+    <Tab.Screen name="Home" component={HomeScreen}/>
+    <Tab.Screen name="ProductsScreen" component={ProductsScreen}/>
+    <Tab.Screen name="OrderHistory" component={OrderHistory}/>
+    <Tab.Screen name="CartScreen" component={CartScreen}/>
+    <Tab.Screen name="AccountScreen" component={AccountScreen}/>
   </Tab.Navigator>
 );
 

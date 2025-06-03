@@ -1,9 +1,7 @@
-// App.js
 import 'react-native-gesture-handler';
 import { useAuth } from './context/AuthContext';
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthProvider } from './context/AuthContext';
-
 import { CartProvider } from './context/CartContext';
 import { PedidosProvider } from './context/PedidosContext';
 import PublicNavigator from './navigation/PublicNavigator';
@@ -14,7 +12,7 @@ import FlashMessage from "react-native-flash-message";
 
 // Componente interno que utiliza el contexto de autenticación
 const AppInner = () => {
-  const { authState } = useAuth(); // Obtiene el estado de autenticación (incluye el rol del usuario)
+  const { authState } = useAuth(); 
 
   return (
     <NavigationContainer>

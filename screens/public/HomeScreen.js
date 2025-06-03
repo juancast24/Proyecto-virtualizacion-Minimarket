@@ -15,9 +15,8 @@ const HomeScreen = () => {
 
     return (
          <>
-            <StatusBar backgroundColor="#F6FDFF"  barStyle="dark-content" /> {/* Cambia el color aquí */}
-        <BottomBarLayout>
-            
+         <BottomBarLayout>
+            <StatusBar backgroundColor="#F6FDFF" barStyle="dark-content" />
                 <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
                     <View style={styles.content}>
                         {/* Encabezado con título y logo */}
@@ -42,7 +41,6 @@ const HomeScreen = () => {
                     {/* Muestra los productos filtrados por categoría y búsqueda */}
                     <ProductCard selectedCategory={selectedCategory} searchQuery={searchQuery} />
                 </SafeAreaView>
-            
         </BottomBarLayout>
         </>
     );
@@ -57,13 +55,11 @@ const styles = StyleSheet.create({
     content: {
         paddingHorizontal: 10,
     },
-
     bottomBar: {
-        height: 'auto', // Ajusta el alto según lo que necesites
+        height: 'auto', 
         backgroundColor: 'auto',
         width: '100%',
     },
-
     containerTitle: {
         flexDirection: 'row',
         alignItems: 'center',
