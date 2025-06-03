@@ -159,7 +159,7 @@ const OrderHistory = () => {
                 )}
 
                 <Pressable
-                  onPress={() => navigation.navigate("OrderScreen", { order: item })}
+                  onPress={() => navigation.navigate("OrdersScreen", { order: item })}
                   style={({ pressed }) => [
                     styles.detailButton,
                     { backgroundColor: pressed ? "#2563EB" : "#4A90E2" },

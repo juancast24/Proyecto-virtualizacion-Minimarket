@@ -6,8 +6,6 @@ import { useCart } from '../../context/CartContext';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext, useAuth } from '../../context/AuthContext';
-import BottomBarLayout from '../../components/BottomBarLayout';
-import { useAuth } from '../../context/AuthContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const CartScreen = () => {
@@ -85,8 +83,7 @@ const CartScreen = () => {
 
   return (
     <BottomBarLayout>   
-    <Layout>
-    <BottomBarLayout>
+    
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom', 'left', 'right']}>
         <Text style={styles.title}>Mi Carrito</Text>
         {cartItems.length > 0 ? (
@@ -136,9 +133,7 @@ const CartScreen = () => {
           </View>
         )}
       </SafeAreaView>
-    </Layout>
     </BottomBarLayout>  
-    </BottomBarLayout>
   );
 };
 
@@ -317,6 +312,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-});
+}});
 
 export default CartScreen;

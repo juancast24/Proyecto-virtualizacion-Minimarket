@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import SearchAndCategory from '../../components/SearchAndCategory';
-import Layout from '../../components/Layout';
 import { View, Text, StyleSheet, Image, StatusBar } from 'react-native';
 import ProductCard from '../../components/ProductCard';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,13 +11,13 @@ const HomeScreen = () => {
     const [selectedCategory, setSelectedCategory] = useState(null);
     // Estado para la búsqueda
     const [searchQuery, setSearchQuery] = useState('');
-    const insets = useSafeAreaInsets(); // <-- aquí
+    const insets = useSafeAreaInsets(); 
 
     return (
          <>
             <StatusBar backgroundColor="#F6FDFF"  barStyle="dark-content" /> {/* Cambia el color aquí */}
         <BottomBarLayout>
-            <Layout>
+            
                 <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
                     <View style={styles.content}>
                         {/* Encabezado con título y logo */}
@@ -43,7 +42,7 @@ const HomeScreen = () => {
                     {/* Muestra los productos filtrados por categoría y búsqueda */}
                     <ProductCard selectedCategory={selectedCategory} searchQuery={searchQuery} />
                 </SafeAreaView>
-            </Layout>
+            
         </BottomBarLayout>
         </>
     );
