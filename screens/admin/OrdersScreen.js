@@ -11,7 +11,6 @@ import {
   Linking,
   Alert,
 } from "react-native";
-import Layout from "../../components/Layout";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import { Feather, Ionicons, AntDesign } from "@expo/vector-icons";

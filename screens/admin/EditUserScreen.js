@@ -11,7 +11,6 @@ import {
 import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 import { firebaseApp } from "../../firebase.config";
 import { useFocusEffect } from "@react-navigation/native";
-import Layout from "../../components/Layout";
 
 // Inicializa la instancia de Firestore
 const db = getFirestore(firebaseApp);
@@ -80,77 +79,75 @@ const EditUserScreen = ({ route, navigation }) => {
   };
 
   return (
-    <Layout>
-      <View style={styles.container}>
-        <Text style={styles.title}>Editar Usuario</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Editar Usuario</Text>
 
-        <View style={styles.fieldGroup}>
-          <Text style={styles.label}>Nombre</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Nombre"
-            value={nombre}
-            onChangeText={setNombre}
-            placeholderTextColor="#aaa"
-          />
-        </View>
-
-        <View style={styles.fieldGroup}>
-          <Text style={styles.label}>Correo</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Correo"
-            value={correo}
-            onChangeText={setCorreo}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            placeholderTextColor="#aaa"
-          />
-        </View>
-
-        <View style={styles.fieldGroup}>
-          <Text style={styles.label}>Teléfono</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Teléfono"
-            value={telefono}
-            onChangeText={setTelefono}
-            keyboardType="phone-pad"
-            placeholderTextColor="#aaa"
-          />
-        </View>
-
-        <View style={styles.fieldGroup}>
-          <Text style={styles.label}>Rol</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Rol (user/admin)"
-            value={rol}
-            onChangeText={setRol}
-            placeholderTextColor="#aaa"
-          />
-        </View>
-
-        <Pressable
-          style={({ pressed }) => [
-            styles.button,
-            pressed && { backgroundColor: "#206090" },
-          ]}
-          onPress={handleUpdate}
-        >
-          <Text style={styles.buttonText}>Actualizar</Text>
-        </Pressable>
-        <Pressable
-          style={({ pressed }) => [
-            styles.cancelButton,
-            pressed && { backgroundColor: "#b71c1c" },
-          ]}
-          onPress={() => navigation.navigate("Tabs", { screen: "UserManagement" })}
-        >
-          <Text style={styles.cancelButtonText}>Cancelar</Text>
-        </Pressable>
+      <View style={styles.fieldGroup}>
+        <Text style={styles.label}>Nombre</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Nombre"
+          value={nombre}
+          onChangeText={setNombre}
+          placeholderTextColor="#aaa"
+        />
       </View>
-    </Layout>
+
+      <View style={styles.fieldGroup}>
+        <Text style={styles.label}>Correo</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Correo"
+          value={correo}
+          onChangeText={setCorreo}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          placeholderTextColor="#aaa"
+        />
+      </View>
+
+      <View style={styles.fieldGroup}>
+        <Text style={styles.label}>Teléfono</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Teléfono"
+          value={telefono}
+          onChangeText={setTelefono}
+          keyboardType="phone-pad"
+          placeholderTextColor="#aaa"
+        />
+      </View>
+
+      <View style={styles.fieldGroup}>
+        <Text style={styles.label}>Rol</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Rol (user/admin)"
+          value={rol}
+          onChangeText={setRol}
+          placeholderTextColor="#aaa"
+        />
+      </View>
+
+      <Pressable
+        style={({ pressed }) => [
+          styles.button,
+          pressed && { backgroundColor: "#206090" },
+        ]}
+        onPress={handleUpdate}
+      >
+        <Text style={styles.buttonText}>Actualizar</Text>
+      </Pressable>
+      <Pressable
+        style={({ pressed }) => [
+          styles.cancelButton,
+          pressed && { backgroundColor: "#b71c1c" },
+        ]}
+        onPress={() => navigation.navigate("Tabs", { screen: "UserManagement" })}
+      >
+        <Text style={styles.cancelButtonText}>Cancelar</Text>
+      </Pressable>
+    </View>
   );
 };
 

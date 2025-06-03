@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 import { firebaseApp } from "../../firebase.config";
-import Layout from "../../components/Layout";
 import { Picker } from "@react-native-picker/picker";
 
 // Inicializa la instancia de Firestore
@@ -77,7 +76,7 @@ const EditProductScreen = ({ route, navigation }) => {
   };
 
   return (
-    <Layout>
+    <View>
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
@@ -238,7 +237,7 @@ const EditProductScreen = ({ route, navigation }) => {
           </View>
         </View>
       </ScrollView>
-    </Layout>
+    </View>
   );
 };
 

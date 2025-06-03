@@ -8,13 +8,12 @@ import {
   Alert,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import Layout from "../../components/Layout";
 import { useAuth } from "../../context/AuthContext";
 import BottomBarLayout from "../../components/BottomBarLayout";
 
 // Pantalla para crear un nuevo usuario
 const CreateUserScreen = ({ navigation }) => {
-  
+
   const { onRegister } = useAuth(); // Obtiene la función de registro del contexto de autenticación
 
   // Estados para los campos del formulario
@@ -48,6 +47,7 @@ const CreateUserScreen = ({ navigation }) => {
   };
 
   return (
+    <BottomBarLayout>
       <View style={styles.container}>
         {/* Título de la pantalla */}
         <Text style={styles.title}>Crear Usuario</Text>
@@ -60,7 +60,7 @@ const CreateUserScreen = ({ navigation }) => {
           onChangeText={setNombre}
         />
         {/* Campo para el correo electrónico */}
-       <Text style={styles.label}>Corrreo electrónico</Text>
+        <Text style={styles.label}>Corrreo electrónico</Text>
         <TextInput
           style={styles.input}
           placeholder="Correo"
@@ -103,11 +103,12 @@ const CreateUserScreen = ({ navigation }) => {
         {/* Botón para volver a la pantalla de gestión de usuarios */}
         <Pressable
           style={[styles.button, { backgroundColor: "#e74c3c" }]}
-          onPress={() => navigation.navigate("Tabs" , { screen: "UserManagement" })}
+          onPress={() => navigation.navigate("Tabs", { screen: "UserManagement" })}
         >
           <Text style={styles.buttonText}>Atras</Text>
         </Pressable>
       </View>
+    </BottomBarLayout>
   );
 };
 

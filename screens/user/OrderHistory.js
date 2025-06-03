@@ -18,7 +18,6 @@ import {
 } from "firebase/firestore";
 import { firebaseApp } from "../../firebase.config";
 import { useAuth } from "../../context/AuthContext";
-import Layout from "../../components/Layout";
 import { useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { format } from "date-fns";

@@ -9,7 +9,6 @@ import {
 import { useAuth } from "../../context/AuthContext";
 import { useState, useEffect } from "react";
 import ProductsAdmin from "../../components/ProductsAdmin";
-import Layout from "../../components/Layout";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import BottomBarLayout from "../../components/BottomBarLayout";

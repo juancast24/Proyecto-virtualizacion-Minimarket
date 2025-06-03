@@ -9,11 +9,8 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context"; // <-- Importa SafeAreaView
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
-import Layout from "../../components/Layout";
-import { Ionicons } from "@expo/vector-icons";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAuth } from "../../context/AuthContext";
 import {

@@ -11,7 +11,7 @@ const Stack = createStackNavigator();
 
 const AdminNavigator = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='AdminDashboard'>
+    <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='Tabs'>
       <Stack.Screen name="Tabs" component={AdminTabNavigator} />
       <Stack.Screen name="CreateProduct" component={CreateProduct} />
       <Stack.Screen name="EditProductScreen" component={EditProductScreen} />

@@ -16,7 +16,7 @@ const KeyboardAwareLayout = ({
 
   return (
     <KeyboardAvoidingView
-      style={[{ flex: 1 }, style]}
+      style={[{ flex: 1, backgroundColor: '#F6FDFF', }, style]}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -48} // Ajusta este valor según tu prueba
     >
@@ -26,7 +26,7 @@ const KeyboardAwareLayout = ({
             {
               flexGrow: 1,
               paddingBottom: adjustedPadding,
-              backgroundColor: '#F6FDFF', 
+              backgroundColor: '#F6FDFF',
             },
             contentContainerStyle,
           ]}

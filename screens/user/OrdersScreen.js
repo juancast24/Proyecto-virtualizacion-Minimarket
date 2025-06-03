@@ -7,7 +7,6 @@ import {
   FlatList,
   Pressable,
 } from "react-native";
-import Layout from "../../components/Layout";
 import { useRoute } from "@react-navigation/native";
 import { format } from "date-fns";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -18,9 +17,9 @@ import { CartContext } from '../../context/CartContext';
 
 // Lista de pedidos de ejemplo (mock)
 const orders = [
-    { id: '1', date: '2025-04-10', status: 'Entregado', total: '$12.50', products: ['Manzanas', 'Leche'] },
-    { id: '2', date: '2025-04-05', status: 'En camino', total: '$8.20', products: ['Pan', 'Huevos'] },
-    { id: '3', date: '2025-04-18', status: 'En proceso', total: '$15.30', products: ['Tomates', 'Jugo'] },
+  { id: '1', date: '2025-04-10', status: 'Entregado', total: '$12.50', products: ['Manzanas', 'Leche'] },
+  { id: '2', date: '2025-04-05', status: 'En camino', total: '$8.20', products: ['Pan', 'Huevos'] },
+  { id: '3', date: '2025-04-18', status: 'En proceso', total: '$15.30', products: ['Tomates', 'Jugo'] },
 ];
 
 const OrdersScreen = () => {
@@ -31,12 +30,12 @@ const OrdersScreen = () => {
   const getStatusStyle = (estado) => ({
     backgroundColor:
       estado === "Entregado"
-        ? "#28a745" 
+        ? "#28a745"
         : estado === "Pendiente"
-        ? "#ffc107" 
-        : estado === "En camino"
-        ? "#009688" 
-        : "#6c757d", 
+          ? "#ffc107"
+          : estado === "En camino"
+            ? "#009688"
+            : "#6c757d",
   });
 
   const getStatusIcon = (estado) => {
@@ -66,45 +65,44 @@ const OrdersScreen = () => {
   );
 
   return (
-    <Layout>
-      <View style={styles.container}>
-        <Text style={styles.title}>Detalles del Pedido</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Detalles del Pedido</Text>
 
-        <View style={styles.section}>
-          {/* Fecha y total alineados */}
-          <View style={styles.rowBetween}>
-            <View>
-              <Text style={styles.label}><Icon name="calendar-month" size={20} color={"gray"} /> Fecha:</Text>
-              <Text style={styles.value}>
-                {format(new Date(order.fecha), "dd/MM/yyyy HH:mm")}
-              </Text>
-            </View>
-            <View style={{ alignItems: "flex-end" }}>
-              <Text style={styles.label}><Icon name="cash-multiple" size={20} color={"gray"} /> Total:</Text>
-              <Text style={styles.total}>
-                ${Number(order.total || 0).toLocaleString("es-CL")}
-              </Text>
-            </View>
-          </View>
-
-          {/* Dirección si existe */}
-          {order?.direccion && (
-            <View style={styles.infoItem}>
-              <Text style={styles.label}><Icon name="map-marker" size={20} color={"gray"} /> Dirección:</Text>
-              <Text style={styles.value}>{order.direccion}</Text>
-            </View>
-          )}
-
-          {/* Estado */}
-          <View style={styles.infoItem}>
-            <Text style={styles.label}><Icon name="tag" size={20} color={"gray"} /> Estado:</Text>
-            <Text style={[styles.badge, getStatusStyle(order.estado)]}>
-              <Icon name={getStatusIcon(order.estado)} size={16} color="#fff" /> {order.estado}
+      <View style={styles.section}>
+        {/* Fecha y total alineados */}
+        <View style={styles.rowBetween}>
+          <View>
+            <Text style={styles.label}><Icon name="calendar-month" size={20} color={"gray"} /> Fecha:</Text>
+            <Text style={styles.value}>
+              {format(new Date(order.fecha), "dd/MM/yyyy HH:mm")}
             </Text>
           </View>
+          <View style={{ alignItems: "flex-end" }}>
+            <Text style={styles.label}><Icon name="cash-multiple" size={20} color={"gray"} /> Total:</Text>
+            <Text style={styles.total}>
+              ${Number(order.total || 0).toLocaleString("es-CL")}
+            </Text>
+          </View>
+        </View>
 
-          {/* Botón Generar recibo */}
-          <Pressable
+        {/* Dirección si existe */}
+        {order?.direccion && (
+          <View style={styles.infoItem}>
+            <Text style={styles.label}><Icon name="map-marker" size={20} color={"gray"} /> Dirección:</Text>
+            <Text style={styles.value}>{order.direccion}</Text>
+          </View>
+        )}
+
+        {/* Estado */}
+        <View style={styles.infoItem}>
+          <Text style={styles.label}><Icon name="tag" size={20} color={"gray"} /> Estado:</Text>
+          <Text style={[styles.badge, getStatusStyle(order.estado)]}>
+            <Icon name={getStatusIcon(order.estado)} size={16} color="#fff" /> {order.estado}
+          </Text>
+        </View>
+
+        {/* Botón Generar recibo */}
+        <Pressable
           style={({ pressed }) => [
             styles.generateReceiptButton,
             { backgroundColor: pressed ? "#2563EB" : "#4A90E2" }
@@ -114,22 +112,21 @@ const OrdersScreen = () => {
           <Icon name="receipt" size={22} color="#fff" />
           <Text style={styles.generateReceiptText}>Generar recibo</Text>
         </Pressable>
-        </View>
-
-        {/* Lista de productos */}
-        <View style={styles.section}>
-          <Text style={styles.label}><Icon name="cart-outline" size={20} color={"gray"} /> Productos:</Text>
-          <FlatList
-            data={order.productos}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderProduct}
-            scrollEnabled={false}
-            contentContainerStyle={{ paddingBottom: 20 }}
-            ItemSeparatorComponent={() => <View style={styles.separator} />}
-          />
-        </View>
       </View>
-    </Layout>
+
+      {/* Lista de productos */}
+      <View style={styles.section}>
+        <Text style={styles.label}><Icon name="cart-outline" size={20} color={"gray"} /> Productos:</Text>
+        <FlatList
+          data={order.productos}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderProduct}
+          scrollEnabled={false}
+          contentContainerStyle={{ paddingBottom: 20 }}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+        />
+      </View>
+    </View>
   );
 };
 

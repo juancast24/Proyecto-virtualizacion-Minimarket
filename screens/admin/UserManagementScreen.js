@@ -8,7 +8,6 @@ import {
   TextInput,
   Alert,
 } from "react-native";
-import Layout from "../../components/Layout";
 import { Feather } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";

@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-import Layout from "../../components/Layout";
 import {
   getAuth,
   updatePassword,
@@ -67,7 +66,7 @@ const ChangePasswordScreen = ({ navigation }) => {
   };
 
   return (
-    <Layout>
+    <View>
       <View style={styles.container}>
         {/* Título de la pantalla */}
         <Text style={styles.title}>Cambiar contraseña</Text>
@@ -102,7 +101,7 @@ const ChangePasswordScreen = ({ navigation }) => {
           <Text style={styles.cancelText}>Cancelar</Text>
         </Pressable>
       </View>
-    </Layout>
+    </View>
   );
 };
 
