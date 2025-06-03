@@ -10,6 +10,7 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import Layout from "../../components/Layout";
 import { useAuth } from "../../context/AuthContext";
+import BottomBarLayout from "../../components/BottomBarLayout";
 
 // Pantalla para crear un nuevo usuario
 const CreateUserScreen = ({ navigation }) => {
@@ -47,7 +48,6 @@ const CreateUserScreen = ({ navigation }) => {
   };
 
   return (
-    <Layout>
       <View style={styles.container}>
         {/* Título de la pantalla */}
         <Text style={styles.title}>Crear Usuario</Text>
@@ -100,13 +100,21 @@ const CreateUserScreen = ({ navigation }) => {
         <Pressable style={styles.button} onPress={handleCreate}>
           <Text style={styles.buttonText}>Crear</Text>
         </Pressable>
+        {/* Botón para volver a la pantalla de gestión de usuarios */}
+        <Pressable
+          style={[styles.button, { backgroundColor: "#e74c3c" }]}
+          onPress={() => navigation.navigate("Tabs" , { screen: "UserManagement" })}
+        >
+          <Text style={styles.buttonText}>Atras</Text>
+        </Pressable>
       </View>
-    </Layout>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { padding: 20 },
+  container: { padding: 20, backgroundColor: "#F6FDFF", marginTop: 20, height: "100%" },
+
+
   title: {
     fontSize: 22,
     fontWeight: "bold",
@@ -119,6 +127,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     marginBottom: 12,
+    backgroundColor: "#fff",
   },
   label: {
     fontWeight: "bold",
@@ -140,6 +149,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     alignItems: "center",
+    marginTop: 10,
   },
   buttonText: { color: "#fff", fontWeight: "bold" },
 });

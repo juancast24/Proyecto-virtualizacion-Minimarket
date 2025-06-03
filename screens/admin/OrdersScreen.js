@@ -489,14 +489,6 @@ const OrdersScreen = () => {
             </View>
           </Modal>
         )}
-
-        {/* Botón para regresar al dashboard de administrador */}
-        <Pressable
-          style={[styles.button, { backgroundColor: "red"}]}
-          onPress={() => navigation.navigate("AdminDashboard")}
-        >
-          <Text style={styles.buttonText}>Atrás</Text>
-        </Pressable>
       </View>
     </BottomBarLayout>
   );

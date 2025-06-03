@@ -13,6 +13,7 @@ import Layout from "../../components/Layout";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import BottomBarLayout from "../../components/BottomBarLayout";
+import { StatusBar } from "react-native";
 
 const AdminDashboard = () => {
   const { authState } = useAuth();
@@ -28,23 +29,21 @@ const AdminDashboard = () => {
     navigation.navigate("CreateProduct"); // Navegar a la pantalla de creación de productos.
   };
 
-  const handleOrdersPress = () => {
-    navigation.navigate("OrdersScreen"); // Navegar a la pantalla de pedidos.
-  };
-
   return (
-    <BottomBarLayout> 
-      <View style={styles.container}>
-        <Text style={styles.title}>Productos</Text>
-
-        <ProductsAdmin />
-        <View style={styles.buttonContainer}>
-          <Pressable style={styles.button} onPress={handleCreateProductPress}>
-            <Text style={styles.buttonText}>Crear Producto</Text>
-          </Pressable>
+    <>
+      <StatusBar backgroundColor="#F6FDFF" barStyle="dark-content" />
+      <BottomBarLayout> 
+        <View style={styles.container}>
+          <Text style={styles.title}>Productos</Text>
+          <ProductsAdmin />
+          <View style={styles.buttonContainer}>
+            <Pressable style={styles.button} onPress={handleCreateProductPress}>
+              <Text style={styles.buttonText}>Crear Producto</Text>
+            </Pressable>
+          </View>
         </View>
-      </View>
-    </BottomBarLayout>
+      </BottomBarLayout>
+    </>
   );
 };
 const styles = StyleSheet.create({
@@ -61,6 +60,7 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   buttonContainer: {
+    marginTop: 50,
     flexDirection: "row", // Alineación horizontal
     justifyContent: "space-between", // Espaciado entre los botones
     marginHorizontal: 10, // Margen horizontal para el contenedor
