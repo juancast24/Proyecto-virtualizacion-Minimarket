@@ -583,7 +583,7 @@ const styles = StyleSheet.create({
   actionButton: {
     backgroundColor: "#2980b9",
     paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingHorizontal: 5,
     borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",

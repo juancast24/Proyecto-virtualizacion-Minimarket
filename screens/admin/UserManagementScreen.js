@@ -244,7 +244,7 @@ const UserManagementScreen = () => {
           style={{
             backgroundColor: "#2980b9",
             padding: 10,
-            borderRadius: 8,
+            borderRadius: 30,
             alignItems: "center",
             marginVertical: 10,
           }}

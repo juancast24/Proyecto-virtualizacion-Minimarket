@@ -28,7 +28,7 @@ const BottomBarLayout = ({ children }) => {
   const isGuest = !authState?.authenticated;
   const isUser = !isGuest && !isAdmin;
 
-  const goTo = (screen) => navigation.navigate("Tabs", { screen });
+  const goTo = (screen) => navigation.navigate( screen );
 
   const isActive = (screen) => route.name === screen;
 

@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   buttonContainer: {
-    marginTop: 50,
+    marginTop: 10,
     flexDirection: "row", // Alineación horizontal
     justifyContent: "space-between", // Espaciado entre los botones
     marginHorizontal: 10, // Margen horizontal para el contenedor
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: "#2980b9",
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 30,
     marginVertical: 10,
     alignItems: "center",
     flex: 1, // Para que ambos botones tengan el mismo ancho

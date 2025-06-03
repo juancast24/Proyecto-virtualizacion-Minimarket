@@ -229,6 +229,7 @@ const LoginScreen = () => {
               value={password}
               onChangeText={setPassword}
               style={styles.input}
+              autoCapitalize="none"
             />
             {/* Confirmar contraseña solo en registro */}
             {!isLogin && (
@@ -238,6 +239,7 @@ const LoginScreen = () => {
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 style={styles.input}
+                autoCapitalize="none"
               />
             )}
 

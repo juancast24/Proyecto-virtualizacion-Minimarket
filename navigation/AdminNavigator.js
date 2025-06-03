@@ -1,18 +1,25 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import AdminTabNavigator from "./AdminTabNavigator";
 import CreateProduct from "../screens/admin/CreateProduct";
 import EditProductScreen from "../screens/admin/EditProductScreen";
 import CreateUserScreen from "../screens/admin/CreateUserScreen";
 import EditUserScreen from "../screens/admin/EditUserScreen";
 import ChangePasswordScreen from "../screens/admin/ChangePasswordScreen";
+import AdminDashboard from "../screens/admin/AdminDashboard";
+import UserManagementScreen from "../screens/admin/UserManagementScreen";
+import OrdersScreen from "../screens/admin/OrdersScreen";
+import AccountScreenAdmin from "../screens/admin/AccountScreenAdmin";
+
 
 const Stack = createStackNavigator();
 
 const AdminNavigator = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='Tabs'>
-      <Stack.Screen name="Tabs" component={AdminTabNavigator} />
+    <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='AdminDashboard'>
+      <Stack.Screen name="AdminDashboard" component={AdminDashboard} />
+      <Stack.Screen name="AccountScreenAdmin" component={AccountScreenAdmin} />
+      <Stack.Screen name="UserManagement" component={UserManagementScreen} />
+      <Stack.Screen name="OrdersScreen" component={OrdersScreen} />
       <Stack.Screen name="CreateProduct" component={CreateProduct} />
       <Stack.Screen name="EditProductScreen" component={EditProductScreen} />
       <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} options={{ title: "Cambiar contraseña" }} />
