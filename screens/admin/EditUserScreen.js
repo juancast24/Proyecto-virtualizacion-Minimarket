@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 24,
     textAlign: "center",
-    color: "#2980b9",
+    color: "black",
     letterSpacing: 1,
   },
   fieldGroup: {
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 15,
-    color: "#2980b9",
+    color: "black",
     marginBottom: 4,
     fontWeight: "600",
     marginLeft: 2,

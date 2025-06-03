@@ -1,4 +1,3 @@
-import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import UserTabNavigator from './UserTabNavigator';
 import ProductDetailsScreen from '../screens/public/ProductDetailsScreen';
