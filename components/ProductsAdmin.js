@@ -35,7 +35,7 @@ const ProductsAdmin = () => {
   const navigation = useNavigation(); // Hook para navegación entre pantallas
   const [searchText, setSearchText] = useState(""); // Estado para el texto de búsqueda
   const [currentPage, setCurrentPage] = useState(1); // Página actual para la paginación
-  const [itemsPerPage, setItemsPerPage] = useState(4); // Cantidad de productos por página
+  const [itemsPerPage, setItemsPerPage] = useState(3); // Cantidad de productos por página
   const [products, setProducts] = useState([]); // Lista de productos obtenidos de Firestore
   const [loading, setLoading] = useState(true); // Estado de carga
   const [modalVisible, setModalVisible] = useState(false);
@@ -154,6 +154,18 @@ const ProductsAdmin = () => {
   return (
     <View style={styles.container}>
       {/* Barra de búsqueda */}
+      <View style={styles.searchContainer}>
+      <View style={styles.search}>
+        <Ionicons name="search" size={20} color="#4A90E2" style={styles.searchIcon} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Buscar producto..."
+          placeholderTextColor="#888"
+          value={searchText}
+          onChangeText={setSearchText}
+        />
+      </View>
+    </View>
       {loading ? (
         <ActivityIndicator
           size="large"
@@ -473,7 +485,7 @@ const styles = StyleSheet.create({
   },
   paginationContainer: {
     padding: 10,
-    backgroundColor: "#fff",
+    backgroundColor: "#F6FDFF",
     borderTopWidth: 1,
     borderTopColor: "#e0e0e0",
   },

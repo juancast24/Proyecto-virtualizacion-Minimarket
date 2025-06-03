@@ -145,7 +145,7 @@ const EditUserScreen = ({ route, navigation }) => {
             styles.cancelButton,
             pressed && { backgroundColor: "#b71c1c" },
           ]}
-          onPress={() => navigation.navigate("UserManagement")}
+          onPress={() => navigation.navigate("Tabs", { screen: "UserManagement" })}
         >
           <Text style={styles.cancelButtonText}>Cancelar</Text>
         </Pressable>
