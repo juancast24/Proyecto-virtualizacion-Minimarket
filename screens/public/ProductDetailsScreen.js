@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { View, Image, StyleSheet, Text, Pressable, ScrollView } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { CartContext } from '../../context/CartContext';
@@ -45,87 +45,68 @@ const ProductDetails = () => {
 
   return (
     <View style={styles.container}>
+      {/* Header con SafeArea */}
       <View style={[styles.headerProductWrapper, { paddingTop: insets.top }]}>
         <View style={styles.header}>
+          {/* Botón para volver atrás */}
           <Pressable onPress={handlePressBack} style={styles.headerButton}>
             <Ionicons name="chevron-back-outline" size={28} color="black" />
           </Pressable>
+          {/* Botón para ir al carrito */}
           <Pressable onPress={handleCartPress} style={styles.headerButton}>
             <Ionicons name="cart-outline" size={28} color="black" />
           </Pressable>
         </View>
 
+        {/* Contenido principal del producto (imagen, nombre, cantidad) */}
         <View style={styles.productContainer}>
-          {/* Imagen con lógica de sin stock, en promoción y pocos en stock */}
-          <View style={styles.imageWrapper}>
-            <Image
-              source={{ uri: product.image }}
-              style={[styles.image, product.stock === 0 && styles.imageOutOfStock]}
-            />
-            {product.stock === 0 && (
-              <View style={styles.overlay}>
-                <Text style={styles.outOfStockText}>Sin stock</Text>
-              </View>
-            )}
-            {product.stock < 5 && product.stock > 0 && (
-              <View style={styles.overlay}>
-                <Text style={styles.lowStockText}>¡Ultimas unidades!</Text>
-              </View>
-            )}
-          </View>
-
+          <Image source={{ uri: product.image }} style={styles.image} />
           <Text style={styles.productName}>{product.name}</Text>
 
           <View style={styles.quantityControl}>
-            <Pressable onPress={decreaseQuantity} style={styles.quantityButton} disabled={product.stock === 0}>
-              <Ionicons name="remove-outline" size={24} color={product.stock === 0 ? '#aaa' : '#333'} />
+            {/* Botón para disminuir cantidad */}
+            <Pressable onPress={decreaseQuantity} style={styles.quantityButton}>
+              <Ionicons name="remove-outline" size={24} color="#333" />
             </Pressable>
             <Text style={styles.quantityText}>{quantity}</Text>
-            <Pressable onPress={increaseQuantity} style={styles.quantityButton} disabled={product.stock === 0}>
-              <Ionicons name="add-outline" size={24} color={product.stock === 0 ? '#aaa' : '#333'} />
+            {/* Botón para aumentar cantidad */}
+            <Pressable onPress={increaseQuantity} style={styles.quantityButton}>
+              <Ionicons name="add-outline" size={24} color="#333" />
             </Pressable>
           </View>
         </View>
       </View>
 
+      {/* Información del producto (Presentación y Descripción) */}
       <ScrollView style={styles.infoContainer}>
         <View style={styles.infoHeader}>
+          {/* Presentación del producto */}
           <View style={styles.sectionHeader}>
             <Image source={{ uri: 'https://i.imgur.com/H9LTHyB.png' }} style={styles.imageSectionHeader} />
             <Text style={styles.sectionContent}>{product.quantity_per_unit} {product.unit}</Text>
           </View>
+          {/* Stock disponible */}
           <View style={styles.sectionHeader}>
             <Image source={{ uri: 'https://i.imgur.com/PRWE0fh.png' }} style={styles.imageSectionHeader} />
             <Text style={styles.sectionContent}>Disponible: {product.stock}</Text>
           </View>
         </View>
+        {/* Título y descripción del producto */}
         <Text style={styles.sectionTitle}>Descripción</Text>
         <Text style={styles.sectionContent}>{product.description}</Text>
       </ScrollView>
 
+      {/* Barra inferior de Precio y Añadir al Carrito */}
       <View style={[styles.sectionBottom, { paddingBottom: insets.bottom }]}>
         <Text style={styles.totalPriceText}>${totalPrice.toLocaleString('es-CL')}</Text>
         <Pressable
           onPress={handleAddToCart}
           style={({ pressed }) => [
             styles.addToCartButton,
-            {
-              backgroundColor:
-                product.stock === 0 ? '#ccc' : pressed ? '#2563EB' : '#4A90E2',
-              flexDirection: 'row',
-              gap: 6,
-            },
+            { backgroundColor: pressed ? '#2563EB' : '#4A90E2' },
           ]}
-          disabled={product.stock === 0}
         >
-          {product.stock === 0 ? (
-            <>
-              <Ionicons name="sad-outline" size={20} color="white" />
-              <Text style={styles.addToCartButtonText}>Sin stock</Text>
-            </>
-          ) : (
-            <Text style={styles.addToCartButtonText}>Agregar al carrito</Text>
-          )}
+          <Text style={styles.addToCartButtonText}>Agregar al carrito</Text>
         </Pressable>
       </View>
     </View>
@@ -168,7 +149,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: '100%',
+    height: 240,
     resizeMode: 'contain',
   },
   imageOutOfStock: {
@@ -257,7 +238,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    elevation: 15,
   },
   totalPriceText: {
     fontSize: 32,

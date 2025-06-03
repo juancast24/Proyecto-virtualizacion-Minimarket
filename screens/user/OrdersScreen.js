@@ -12,6 +12,16 @@ import { useRoute } from "@react-navigation/native";
 import { format } from "date-fns";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from "@react-navigation/native";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import BottomBarLayout from '../../components/BottomBarLayout';
+import { CartContext } from '../../context/CartContext';
+
+// Lista de pedidos de ejemplo (mock)
+const orders = [
+    { id: '1', date: '2025-04-10', status: 'Entregado', total: '$12.50', products: ['Manzanas', 'Leche'] },
+    { id: '2', date: '2025-04-05', status: 'En camino', total: '$8.20', products: ['Pan', 'Huevos'] },
+    { id: '3', date: '2025-04-18', status: 'En proceso', total: '$15.30', products: ['Tomates', 'Jugo'] },
+];
 
 const OrdersScreen = () => {
   const route = useRoute();

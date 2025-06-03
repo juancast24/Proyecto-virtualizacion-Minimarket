@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Alert, Image, Pressable } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, StyleSheet, Alert, Image, Pressable, Keyboard, Dimensions, Platform } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import KeyboardAwareLayout from '../../components/KeyboardAwareLayout';
+
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const LoginScreen = () => {
   // Estado para alternar entre login y registro
@@ -13,6 +17,24 @@ const LoginScreen = () => {
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [barrio, setBarrio] = useState('');
+
+  const insets = useSafeAreaInsets();
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      () => setKeyboardOpen(true)
+    );
+    const hideSub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => setKeyboardOpen(false)
+    );
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   // Obtiene funciones de autenticación del contexto
   const { onLogin, onRegister } = useAuth();
@@ -64,28 +86,42 @@ const LoginScreen = () => {
     }
   };
 
-  return (
-    <View style={styles.bg}>
-      <View style={styles.container}>
-        {/* Logo y título */}
-        <Image source={require('../../assets/logo-market.png')} style={styles.logo} />
-        <Text style={styles.title}>{isLogin ? 'Bienvenido' : 'Crea tu cuenta'}</Text>
+  // Calcula el alto mínimo del container
+  const minHeight = keyboardOpen
+    ? SCREEN_HEIGHT - (insets.bottom + 16)
+    : SCREEN_HEIGHT;
 
-        {/* Botones para alternar entre login y registro */}
-        <View style={styles.toggleContainer}>
-          <Pressable
-            style={[styles.toggleButton, isLogin && styles.activeToggle]}
-            onPress={() => setIsLogin(true)}
-          >
-            <Text style={[styles.toggleText, isLogin && styles.activeText]}>Iniciar Sesión</Text>
-          </Pressable>
-          <Pressable
-            style={[styles.toggleButton, !isLogin && styles.activeToggle]}
-            onPress={() => setIsLogin(false)}
-          >
-            <Text style={[styles.toggleText, !isLogin && styles.activeText]}>Registrarse</Text>
-          </Pressable>
-        </View>
+  return (
+    <KeyboardAwareLayout
+      contentContainerStyle={{ flexGrow: 1 }}
+      keyboardPadding={keyboardOpen ? Math.max(insets.bottom - 8, 0) : 0}
+      keyboardOpen={keyboardOpen}
+    >
+      <View style={[
+        !keyboardOpen && { flex: 1, justifyContent: 'center' }
+      ]}>
+        <View style={styles.container}>
+          {/* Logo y título */}
+          <View style={{ alignItems: 'center' }}>
+            <Image source={require('../../assets/logo-market.png')} style={styles.logo} />
+            <Text style={styles.title}>{isLogin ? 'Bienvenido' : 'Crea tu cuenta'}</Text>
+          </View>
+
+          {/* Botones para alternar entre login y registro */}
+          <View style={styles.toggleContainer}>
+            <Pressable
+              style={[styles.toggleButton, isLogin && styles.activeToggle]}
+              onPress={() => setIsLogin(true)}
+            >
+              <Text style={[styles.toggleText, isLogin && styles.activeText]}>Iniciar Sesión</Text>
+            </Pressable>
+            <Pressable
+              style={[styles.toggleButton, !isLogin && styles.activeToggle]}
+              onPress={() => setIsLogin(false)}
+            >
+              <Text style={[styles.toggleText, !isLogin && styles.activeText]}>Registrarse</Text>
+            </Pressable>
+          </View>
 
         {/* Formulario de login o registro */}
         <View style={styles.form}>
@@ -120,52 +156,49 @@ const LoginScreen = () => {
             </>
           )}
 
-          {/* Campo de email */}
-          <TextInput
-            placeholder="Email"
-            autoCapitalize="none"
-            value={email}
-            onChangeText={setemail}
-            style={styles.input}
-          />
-          {/* Campo de contraseña */}
-          <TextInput
-            placeholder="Contraseña"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-            style={styles.input}
-          />
-          {/* Confirmar contraseña solo en registro */}
-          {!isLogin && (
+            {/* Campo de email */}
             <TextInput
-              placeholder="Confirmar Contraseña"
-              secureTextEntry
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
+              placeholder="Email"
+              autoCapitalize="none"
+              value={email}
+              onChangeText={setemail}
               style={styles.input}
             />
-          )}
+            {/* Campo de contraseña */}
+            <TextInput
+              placeholder="Contraseña"
+              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
+              style={styles.input}
+            />
+            {/* Confirmar contraseña solo en registro */}
+            {!isLogin && (
+              <TextInput
+                placeholder="Confirmar Contraseña"
+                secureTextEntry
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                style={styles.input}
+              />
+            )}
 
-          {/* Botón principal para login o registro */}
-          <Pressable style={styles.mainButton} onPress={isLogin ? handleLogin : handleRegister}>
-            <Text style={styles.mainButtonText}>{isLogin ? 'Entrar' : 'Crear cuenta'}</Text>
-          </Pressable>
+            {/* Botón principal para login o registro */}
+            <Pressable style={styles.mainButton} onPress={isLogin ? handleLogin : handleRegister}>
+              <Text style={styles.mainButtonText}>{isLogin ? 'Entrar' : 'Crear cuenta'}</Text>
+            </Pressable>
+          </View>
         </View>
       </View>
-    </View>
+    </KeyboardAwareLayout>
   );
 };
 
 const styles = StyleSheet.create({
   bg: {
     flex: 1,
-    backgroundColor: '#F6FDFF',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   container: {
-    width: '85%',
     backgroundColor: '#ffffff',
     borderRadius: 20,
     padding: 25,
@@ -174,6 +207,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 6,
+    marginHorizontal: 20,
   },
   logo: {
     width: 130,
@@ -234,6 +268,9 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  centerWrapper: {
+    width: '100%',
   },
 });
 

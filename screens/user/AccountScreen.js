@@ -15,6 +15,7 @@ import { useAuth } from "../../context/AuthContext";
 import { getFirestore, doc, updateDoc } from "firebase/firestore";
 import { firebaseApp } from "../../firebase.config";
 import { getAuth, updatePassword } from "firebase/auth";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Inicializa la instancia de Firestore
 const db = getFirestore(firebaseApp);
@@ -433,19 +434,19 @@ const AccountScreen = ({ navigation }) => {
           </View>
         </View>
 
-        {/* Botón para cerrar sesión */}
-        <Pressable style={styles.logoutButton} onPress={handleLogout}>
-          <MaterialIcons
-            name="logout"
-            size={20}
-            color="#ffffff"
-            style={styles.logoutIcon}
-          />
-          <Text style={styles.logoutText}>Cerrar sesión</Text>
-        </Pressable>
-      </View>
-    </Layout>
-  );
+                {/* Botón para cerrar sesión */}
+                <Pressable style={styles.logoutButton} onPress={handleLogout}>
+                    <MaterialIcons
+                        name="logout"
+                        size={20}
+                        color="#ffffff"
+                        style={styles.logoutIcon}
+                    />
+                    <Text style={styles.logoutText}>Cerrar sesión</Text>
+                </Pressable>
+            </View>
+        </Layout>
+    );
 };
 
 const styles = StyleSheet.create({

@@ -2,43 +2,47 @@ import React, { useState } from 'react';
 import SearchAndCategory from '../../components/SearchAndCategory';
 import Layout from '../../components/Layout';
 import { View, Text, StyleSheet, Image } from 'react-native';
-import ProductCard from '../../components/ProductCard';
-import { showMessage } from "react-native-flash-message";
+import ProductCard from '../../components/productCard';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import BottomBarLayout from '../../components/BottomBarLayout';
 
 const HomeScreen = () => {
     // Estado para la categoría seleccionada
     const [selectedCategory, setSelectedCategory] = useState(null);
     // Estado para la búsqueda
     const [searchQuery, setSearchQuery] = useState('');
+    const insets = useSafeAreaInsets(); // <-- aquí
 
     return (
-        <Layout>
-            <View style={styles.container}>
-                {/* Encabezado con título y logo */}
-                <View style={styles.content}>
-                    <View style={styles.containerTitle}>
-                        <Text style={styles.title}>
-                            Empieza{"\n"}
-                            <Text style={{ color: '#4A90E2' }}>Elije, </Text>
-                            lleva
-                        </Text>
-                        <View style={styles.imageContainer}>
-                            <Image source={require('../../assets/logo-market.png')} style={styles.logo} />
+        <BottomBarLayout>
+            <Layout>
+                <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+                    <View style={styles.content}>
+                        {/* Encabezado con título y logo */}
+                        <View style={styles.containerTitle}>
+                            <Text style={styles.title}>
+                                Empieza{"\n"}
+                                <Text style={{ color: '#4A90E2' }}>Elije, </Text>
+                                lleva
+                            </Text>
+                            <View style={styles.imageContainer}>
+                                <Image source={require('../../assets/logo-market.png')} style={styles.logo} />
+                            </View>
                         </View>
+                        {/* Barra de categorías al fondo */}
+                        <SearchAndCategory
+                            selectedCategory={selectedCategory}
+                            setSelectedCategory={setSelectedCategory}
+                            searchQuery={searchQuery}
+                            setSearchQuery={setSearchQuery}
+                        />
                     </View>
-                </View>
-                {/* Componente de búsqueda y categorías */}
-                <SearchAndCategory
-                    selectedCategory={selectedCategory}
-                    setSelectedCategory={setSelectedCategory}
-                    searchQuery={searchQuery}
-                    setSearchQuery={setSearchQuery}
-                />
-
-                {/* Muestra los productos filtrados por categoría y búsqueda */}
-                <ProductCard selectedCategory={selectedCategory} searchQuery={searchQuery} />
-            </View>
-        </Layout>
+                    {/* Muestra los productos filtrados por categoría y búsqueda */}
+                    <ProductCard selectedCategory={selectedCategory} searchQuery={searchQuery} />
+                </SafeAreaView>
+            </Layout>
+        </BottomBarLayout>
     );
 };
 
@@ -46,10 +50,18 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#F6FDFF',
+        // Espacio para los botones del sistema
     },
     content: {
         paddingHorizontal: 10,
     },
+
+    bottomBar: {
+        height: 'auto', // Ajusta el alto según lo que necesites
+        backgroundColor: 'auto',
+        width: '100%',
+    },
+
     containerTitle: {
         flexDirection: 'row',
         alignItems: 'center',

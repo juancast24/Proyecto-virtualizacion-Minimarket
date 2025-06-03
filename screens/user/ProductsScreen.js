@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Layout from '../../components/Layout';
-import ProductCard from '../../components/ProductCard';
+import ProductCard from '../../components/productCard';
 import SearchAndCategory from '../../components/SearchAndCategory';
 
 export default function ProductsScreen() {

@@ -8,6 +8,7 @@ import {
   Pressable,
   Image,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   getFirestore,
   collection,
@@ -21,6 +22,7 @@ import Layout from "../../components/Layout";
 import { useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { format } from "date-fns";
+import BottomBarLayout from "../../components/BottomBarLayout";
 
 const db = getFirestore(firebaseApp);
 
@@ -78,17 +80,19 @@ const OrderHistory = () => {
 
   if (loading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#4CAF50" />
-      </View>
+      <BottomBarLayout>
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color="#4CAF50" />
+        </View>
+      </BottomBarLayout>
     );
   }
 
   if (orders.length === 0) {
     return (
-      <Layout>
+      <BottomBarLayout>
         <View style={styles.centered}>
-          <Text style={styles.emptyTitle}>¡Haz tu primera compra!</Text>
+            <Text style={styles.emptyTitle}>¡Haz tu primera compra!</Text>
           <Text style={styles.emptyText}>Aquí podrás ver tus compras y hacer seguimiento de tus pedidos.</Text>
           <Pressable
             onPress={() => navigation.navigate("ProductsScreen")}
@@ -98,14 +102,18 @@ const OrderHistory = () => {
             ]}
           >
             <Text style={styles.shopButtonText}>Ver productos</Text>
-          </Pressable>
+            </Pressable>
         </View>
-      </Layout>
+      </BottomBarLayout>
     );
   }
 
   return (
-    <Layout>
+    <BottomBarLayout>
+    <SafeAreaView
+        style={styles.safeArea}
+        edges={["top", "bottom", "left", "right"]}
+      >
       <View style={styles.header}>
         <Text style={styles.title}>Mis Pedidos</Text>
       </View>
@@ -166,7 +174,8 @@ const OrderHistory = () => {
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
       />
-    </Layout>
+      </SafeAreaView>
+  </BottomBarLayout>
   );
 };
 

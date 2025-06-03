@@ -9,6 +9,7 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context"; // <-- Importa SafeAreaView
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
 import Layout from "../../components/Layout";
@@ -27,6 +28,7 @@ import { firebaseApp } from "../../firebase.config";
 import { showMessage } from "react-native-flash-message";
 import { useCart } from "../../context/CartContext";
 import { isColor } from "react-native-reanimated";
+import KeyboardAwareLayout from "../../components/KeyboardAwareLayout";
 
 const db = getFirestore(firebaseApp);
 const FormPay = () => {
@@ -151,7 +153,7 @@ const FormPay = () => {
     }
   };
   return (
-    <Layout>
+    <KeyboardAwareLayout>
       <ScrollView
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
@@ -279,7 +281,7 @@ const FormPay = () => {
           <Text style={styles.confirmButtonText}>Confirmar pedido</Text>
         </Pressable>
       </ScrollView>
-    </Layout>
+    </KeyboardAwareLayout>
   );
 };
 
