@@ -251,244 +251,233 @@ const OrdersScreen = () => {
   return (
     <BottomBarLayout>
       <View style={styles.container}>
-        {/* Título de la pantalla */}
-        <Text style={styles.title}>Pedidos</Text>
-
-        {/* Buscador de pedidos */}
-        <View style={styles.searchContainer}>
-          <Ionicons
-            name="search"
-            size={24}
-            color="gray"
-            style={styles.searchIcon}
-          />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Buscar por nombre o estado"
-            value={searchText}
-            onChangeText={setSearchText}
-          />
-        </View>
-
-        {/* Tabla de pedidos */}
-        <View style={styles.tableContainer}>
-          {/* Encabezado de la tabla */}
-          <View className="tableHeader" style={styles.tableHeader}>
-            <Text style={[styles.headerCell, { flex: 1.5 }]}>Cliente</Text>
-            <Text style={[styles.headerCell, { flex: 1 }]}>Fecha</Text>
-            <Text style={[styles.headerCell, { flex: 1 }]}>Estado</Text>
-            <Text style={[styles.headerCell, { flex: 2 }]}>Dirección</Text>
-            <Text style={[styles.headerCell, { flex: 0.8 }]}>Acción</Text>
-          </View>
-
-          {/* Lista de pedidos paginada */}
-          <FlatList
-            data={currentOrders}
-            renderItem={renderOrder}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={styles.tableContent}
-          />
-
-          {/* Controles de paginación */}
-          <View style={styles.paginationContainer}>
-            <Text style={styles.paginationText}>
-              Mostrando {indexOfFirstOrder + 1}-
-              {Math.min(indexOfLastOrder, filteredOrders.length)} de{" "}
-              {filteredOrders.length} pedidos
-            </Text>
-            <View style={styles.paginationControls}>
-              {/* Botón página anterior */}
-              <Pressable
-                style={[
-                  styles.paginationButton,
-                  currentPage === 1 && styles.disabledButton,
-                ]}
-                onPress={goToPrevPage}
-                disabled={currentPage === 1}
-              >
-                <AntDesign
-                  name="left"
-                  size={18}
-                  color={currentPage === 1 ? "#BBBBBB" : "#2980b9"}
-                />
-              </Pressable>
-              {/* Indicador de página actual */}
-              <Text style={styles.pageIndicator}>
-                {currentPage} de {totalPages}
-              </Text>
-              {/* Botón página siguiente */}
-              <Pressable
-                style={[
-                  styles.paginationButton,
-                  currentPage === totalPages && styles.disabledButton,
-                ]}
-                onPress={goToNextPage}
-                disabled={currentPage === totalPages}
-              >
-                <AntDesign
-                  name="right"
-                  size={18}
-                  color={currentPage === totalPages ? "#BBBBBB" : "#2980b9"}
-                />
-              </Pressable>
+      <FlatList
+        data={currentOrders}
+        renderItem={renderOrder}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.tableContent}
+        ListHeaderComponent={
+          <>
+            {/* Título de la pantalla */}
+            <Text style={styles.title}>Pedidos</Text>
+            {/* Buscador de pedidos */}
+            <View style={styles.searchContainer}>
+              <Ionicons
+                name="search"
+                size={24}
+                color="gray"
+                style={styles.searchIcon}
+              />
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Buscar por nombre o estado"
+                value={searchText}
+                onChangeText={setSearchText}
+              />
             </View>
-          </View>
-        </View>
-
-        {/* Modal para mostrar detalles del pedido seleccionado */}
-        {selectedOrder && (
-          <Modal
-            visible={modalVisible}
-            animationType="slide"
-            transparent={true}
-          >
-            <View style={styles.modalContainer}>
-              <View style={styles.modalContent}>
-                <Text style={styles.modalTitle}>Detalles del Pedido</Text>
-
-                {/* ID del pedido */}
-                <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>ID:</Text>
-                  <Text style={styles.detailValue}>{selectedOrder.id}</Text>
-                </View>
-
-                {/* Nombre del cliente */}
-                <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Cliente:</Text>
-                  <Text style={styles.detailValue}>{selectedOrder.name}</Text>
-                </View>
-
-                {/* Lista de productos del pedido */}
-                <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Productos:</Text>
-                  <View style={styles.detailProductsList}>
-                    {Array.isArray(selectedOrder.products) &&
-                    selectedOrder.products.length > 0 ? (
-                      selectedOrder.products.map((prod, idx) =>
-                        typeof prod === "object" && prod !== null ? (
-                          <View
-                            key={idx}
-                            style={{
-                              flexDirection: "row",
-                              alignItems: "center",
-                              marginBottom: 4,
-                            }}
-                          >
-                            {prod.image && (
-                              <Image
-                                source={{ uri: prod.image }}
-                                style={{
-                                  width: 32,
-                                  height: 32,
-                                  borderRadius: 6,
-                                  marginRight: 8,
-                                  backgroundColor: "#eee",
-                                }}
-                              />
-                            )}
-                            <Text style={styles.productText}>
-                              {prod.name} x{prod.quantity}
-                            </Text>
-                          </View>
-                        ) : (
-                          <Text key={idx} style={styles.productText}>
-                            • {prod}
-                          </Text>
-                        )
-                      )
-                    ) : (
-                      <Text style={styles.productText}>Sin productos</Text>
-                    )}
-                  </View>
-                </View>
-
-                {/* Total del pedido */}
-                <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Total:</Text>
-                  <Text style={styles.detailValue}>
-                    $
-                    {selectedOrder.total
-                      ? selectedOrder.total.toLocaleString()
-                      : "0"}
-                  </Text>
-                </View>
-
-                {/* Fecha del pedido */}
-                <Text style={styles.detailValue}>
-                  {selectedOrder.date && selectedOrder.date.seconds
-                    ? new Date(
-                        selectedOrder.date.seconds * 1000
-                      ).toLocaleDateString()
-                    : selectedOrder.date || ""}
-                </Text>
-
-                {/* Estado del pedido con indicador de color */}
-                <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Estado:</Text>
-                  <View style={styles.statusBadge}>
-                    <View
-                      style={[
-                        styles.statusDot,
-                        {
-                          backgroundColor: getStatusColor(selectedOrder.status),
-                        },
-                      ]}
-                    />
-                    <Text style={styles.statusText}>
-                      {selectedOrder.status}
-                    </Text>
-                  </View>
-                </View>
-
-                {/* Botón para editar el estado del pedido (a implementar) */}
-                {editingStatus ? (
-                  <>
-                    <Picker
-                      selectedValue={newStatus}
-                      onValueChange={setNewStatus}
-                      style={{ marginVertical: 10 }}
-                    >
-                      <Picker.Item label="Pendiente" value="pendiente" />
-                      <Picker.Item label="Enviado" value="enviado" />
-                      <Picker.Item label="Entregado" value="entregado" />
-                    </Picker>
-                    <Pressable
-                      style={styles.editButton}
-                      onPress={updateOrderStatus}
-                    >
-                      <Text style={styles.editButtonText}>Guardar estado</Text>
-                    </Pressable>
-                    <Pressable
-                      style={styles.closeButton}
-                      onPress={() => setEditingStatus(false)}
-                    >
-                      <Text style={styles.closeButtonText}>Cancelar</Text>
-                    </Pressable>
-                  </>
-                ) : (
-                  <Pressable
-                    style={styles.editButton}
-                    onPress={() => {
-                      setNewStatus(selectedOrder.status || "pendiente");
-                      setEditingStatus(true);
-                    }}
-                  >
-                    <Text style={styles.editButtonText}>Editar estado</Text>
-                  </Pressable>
-                )}
-
-                {/* Botón para cerrar el modal */}
+            {/* Encabezado de la tabla */}
+            <View className="tableHeader" style={styles.tableHeader}>
+              <Text style={[styles.headerCell, { flex: 1.5 }]}>Cliente</Text>
+              <Text style={[styles.headerCell, { flex: 1 }]}>Fecha</Text>
+              <Text style={[styles.headerCell, { flex: 1 }]}>Estado</Text>
+              <Text style={[styles.headerCell, { flex: 2 }]}>Dirección</Text>
+              <Text style={[styles.headerCell, { flex: 0.8 }]}>Acción</Text>
+            </View>
+          </>
+        }
+        ListFooterComponent={
+          <>
+            {/* Controles de paginación */}
+            <View style={styles.paginationContainer}>
+              <Text style={styles.paginationText}>
+                Mostrando {indexOfFirstOrder + 1}-
+                {Math.min(indexOfLastOrder, filteredOrders.length)} de{" "}
+                {filteredOrders.length} pedidos
+              </Text>
+              <View style={styles.paginationControls}>
                 <Pressable
-                  style={styles.closeButton}
-                  onPress={() => setModalVisible(false)}
+                  style={[
+                    styles.paginationButton,
+                    currentPage === 1 && styles.disabledButton,
+                  ]}
+                  onPress={goToPrevPage}
+                  disabled={currentPage === 1}
                 >
-                  <Text style={styles.closeButtonText}>Cerrar</Text>
+                  <AntDesign
+                    name="left"
+                    size={18}
+                    color={currentPage === 1 ? "#BBBBBB" : "#2980b9"}
+                  />
+                </Pressable>
+                <Text style={styles.pageIndicator}>
+                  {currentPage} de {totalPages}
+                </Text>
+                <Pressable
+                  style={[
+                    styles.paginationButton,
+                    currentPage === totalPages && styles.disabledButton,
+                  ]}
+                  onPress={goToNextPage}
+                  disabled={currentPage === totalPages}
+                >
+                  <AntDesign
+                    name="right"
+                    size={18}
+                    color={currentPage === totalPages ? "#BBBBBB" : "#2980b9"}
+                  />
                 </Pressable>
               </View>
             </View>
-          </Modal>
-        )}
-      </View>
+            {/* Modal para mostrar detalles del pedido seleccionado */}
+            {selectedOrder && (
+              <Modal
+                visible={modalVisible}
+                animationType="slide"
+                transparent={true}
+              >
+                <View style={styles.modalContainer}>
+                  <View style={styles.modalContent}>
+                    <Text style={styles.modalTitle}>Detalles del Pedido</Text>
+                    {/* ...todo el contenido del modal aquí... */}
+                    {/* ID del pedido */}
+                    <View style={styles.detailRow}>
+                      <Text style={styles.detailLabel}>ID:</Text>
+                      <Text style={styles.detailValue}>{selectedOrder.id}</Text>
+                    </View>
+                    {/* Nombre del cliente */}
+                    <View style={styles.detailRow}>
+                      <Text style={styles.detailLabel}>Cliente:</Text>
+                      <Text style={styles.detailValue}>{selectedOrder.name}</Text>
+                    </View>
+                    {/* Lista de productos del pedido */}
+                    <View style={styles.detailRow}>
+                      <Text style={styles.detailLabel}>Productos:</Text>
+                      <View style={styles.detailProductsList}>
+                        {Array.isArray(selectedOrder.products) &&
+                        selectedOrder.products.length > 0 ? (
+                          selectedOrder.products.map((prod, idx) =>
+                            typeof prod === "object" && prod !== null ? (
+                              <View
+                                key={idx}
+                                style={{
+                                  flexDirection: "row",
+                                  alignItems: "center",
+                                  marginBottom: 4,
+                                }}
+                              >
+                                {prod.image && (
+                                  <Image
+                                    source={{ uri: prod.image }}
+                                    style={{
+                                      width: 32,
+                                      height: 32,
+                                      borderRadius: 6,
+                                      marginRight: 8,
+                                      backgroundColor: "#eee",
+                                    }}
+                                  />
+                                )}
+                                <Text style={styles.productText}>
+                                  {prod.name} x{prod.quantity}
+                                </Text>
+                              </View>
+                            ) : (
+                              <Text key={idx} style={styles.productText}>
+                                • {prod}
+                              </Text>
+                            )
+                          )
+                        ) : (
+                          <Text style={styles.productText}>Sin productos</Text>
+                        )}
+                      </View>
+                    </View>
+                    {/* Total del pedido */}
+                    <View style={styles.detailRow}>
+                      <Text style={styles.detailLabel}>Total:</Text>
+                      <Text style={styles.detailValue}>
+                        $
+                        {selectedOrder.total
+                          ? selectedOrder.total.toLocaleString()
+                          : "0"}
+                      </Text>
+                    </View>
+                    {/* Fecha del pedido */}
+                    <Text style={styles.detailValue}>
+                      {selectedOrder.date && selectedOrder.date.seconds
+                        ? new Date(
+                            selectedOrder.date.seconds * 1000
+                          ).toLocaleDateString()
+                        : selectedOrder.date || ""}
+                    </Text>
+                    {/* Estado del pedido con indicador de color */}
+                    <View style={styles.detailRow}>
+                      <Text style={styles.detailLabel}>Estado:</Text>
+                      <View style={styles.statusBadge}>
+                        <View
+                          style={[
+                            styles.statusDot,
+                            {
+                              backgroundColor: getStatusColor(selectedOrder.status),
+                            },
+                          ]}
+                        />
+                        <Text style={styles.statusText}>
+                          {selectedOrder.status}
+                        </Text>
+                      </View>
+                    </View>
+                    {/* Botón para editar el estado del pedido */}
+                    {editingStatus ? (
+                      <>
+                        <Picker
+                          selectedValue={newStatus}
+                          onValueChange={setNewStatus}
+                          style={{ marginVertical: 10 }}
+                        >
+                          <Picker.Item label="Pendiente" value="pendiente" />
+                          <Picker.Item label="Enviado" value="enviado" />
+                          <Picker.Item label="Entregado" value="entregado" />
+                        </Picker>
+                        <Pressable
+                          style={styles.editButton}
+                          onPress={updateOrderStatus}
+                        >
+                          <Text style={styles.editButtonText}>Guardar estado</Text>
+                        </Pressable>
+                        <Pressable
+                          style={styles.closeButton}
+                          onPress={() => setEditingStatus(false)}
+                        >
+                          <Text style={styles.closeButtonText}>Cancelar</Text>
+                        </Pressable>
+                      </>
+                    ) : (
+                      <Pressable
+                        style={styles.editButton}
+                        onPress={() => {
+                          setNewStatus(selectedOrder.status || "pendiente");
+                          setEditingStatus(true);
+                        }}
+                      >
+                        <Text style={styles.editButtonText}>Editar estado</Text>
+                      </Pressable>
+                    )}
+                    {/* Botón para cerrar el modal */}
+                    <Pressable
+                      style={styles.closeButton}
+                      onPress={() => setModalVisible(false)}
+                    >
+                      <Text style={styles.closeButtonText}>Cerrar</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              </Modal>
+            )}
+          </>
+        }
+      />
+    </View>
     </BottomBarLayout>
   );
 };
@@ -612,7 +601,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderTopWidth: 1,
     borderTopColor: "#eee",
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#F6FDFF",
   },
   paginationText: {
     fontSize: 13,

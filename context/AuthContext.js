@@ -94,16 +94,15 @@ export const AuthProvider = ({ children }) => {
 
   // Login de usuario
   const onLogin = async (email, password) => {
-    try {
-      const res = await signInWithEmailAndPassword(auth, email, password);
-      const newState = await buildAuthState(res.user);
-      setAuthState(newState);
-      return true;
-    } catch (error) {
-      console.error("Error en login:", error);
-      return false;
-    }
-  };
+  try {
+    const res = await signInWithEmailAndPassword(auth, email, password);
+    const newState = await buildAuthState(res.user);
+    setAuthState(newState);
+    return newState.user; // <-- Retorna el usuario
+  } catch (error) {
+    return false;
+  }
+};
 
   // Logout
   const onLogout = async () => {
