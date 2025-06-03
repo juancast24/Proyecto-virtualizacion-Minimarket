@@ -6,6 +6,9 @@ import LoginScreen from '../screens/public/LoginScreen';
 import ProductDetailsScreen from '../screens/public/ProductDetailsScreen';
 import FormPay from '../screens/public/FormPay';
 import CartScreen from '../screens/public/CartScreen'; 
+import SuccessScreen from '../screens/public/SuccessScreen';
+import ReciboScreen from '../screens/public/ReciboScreen';
+import OrdersScreen from '../screens/user/OrdersScreen';
 
 const Stack = createStackNavigator();
 
@@ -18,6 +21,9 @@ const PublicNavigator = () => {
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="CartScreen" component={CartScreen} />
       <Stack.Screen name="FormPay" component={FormPay} />
+      <Stack.Screen name="SuccessScreen" component={SuccessScreen} />
+      <Stack.Screen name="ReciboScreen" component={ReciboScreen} />
+      <Stack.Screen name="OrderScreen" component={OrdersScreen} />
     </Stack.Navigator>
   );
 };

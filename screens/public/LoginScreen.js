@@ -16,6 +16,7 @@ const LoginScreen = () => {
   const [phone, setPhone] = useState('');
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
+  const [barrio, setBarrio] = useState('');
 
   const insets = useSafeAreaInsets();
   const [keyboardOpen, setKeyboardOpen] = useState(false);
@@ -66,7 +67,8 @@ const LoginScreen = () => {
       phone.trim(),
       'user',
       name.trim(),
-      address.trim()
+      address.trim(),
+      barrio.trim()
     );
 
     if (success) {
@@ -78,6 +80,7 @@ const LoginScreen = () => {
       setPhone('');
       setName('');
       setAddress('');
+      setBarrio('');
     } else {
       Alert.alert('Error', 'No se pudo crear la cuenta');
     }
@@ -120,6 +123,7 @@ const LoginScreen = () => {
             </Pressable>
           </View>
 
+<<<<<<< HEAD
           {/* Formulario de login o registro */}
           <View style={styles.form}>
             {/* Campos adicionales solo para registro */}
@@ -146,6 +150,40 @@ const LoginScreen = () => {
                 />
               </>
             )}
+=======
+        {/* Formulario de login o registro */}
+        <View style={styles.form}>
+          {/* Campos adicionales solo para registro */}
+          {!isLogin && (
+            <>
+              <TextInput
+                placeholder="Nombre completo"
+                value={name}
+                onChangeText={setName}
+                style={styles.input}
+              />
+              <TextInput
+                placeholder="Teléfono"
+                keyboardType="phone-pad"
+                value={phone}
+                onChangeText={setPhone}
+                style={styles.input}
+              />
+              <TextInput
+                placeholder="Dirección"
+                value={address}
+                onChangeText={setAddress}
+                style={styles.input}
+              />
+              <TextInput
+                placeholder="Barrio"
+                value={barrio}
+                onChangeText={setBarrio}
+                style={styles.input}
+              />
+            </>
+          )}
+>>>>>>> 1c0ced9b39c7ab6175669668979dea917d05cc74
 
             {/* Campo de email */}
             <TextInput

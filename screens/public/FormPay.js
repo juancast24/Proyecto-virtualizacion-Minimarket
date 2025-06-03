@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -14,12 +14,11 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
 import Layout from "../../components/Layout";
 import { Ionicons } from "@expo/vector-icons";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAuth } from "../../context/AuthContext";
 import {
   getFirestore,
   collection,
-  getDocs,
-  setDoc,
   doc,
   addDoc,
   updateDoc,
@@ -28,6 +27,7 @@ import {
 import { firebaseApp } from "../../firebase.config";
 import { showMessage } from "react-native-flash-message";
 import { useCart } from "../../context/CartContext";
+import { isColor } from "react-native-reanimated";
 import KeyboardAwareLayout from "../../components/KeyboardAwareLayout";
 
 const db = getFirestore(firebaseApp);
@@ -38,7 +38,8 @@ const FormPay = () => {
   const { cartItems } = route.params || { cartItems: [] };
   const { clearCart } = useCart();
   const { authState } = useAuth();
-
+  const [isChecked, setIsChecked] = useState(false);
+  const [isCheckedWhatsApp, setIsCheckedWhatsApp] = useState(false);
   // Estado para el formulario de datos de envío y pago
   const [form, setForm] = useState({
     nombre: "",
@@ -79,17 +80,38 @@ const FormPay = () => {
   };
 
   const handleConfirmOrder = async () => {
+    if (
+      (!authState.user && (!form.nombre || !form.telefono || !form.correo || !form.barrio || !form.direccion)) ||
+      cartItems.length === 0 ||!isChecked 
+    ) {
+      showMessage({
+        message: "Todos los campos son obligatorios",
+        type: "warning",
+        duration: 1500,
+        titleStyle: { fontSize: 20, fontWeight: "bold" },
+        style: {
+          marginTop: 25,
+          paddingVertical: 24,
+          paddingHorizontal: 32,
+          minWidth: 350,
+          alignSelf: "center",
+          borderRadius: 10,
+        },
+        icon: "warning",
+      });
+      return;
+    }
     try {
       const userData = authState.user
         ? {
-            uid: authState.user.uid, // Agrega el UID aquí
-            nombre: authState.user.nombre,
-            telefono: authState.user.telefono,
-            correo: authState.user.correo,
-            barrio: form.barrio,
-            direccion: authState.user.direccion || form.direccion,
-            metodoPago: form.metodoPago,
-          }
+          uid: authState.user.uid,
+          nombre: authState.user.nombre,
+          telefono: authState.user.telefono,
+          correo: authState.user.correo,
+          barrio: authState.user.barrio || form.barrio,
+          direccion: authState.user.direccion || form.direccion,
+          metodoPago: form.metodoPago,
+        }
         : { ...form };
 
       const orderData = {
@@ -97,33 +119,29 @@ const FormPay = () => {
         productos: cartItems,
         total: calcularTotalGeneral(),
         fecha: new Date().toISOString(),
+        estado: "Pendiente"
       };
 
+      // Guarda el pedido y obtén el ID
+    const docRef = await addDoc(collection(db, "pedidos"), orderData);
+    const pedidoId = docRef.id;
       // Siempre usa addDoc para generar un ID único, tanto para usuarios logueados como no logueados
       await addDoc(collection(db, "pedidos"), orderData);
 
-      // Actualiza el stock de cada producto
-    for (const item of cartItems) {
-      const productRef = doc(db, "products", item.id);
-      const productSnap = await getDoc(productRef);
-      if (productSnap.exists()) {
-        const currentStock = productSnap.data().stock || 0;
-        const newStock = Math.max(currentStock - item.quantity, 0);
-        await updateDoc(productRef, { stock: newStock });
-      }
-    }
 
+      // Actualiza el stock de cada producto
+      for (const item of cartItems) {
+        const productRef = doc(db, "products", item.id);
+        const productSnap = await getDoc(productRef);
+        if (productSnap.exists()) {
+          const currentStock = productSnap.data().stock || 0;
+          const newStock = Math.max(currentStock - item.quantity, 0);
+          await updateDoc(productRef, { stock: newStock });
+        }
+      }
       // Limpia el carrito después de confirmar el pedido
       clearCart();
-
-      showMessage({
-        message: "¡Pedido confirmado y guardado con éxito!",
-        type: "success",
-        duration: 2000,
-        titleStyle: { fontSize: 20, fontWeight: "bold" },
-      });
-
-      navigation.navigate("Home");
+      navigation.navigate("SuccessScreen", { pedidoId });
     } catch (error) {
       console.error("Error al guardar el pedido:", error);
       showMessage({
@@ -169,8 +187,8 @@ const FormPay = () => {
         <View style={styles.sectionWrapper}>
           <Text style={styles.sectionTitle}>Datos de Envío</Text>
           <Text style={styles.deliveryInfo}>
-            <Ionicons
-              name="information-circle-outline"
+            <Icon
+              name="information-off-outline"
               size={16}
               color="#666"
             />{" "}
@@ -205,7 +223,7 @@ const FormPay = () => {
             placeholder="Barrio"
             placeholderTextColor="#999"
             onChangeText={(text) => handleChange("barrio", text)}
-            value={form.barrio}
+            value={authState.user ? authState.user.barrio : form.barrio}
           />
           <TextInput
             style={styles.input}
@@ -214,6 +232,22 @@ const FormPay = () => {
             onChangeText={(text) => handleChange("direccion", text)}
             value={authState.user ? authState.user.direccion : form.direccion}
           />
+          <Pressable onPress={() => setIsCheckedWhatsApp(!isCheckedWhatsApp)} style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Icon
+              name={isCheckedWhatsApp ? 'checkbox-marked-outline' : 'checkbox-blank-outline'}
+              size={20}
+              color={isCheckedWhatsApp ? '#4A90E2' : '#aaa'}
+            />
+            <Text style={isCheckedWhatsApp ? styles.textCheckDisabled : styles.textCheck}>{'Deseo recibir notificaciones al WhatsApp'}</Text>
+          </Pressable>
+          <Pressable onPress={() => setIsChecked(!isChecked)} style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Icon
+              name={isChecked ? 'checkbox-marked-outline' : 'checkbox-blank-outline'}
+              size={20}
+              color={isChecked ? '#4A90E2' : '#aaa'}
+            />
+            <Text style={isChecked ? styles.textCheckDisabled : styles.textCheck}>{'Acepto los términos y condiciones'}</Text>
+          </Pressable>
         </View>
 
         <View style={styles.separator} />
@@ -253,7 +287,7 @@ const FormPay = () => {
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 16,
+    marginHorizontal: 10,
     paddingBottom: 20,
   },
   header: {
@@ -271,7 +305,6 @@ const styles = StyleSheet.create({
     color: "#333",
     flex: 1,
     textAlign: "center",
-    marginRight: 45,
   },
   sectionWrapper: {
     backgroundColor: "white",
@@ -291,10 +324,11 @@ const styles = StyleSheet.create({
     }),
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
-    color: "#333",
+    color: "#555",
     marginBottom: 15,
+
   },
 
   cartItemCard: {
@@ -343,12 +377,12 @@ const styles = StyleSheet.create({
     borderTopColor: "#eee",
   },
   totalLabel: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
     color: "#333",
   },
   totalAmount: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: "bold",
     color: "#4CAF50",
   },
@@ -361,7 +395,7 @@ const styles = StyleSheet.create({
   },
 
   deliveryInfo: {
-    fontSize: 14,
+    fontSize: 15,
     color: "#666",
     marginBottom: 15,
     fontStyle: "italic",
@@ -425,6 +459,18 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  textCheck: {
+    fontSize: 15,
+    color: "#666",
+    marginLeft: 10,
+    fontStyle: 'italic',
+  },
+  textCheckDisabled: {
+    fontSize: 15,
+    color: "#4A90E2",
+    marginLeft: 10,
+    fontStyle: 'italic',
   },
 });
 

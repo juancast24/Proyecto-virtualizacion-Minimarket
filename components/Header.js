@@ -37,7 +37,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderBottomWidth: 1,
         borderBottomColor: '#ddd',
-        marginBottom: 10,
     },
     // Estilos para el texto del header
     headerText: {

@@ -6,14 +6,24 @@ import {
   FlatList,
   Pressable,
   Modal,
-  TextInput, Image
+  TextInput,
+  Image,
+  Linking,
+  Alert,
 } from "react-native";
 import Layout from "../../components/Layout";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import { Feather, Ionicons, AntDesign } from "@expo/vector-icons";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import { firebaseApp } from "../../firebase.config";
+import { Picker } from "@react-native-picker/picker";
 
 // Inicializa la instancia de Firestore
 const db = getFirestore(firebaseApp);
@@ -34,6 +44,9 @@ const OrdersScreen = () => {
   const [orders, setOrders] = useState([]);
   // Estado para mostrar indicador de carga mientras se obtienen los pedidos
   const [loading, setLoading] = useState(true);
+
+  const [editingStatus, setEditingStatus] = useState(false);
+  const [newStatus, setNewStatus] = useState("pendiente");
 
   // Estados para la paginación
   const [currentPage, setCurrentPage] = useState(1); // Página actual
@@ -56,6 +69,19 @@ const OrdersScreen = () => {
             address: data.direccion || data.address || "Sin dirección",
             products: data.productos || data.products || [],
             total: data.total || 0,
+            products: data.productos || data.products || [],
+            total: data.total || 0,
+            // Asegura que el teléfono sea string y sin espacios
+            telefono: (
+              data.telefono ||
+              data.phone ||
+              (data.usuario && data.usuario.telefono) ||
+              (Array.isArray(data.productos) && data.productos[0]?.telefono) ||
+              (Array.isArray(data.products) && data.products[0]?.telefono) ||
+              ""
+            )
+              .toString()
+              .replace(/\s+/g, ""),
           });
         });
         setOrders(ordersArray);
@@ -67,6 +93,55 @@ const OrdersScreen = () => {
     };
     fetchOrders();
   }, []);
+
+  const sendWhatsAppNotification = (order, newStatus) => {
+    // Intenta obtener el teléfono del pedido
+    const phone =
+      order.telefono ||
+      order.phone ||
+      (order.usuario && order.usuario.telefono) ||
+      (order.products && order.products[0] && order.products[0].telefono);
+
+    if (!phone) {
+      Alert.alert("Error", "No se encontró el número de teléfono del cliente.");
+      return;
+    }
+
+    const message = `Hola ${order.name}, tu pedido (${order.id}) ha cambiado de estado a: ${newStatus}. ¡Gracias por tu compra!`;
+    const url = `https://wa.me/${phone.replace(
+      /[^0-9]/g,
+      ""
+    )}?text=${encodeURIComponent(message)}`;
+
+    Linking.openURL(url).catch(() =>
+      Alert.alert("Error", "No se pudo abrir WhatsApp.")
+    );
+  };
+
+  // Función para actualizar el estado en Firestore
+  const updateOrderStatus = async () => {
+    if (!selectedOrder) return;
+    try {
+      const db = getFirestore(firebaseApp);
+      const orderDocRef = doc(db, "pedidos", selectedOrder.id);
+      await updateDoc(orderDocRef, { estado: newStatus });
+
+      // Actualiza el estado localmente
+      setOrders((prev) =>
+        prev.map((order) =>
+          order.id === selectedOrder.id
+            ? { ...order, status: newStatus }
+            : order
+        )
+      );
+      setSelectedOrder((prev) => ({ ...prev, status: newStatus }));
+      setEditingStatus(false);
+      // Notifica por WhatsApp
+      sendWhatsAppNotification(selectedOrder, newStatus);
+    } catch (error) {
+      console.error("Error al actualizar el estado:", error);
+    }
+  };
 
   // Filtra los pedidos según el texto de búsqueda (por nombre)
   const filteredOrders = orders.filter((order) =>
@@ -366,12 +441,41 @@ const OrdersScreen = () => {
                 </View>
 
                 {/* Botón para editar el estado del pedido (a implementar) */}
-                <Pressable
-                  style={styles.editButton}
-                  onPress={() => setModalVisible(false)}
-                >
-                  <Text style={styles.editButtonText}>Editar estado</Text>
-                </Pressable>
+                {editingStatus ? (
+                  <>
+                    <Picker
+                      selectedValue={newStatus}
+                      onValueChange={setNewStatus}
+                      style={{ marginVertical: 10 }}
+                    >
+                      <Picker.Item label="Pendiente" value="pendiente" />
+                      <Picker.Item label="Enviado" value="enviado" />
+                      <Picker.Item label="Entregado" value="entregado" />
+                    </Picker>
+                    <Pressable
+                      style={styles.editButton}
+                      onPress={updateOrderStatus}
+                    >
+                      <Text style={styles.editButtonText}>Guardar estado</Text>
+                    </Pressable>
+                    <Pressable
+                      style={styles.closeButton}
+                      onPress={() => setEditingStatus(false)}
+                    >
+                      <Text style={styles.closeButtonText}>Cancelar</Text>
+                    </Pressable>
+                  </>
+                ) : (
+                  <Pressable
+                    style={styles.editButton}
+                    onPress={() => {
+                      setNewStatus(selectedOrder.status || "pendiente");
+                      setEditingStatus(true);
+                    }}
+                  >
+                    <Text style={styles.editButtonText}>Editar estado</Text>
+                  </Pressable>
+                )}
 
                 {/* Botón para cerrar el modal */}
                 <Pressable
@@ -653,7 +757,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#2980b9",
     padding: 12,
     borderRadius: 8,
-    marginTop: 20,
+    marginTop: 22,
     width: "50%",
     alignSelf: "center",
     justifyContent: "center",

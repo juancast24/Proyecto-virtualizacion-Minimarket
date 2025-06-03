@@ -73,6 +73,7 @@ export default function SearchAndCategory({ selectedCategory, setSelectedCategor
 const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 10,
+        marginTop: 5,
     },
     searchContainer: {
         flexDirection: 'row',

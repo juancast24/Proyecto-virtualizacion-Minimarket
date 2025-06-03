@@ -66,7 +66,8 @@ export const AuthProvider = ({ children }) => {
     telefono = "",
     rol = "user",
     nombre = "",
-    direccion = ""
+    direccion = "",
+    barrio = ""
   ) => {
     try {
       const res = await createUserWithEmailAndPassword(auth, email, password);
@@ -77,6 +78,7 @@ export const AuthProvider = ({ children }) => {
         telefono,
         nombre,
         direccion,
+        barrio,
         rol,
       });
 

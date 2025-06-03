@@ -12,7 +12,6 @@ import { useNavigation } from "@react-navigation/native";
 import {
   getFirestore,
   collection,
-  getDocs,
   onSnapshot,
 } from "firebase/firestore";
 import { firebaseApp } from "../firebase.config";
@@ -36,51 +35,47 @@ export default function ProductCard({ selectedCategory, searchQuery }) {
       duration: 1500,
       titleStyle: { fontSize: 20, fontWeight: "bold" },
       style: {
-      paddingVertical: 24,
-      paddingHorizontal: 32,
-      minWidth: 350,
-      alignSelf: "center",
-      borderRadius: 10,
-    },
+        marginTop: 25,
+        paddingVertical: 24,
+        paddingHorizontal: 32,
+        minWidth: 350,
+        alignSelf: "center",
+        borderRadius: 10,
+      },
       icon: "success",
     });
   };
+
   useEffect(() => {
     const unsubscribe = onSnapshot(
       collection(db, "products"),
       (querySnapshot) => {
-        // Cuando hay cambios, se actualiza el array de productos
         const productsArray = [];
         querySnapshot.forEach((doc) => {
           productsArray.push({ id: doc.id, ...doc.data() });
         });
-        setProducts(productsArray); // Actualiza el estado con los productos
-        setLoading(false); // Quita el indicador de carga
+        setProducts(productsArray);
+        setLoading(false);
       },
       (error) => {
-        // Manejo de errores en la suscripción
         console.error("Error al obtener productos:", error);
         setLoading(false);
       }
     );
 
-    // Esta es la función de limpieza del useEffect, Se llama cuando el componente se desmonta para detener la suscripción en tiempo real y evitar fugas de memoria (memory leaks).
     return () => unsubscribe();
   }, []);
 
-  // Filtrar productos por categoría
   const filteredByCategory = selectedCategory
     ? products.filter(
-        (product) =>
-          (product.category || "").toLowerCase().trim() ===
-          selectedCategory.toLowerCase().trim()
-      )
+      (product) =>
+        (product.category || "").toLowerCase().trim() ===
+        selectedCategory.toLowerCase().trim()
+    )
     : products;
 
-  // Filtrar productos por búsqueda
   const filteredProducts = filteredByCategory.filter((product) => {
     const query = (searchQuery || "").toLowerCase();
-
     return Object.values(product).some((value) =>
       String(value).toLowerCase().includes(query)
     );
@@ -114,24 +109,48 @@ export default function ProductCard({ selectedCategory, searchQuery }) {
           onPress={() => handlePressProduct(item)}
         >
           <View style={styles.imageContainer}>
-            <Image source={{ uri: item.image }} style={styles.cardImage} />
+            <Image
+              source={{ uri: item.image }}
+              style={[
+                styles.cardImage,
+                item.stock === 0 && styles.outOfStockImage,
+              ]}
+            />
+            {item.stock === 0 && (
+              <View style={styles.overlay}>
+                <Text style={styles.outOfStockText}>No hay stock</Text>
+              </View>
+            )}
           </View>
           <Text style={styles.cardName}>{item.name}</Text>
           <Text style={styles.cardPresentation}>
-            Presentacion: {item.quantity_per_unit} {item.unit}
+            Presentación: {item.quantity_per_unit} {item.unit}
           </Text>
           <View style={styles.cardBottom}>
-            <Text style={styles.cardPrice}>
+            <Text
+              style={[
+                styles.cardPrice,
+                item.stock === 0 && styles.cardPriceOutOfStock,
+              ]}
+            >
               ${item.price.toLocaleString("es-CL")}
             </Text>
             <Pressable
               onPress={() => handleAddToCart(item, 1, item.price)}
               style={({ pressed }) => [
                 styles.addToCartButtonText,
-                { backgroundColor: pressed ? "#2563EB" : "#4A90E2" },
+                {
+                  backgroundColor:
+                    item.stock === 0 ? "#ccc" : pressed ? "#2563EB" : "#4A90E2",
+                },
               ]}
+              disabled={item.stock === 0}
             >
-              <Ionicons name="cart-outline" style={styles.iconCart} />
+              {item.stock === 0 ? (
+                <Ionicons name="sad-outline" style={styles.iconCart} />
+              ) : (
+                <Ionicons name="cart-outline" style={styles.iconCart} />
+              )}
             </Pressable>
           </View>
         </Pressable>
@@ -139,6 +158,7 @@ export default function ProductCard({ selectedCategory, searchQuery }) {
     />
   );
 }
+
 const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 10,
@@ -161,15 +181,39 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     alignItems: "center",
+    position: "relative",
   },
   cardImage: {
     width: 80,
     height: 80,
     marginBottom: 10,
+    borderRadius: 10,
+  },
+  outOfStockImage: {
+    opacity: 0.3,
+  },
+  overlay: {
+    position: "absolute",
+    top: 60,
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.7)",
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  outOfStockText: {
+    color: "red",
+    fontWeight: "bold",
+    fontSize: 14,
+  },
+  ultimasUnidades: {
+    color: "#4A90E2",
+    fontWeight: "bold",
+    fontSize: 14,
   },
   cardName: {
     fontSize: 19,
-    alignItems: "center",
     fontWeight: "900",
     textAlign: "center",
   },
@@ -190,8 +234,11 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     maxWidth: "70%",
   },
+  cardPriceOutOfStock: {
+    color: "red",
+    textDecorationLine: "line-through",
+  },
   addToCartButtonText: {
-    backgroundColor: "#4A90E2",
     paddingHorizontal: 15,
     padding: 10,
     borderRadius: 50,
