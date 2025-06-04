@@ -103,7 +103,7 @@ const CartScreen = () => {
         )}
 
         {cartItems.length > 0 && (
-          <View style={[styles.containerBottomFixed, { paddingBottom: -20 + insets.bottom }]}>
+          <View style={[styles.containerBottomFixed]}>
             <View style={styles.summaryContainer}>
               <Text style={styles.summaryText}>Total:</Text>
               <Text style={styles.summaryPrice}>${totalCartPrice.toLocaleString('es-CL')}</Text>
@@ -212,10 +212,10 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   removeButtonContent: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'center',
-},
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   removeButtonText: {
     color: '#fff',
     fontWeight: 'bold',
@@ -243,16 +243,17 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 30,
+    backgroundColor: '#4A90E2',
   },
   shopButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },
-
   containerBottom: {
     backgroundColor: '#F6FDFF',
-    marginBottom: -40,
+    marginBottom: 20,
+  },
   containerBottomFixed: {
     position: 'absolute',
     left: 0,
@@ -261,7 +262,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingHorizontal: 20,
     paddingTop: 20,
-    paddingBottom: 24, // <-- Añade o aumenta este valor para bajar los elementos
+    paddingBottom: 30,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     elevation: 10,
@@ -309,6 +310,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-}});
+});
 
 export default CartScreen;

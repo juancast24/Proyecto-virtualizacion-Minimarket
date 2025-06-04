@@ -1,10 +1,12 @@
 import React, { useState, useContext } from 'react';
-import { View, Image, StyleSheet, Text, Pressable, ScrollView } from 'react-native';
+import { View, Image, StyleSheet, Text, Pressable, ScrollView, Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { CartContext } from '../../context/CartContext';
 import BottomBarLayout from '../../components/BottomBarLayout';
+
+const isTablet = Dimensions.get('window').width >= 600;
 
 const ProductDetails = () => {
   const insets = useSafeAreaInsets();
@@ -12,6 +14,7 @@ const ProductDetails = () => {
   const { product } = route.params;
   const navigation = useNavigation();
   const { addToCart } = useContext(CartContext);
+  
 
   const handlePressBack = () => {
     navigation.goBack();
@@ -104,8 +107,7 @@ const ProductDetails = () => {
       {/* Barra inferior fija */}
       <View
         style={[
-          styles.sectionBottomFixed,
-          { paddingBottom: insets.bottom }
+          styles.sectionBottomFixed
         ]}
       >
         <Text style={styles.totalPriceText}>${totalPrice.toLocaleString('es-CL')}</Text>
@@ -147,19 +149,19 @@ const styles = StyleSheet.create({
   },
   productContainer: {
     alignItems: 'center',
-    paddingBottom: 70,
+    paddingBottom: 50,
     position: 'relative',
-    zIndex: 2, // Por encima de infoHeader
+    zIndex: 2, 
   },
   imageWrapper: {
-    position: 'relative',
-    width: 240,
-    height: 180,
-    marginBottom: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1, // Por encima de infoHeader
-  },
+  position: 'relative',
+  width: isTablet ? 400 : 240,      
+  height: isTablet ? 380 : 140,     
+  marginBottom: isTablet ? 30 : 15, 
+  alignItems: 'center',
+  justifyContent: 'center',
+  zIndex: 1,
+},
   image: {
     width: '100%',
     height: '100%',
@@ -252,7 +254,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: -30,
+    bottom: 0,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',

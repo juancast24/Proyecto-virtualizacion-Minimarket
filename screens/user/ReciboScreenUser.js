@@ -281,7 +281,7 @@ const ReciboScreen = () => {
           </Pressable>
           <Pressable
             style={[styles.button, { backgroundColor: "#1976D2", marginTop: 12 }]}
-            onPress={() => navigation.navigate("Tabs", { screen: "OrderHistory" })}
+            onPress={() => navigation.navigate("OrderHistory")}
           >
             <Text style={styles.buttonText}>Volver a mis pedidos</Text>
           </Pressable>
