@@ -319,7 +319,7 @@ const CreateProduct = () => {
         </Pressable>
         <Pressable
           style={[styles.button, { backgroundColor: "red" }]}
-          onPress={() => navigation.navigate("Tabs" , { screen: "AdminDashboard" })}
+          onPress={() => navigation.navigate("AdminDashboard")}
         >
           <Text style={styles.buttonText}>Atras</Text>
         </Pressable>
