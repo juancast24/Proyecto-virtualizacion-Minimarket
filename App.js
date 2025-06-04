@@ -8,11 +8,15 @@ import PublicNavigator from './navigation/PublicNavigator';
 import AdminNavigator from './navigation/AdminNavigator';
 import UserNavigator from './navigation/UserNavigator';
 import FlashMessage from "react-native-flash-message";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
 
 
 // Componente interno que utiliza el contexto de autenticación
 const AppInner = () => {
   const { authState } = useAuth(); 
+  const insets = useSafeAreaInsets();
 
   return (
     <NavigationContainer>
@@ -25,6 +29,7 @@ const AppInner = () => {
       ) : (
         <PublicNavigator />
       )}
+      <FlashMessage position="top" statusBarHeight={insets.top} />
     </NavigationContainer>
   );
 };
@@ -32,15 +37,17 @@ const AppInner = () => {
 // Componente principal de la aplicación
 export default function App() {
   return (
-    // Proveedor de autenticación envuelve toda la app
+    <SafeAreaProvider>
+ 
     <AuthProvider>
       {/* Proveedor de carrito envuelve la navegación y provee el contexto del carrito */}
       <CartProvider>
         <PedidosProvider>
           <AppInner />
-          <FlashMessage position="top" />
+          
         </PedidosProvider>
       </CartProvider>
     </AuthProvider>
+    </SafeAreaProvider>
   );
 }
