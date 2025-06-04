@@ -103,7 +103,7 @@ const CreateUserScreen = ({ navigation }) => {
         {/* Botón para volver a la pantalla de gestión de usuarios */}
         <Pressable
           style={[styles.button, { backgroundColor: "#e74c3c" }]}
-          onPress={() => navigation.navigate("Tabs", { screen: "UserManagement" })}
+          onPress={() => navigation.navigate("UserManagement")}
         >
           <Text style={styles.buttonText}>Atras</Text>
         </Pressable>
