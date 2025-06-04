@@ -24,7 +24,7 @@ import {
 import { firebaseApp } from "../../firebase.config";
 import { showMessage } from "react-native-flash-message";
 import { useCart } from "../../context/CartContext";
-import { isColor } from "react-native-reanimated";
+import { CommonActions } from '@react-navigation/native';
 import KeyboardAwareLayout from "../../components/KeyboardAwareLayout";
 
 const db = getFirestore(firebaseApp);
@@ -79,7 +79,7 @@ const FormPay = () => {
   const handleConfirmOrder = async () => {
     if (
       (!authState.user && (!form.nombre || !form.telefono || !form.correo || !form.barrio || !form.direccion)) ||
-      cartItems.length === 0 ||!isChecked 
+      cartItems.length === 0 || !isChecked
     ) {
       showMessage({
         message: "Todos los campos son obligatorios",
@@ -120,8 +120,8 @@ const FormPay = () => {
       };
 
       // Guarda el pedido y obtén el ID
-    const docRef = await addDoc(collection(db, "pedidos"), orderData);
-    const pedidoId = docRef.id;
+      const docRef = await addDoc(collection(db, "pedidos"), orderData);
+      const pedidoId = docRef.id;
       // Siempre usa addDoc para generar un ID único, tanto para usuarios logueados como no logueados
       await addDoc(collection(db, "pedidos"), orderData);
 
@@ -138,7 +138,14 @@ const FormPay = () => {
       }
       // Limpia el carrito después de confirmar el pedido
       clearCart();
-      navigation.navigate("SuccessScreen", { pedidoId });
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [
+            { name: 'SuccessScreen', params: { pedidoId } }
+          ],
+        })
+      );
     } catch (error) {
       console.error("Error al guardar el pedido:", error);
       showMessage({

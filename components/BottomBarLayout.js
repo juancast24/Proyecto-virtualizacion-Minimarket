@@ -17,7 +17,7 @@ const TabButton = ({ screen, label, icon, isActive, onPress }) => (
   </TouchableOpacity>
 );
 
-const BottomBarLayout = ({ children }) => {
+const BottomBarLayout = ({ children,disableInsets = false }) => {
   const navigation = useNavigation();
   const route = useRoute();
   const insets = useSafeAreaInsets();
@@ -60,7 +60,7 @@ const BottomBarLayout = ({ children }) => {
       : tabsByRole.guest;
 
   return (
-    <View style={{ flex: 1, paddingTop: insets.top, backgroundColor: '#F6FDFF', }}>
+    <View style={{ flex: 1, paddingTop: disableInsets ? 0 : insets.top, backgroundColor: '#F6FDFF', }}>
       <View style={{ flex: 1 }}>{children}</View>
       <View
         style={[

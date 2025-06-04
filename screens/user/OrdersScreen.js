@@ -33,7 +33,7 @@ const OrdersScreen = () => {
         ? "#28a745"
         : estado === "Pendiente"
           ? "#ffc107"
-          : estado === "En camino"
+          : estado === "Enviado"
             ? "#009688"
             : "#6c757d",
   });
@@ -44,7 +44,7 @@ const OrdersScreen = () => {
         return "check-circle";
       case "Pendiente":
         return "clock-time-four";
-      case "En camino":
+      case "Enviado":
         return "truck-delivery-outline";
       default:
         return "information-outline";
@@ -65,68 +65,70 @@ const OrdersScreen = () => {
   );
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Detalles del Pedido</Text>
+    <BottomBarLayout>
+      <View style={styles.container}>
+        <Text style={styles.title}>Detalles del Pedido</Text>
 
-      <View style={styles.section}>
-        {/* Fecha y total alineados */}
-        <View style={styles.rowBetween}>
-          <View>
-            <Text style={styles.label}><Icon name="calendar-month" size={20} color={"gray"} /> Fecha:</Text>
-            <Text style={styles.value}>
-              {format(new Date(order.fecha), "dd/MM/yyyy HH:mm")}
-            </Text>
+        <View style={styles.section}>
+          {/* Fecha y total alineados */}
+          <View style={styles.rowBetween}>
+            <View>
+              <Text style={styles.label}><Icon name="calendar-month" size={20} color={"gray"} /> Fecha:</Text>
+              <Text style={styles.value}>
+                {format(new Date(order.fecha), "dd/MM/yyyy HH:mm")}
+              </Text>
+            </View>
+            <View style={{ alignItems: "flex-end" }}>
+              <Text style={styles.label}><Icon name="cash-multiple" size={20} color={"gray"} /> Total:</Text>
+              <Text style={styles.total}>
+                ${Number(order.total || 0).toLocaleString("es-CL")}
+              </Text>
+            </View>
           </View>
-          <View style={{ alignItems: "flex-end" }}>
-            <Text style={styles.label}><Icon name="cash-multiple" size={20} color={"gray"} /> Total:</Text>
-            <Text style={styles.total}>
-              ${Number(order.total || 0).toLocaleString("es-CL")}
-            </Text>
-          </View>
-        </View>
 
-        {/* Dirección si existe */}
-        {order?.direccion && (
+          {/* Dirección si existe */}
+          {order?.direccion && (
+            <View style={styles.infoItem}>
+              <Text style={styles.label}><Icon name="map-marker" size={20} color={"gray"} /> Dirección:</Text>
+              <Text style={styles.value}>{order.direccion}</Text>
+            </View>
+          )}
+
+          {/* Estado */}
           <View style={styles.infoItem}>
-            <Text style={styles.label}><Icon name="map-marker" size={20} color={"gray"} /> Dirección:</Text>
-            <Text style={styles.value}>{order.direccion}</Text>
+            <Text style={styles.label}><Icon name="tag" size={20} color={"gray"} /> Estado:</Text>
+            <Text style={[styles.badge, getStatusStyle(order.estado)]}>
+              <Icon name={getStatusIcon(order.estado)} size={16} color="#fff" /> {order.estado}
+            </Text>
           </View>
-        )}
 
-        {/* Estado */}
-        <View style={styles.infoItem}>
-          <Text style={styles.label}><Icon name="tag" size={20} color={"gray"} /> Estado:</Text>
-          <Text style={[styles.badge, getStatusStyle(order.estado)]}>
-            <Icon name={getStatusIcon(order.estado)} size={16} color="#fff" /> {order.estado}
-          </Text>
+          {/* Botón Generar recibo */}
+          <Pressable
+            style={({ pressed }) => [
+              styles.generateReceiptButton,
+              { backgroundColor: pressed ? "#2563EB" : "#4A90E2" }
+            ]}
+            onPress={() => navigation.navigate("ReciboScreen", { pedidoId: order.id })}
+          >
+            <Icon name="receipt" size={22} color="#fff" />
+            <Text style={styles.generateReceiptText}>Generar recibo</Text>
+          </Pressable>
         </View>
 
-        {/* Botón Generar recibo */}
-        <Pressable
-          style={({ pressed }) => [
-            styles.generateReceiptButton,
-            { backgroundColor: pressed ? "#2563EB" : "#4A90E2" }
-          ]}
-          onPress={() => navigation.navigate("ReciboScreen", { pedidoId: order.id })}
-        >
-          <Icon name="receipt" size={22} color="#fff" />
-          <Text style={styles.generateReceiptText}>Generar recibo</Text>
-        </Pressable>
+        {/* Lista de productos */}
+        <View style={styles.section}>
+          <Text style={styles.label}><Icon name="cart-outline" size={20} color={"gray"} /> Productos:</Text>
+          <FlatList
+            data={order.productos}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderProduct}
+            scrollEnabled={false}
+            contentContainerStyle={{ paddingBottom: 20 }}
+            ItemSeparatorComponent={() => <View style={styles.separator} />}
+          />
+        </View>
       </View>
-
-      {/* Lista de productos */}
-      <View style={styles.section}>
-        <Text style={styles.label}><Icon name="cart-outline" size={20} color={"gray"} /> Productos:</Text>
-        <FlatList
-          data={order.productos}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderProduct}
-          scrollEnabled={false}
-          contentContainerStyle={{ paddingBottom: 20 }}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
-        />
-      </View>
-    </View>
+    </BottomBarLayout>
   );
 };
 

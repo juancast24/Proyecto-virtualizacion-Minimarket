@@ -14,7 +14,7 @@ const ProductDetails = () => {
   const { product } = route.params;
   const navigation = useNavigation();
   const { addToCart } = useContext(CartContext);
-  
+
 
   const handlePressBack = () => {
     navigation.goBack();
@@ -48,7 +48,7 @@ const ProductDetails = () => {
   };
 
   return (
-    <BottomBarLayout>
+    <BottomBarLayout disableInsets>
       {/* Header con SafeArea */}
       <View style={[styles.headerProductWrapper]}>
         <View style={styles.header}>
@@ -128,13 +128,14 @@ const ProductDetails = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F6FDFF',
   },
   headerProductWrapper: {
     backgroundColor: 'white',
     borderBottomLeftRadius: 60,
     borderBottomRightRadius: 60,
-    elevation: 12,
+    shadowColor: "#0288D1",
+    elevation: 10,
+    paddingTop: 20,
   },
   header: {
     flexDirection: 'row',
@@ -151,17 +152,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: 50,
     position: 'relative',
-    zIndex: 2, 
+    zIndex: 2,
   },
   imageWrapper: {
-  position: 'relative',
-  width: isTablet ? 400 : 240,      
-  height: isTablet ? 380 : 140,     
-  marginBottom: isTablet ? 30 : 15, 
-  alignItems: 'center',
-  justifyContent: 'center',
-  zIndex: 1,
-},
+    position: 'relative',
+    width: isTablet ? 400 : 240,
+    height: isTablet ? 380 : 140,
+    marginBottom: isTablet ? 30 : 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1,
+  },
   image: {
     width: '100%',
     height: '100%',
@@ -203,8 +204,9 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     paddingHorizontal: 8,
     paddingVertical: 5,
-    elevation: 10,
-    zIndex: 2, // Por encima de infoHeader
+    shadowColor: "#0288D1",
+    elevation: 12,
+    zIndex: 2, 
   },
   quantityButton: {
     padding: 8,
@@ -221,18 +223,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     position: 'relative',
-    zIndex: 0, // Al fondo
+    zIndex: 0, 
   },
   sectionHeader: {
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
-    zIndex: 0, // Al fondo
+    zIndex: 0, 
   },
   imageSectionHeader: {
     width: 55,
     height: 45,
-    zIndex: 0, // Al fondo
+    zIndex: 0, 
   },
   infoContainer: {
     flex: 1,
@@ -265,7 +267,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     elevation: 10,
-    shadowColor: "#000",
+    shadowColor: "",
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.08,
     shadowRadius: 4,

@@ -72,8 +72,8 @@ export default function SearchAndCategory({ selectedCategory, setSelectedCategor
 
 const styles = StyleSheet.create({
     container: {
-        paddingHorizontal: 10,
         marginTop: 10,
+        paddingHorizontal: 10,
     },
     searchContainer: {
         flexDirection: 'row',
@@ -82,11 +82,10 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         paddingHorizontal: 10,
         paddingVertical: 6,
-        shadowColor: '#000',
         shadowOpacity: 0.1,
         shadowOffset: { width: 0, height: 2 },
         shadowRadius: 4,
-        elevation: 3,
+        elevation: 5,
     },
     searchIcon: {
         marginRight: 8,
@@ -97,7 +96,7 @@ const styles = StyleSheet.create({
     },
     categoryList: {
         marginTop: 15,
-        marginBottom: 15,
+        marginBottom: 5,
     },
     categoryButton: {
         borderRadius: 20,

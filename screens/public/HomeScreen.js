@@ -47,7 +47,6 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     content: {
-        paddingHorizontal: 10,
     },
     bottomBar: {
         height: 'auto',
@@ -58,6 +57,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
+        paddingHorizontal: 10,
     },
     logo: {
         width: 120,

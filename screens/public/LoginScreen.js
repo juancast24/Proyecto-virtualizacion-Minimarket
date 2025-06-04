@@ -7,17 +7,11 @@ import {
   Alert,
   Image,
   Pressable,
-  Keyboard,
-  Dimensions,
-  Platform,
   ActivityIndicator
 } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import KeyboardAwareLayout from "../../components/KeyboardAwareLayout";
 import { showMessage } from "react-native-flash-message";
-
-const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 const LoginScreen = () => {
   // Estado para alternar entre login y registro
@@ -33,67 +27,75 @@ const LoginScreen = () => {
   const [loading, setLoading] = useState(false);
 
   const insets = useSafeAreaInsets();
-  const [keyboardOpen, setKeyboardOpen] = useState(false);
-
-  useEffect(() => {
-    const showSub = Keyboard.addListener(
-      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow",
-      () => setKeyboardOpen(true)
-    );
-    const hideSub = Keyboard.addListener(
-      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide",
-      () => setKeyboardOpen(false)
-    );
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
-  }, []);
 
   // Obtiene funciones de autenticación del contexto
   const { onLogin, onRegister } = useAuth();
 
- const handleLogin = async () => {
-  if (email.trim() === "" || password.trim() === "") {
-    return showMessage({
-      message: "Error",
-      description: "Hay campos sin rellenar",
-      type: "danger",
-      icon: "danger",
-    });
-  }
-  setLoading(true);
-  try {
-    const user = await onLogin(email.trim(), password);
-    if (!user) {
-      setLoading(false);
+  const handleLogin = async () => {
+    if (email.trim() === "" || password.trim() === "") {
       return showMessage({
+        message: "Error",
+        description: "Hay campos sin rellenar",
+        type: "danger",
+        icon: "danger",
+        style: {
+          marginTop: 25,
+          minWidth: 350,
+          alignSelf: "center",
+          borderRadius: 10,
+        },
+      });
+    }
+    setLoading(true);
+    try {
+      const user = await onLogin(email.trim(), password);
+      if (!user) {
+        setLoading(false);
+        return showMessage({
+          message: "Error",
+          description: "Email o contraseña incorrectos",
+          type: "danger",
+          icon: "danger",
+          style: {
+            marginTop: 25,
+            minWidth: 350,
+            alignSelf: "center",
+            borderRadius: 10,
+          },
+        });
+      }
+      // Obtén el nombre del usuario (ajusta según tu estructura de usuario)
+      const nombre = user.nombre || user.displayName || "Usuario";
+      showMessage({
+        message: "¡Bienvenido!",
+        description: `${nombre}.`,
+        type: "success",
+        icon: "success",
+        duration: 2000,
+        style: {
+          marginTop: 25,
+          minWidth: 350,
+          alignSelf: "center",
+          borderRadius: 10,
+        },
+      });
+    } catch (error) {
+      showMessage({
         message: "Error",
         description: "Email o contraseña incorrectos",
         type: "danger",
         icon: "danger",
+        style: {
+          marginTop: 25,
+          minWidth: 350,
+          alignSelf: "center",
+          borderRadius: 10,
+        },
       });
+    } finally {
+      setLoading(false);
     }
-    // Obtén el nombre del usuario (ajusta según tu estructura de usuario)
-    const nombre = user.nombre || user.displayName || "Usuario";
-    showMessage({
-      message: "¡Bienvenido!",
-      description: `${nombre}.`,
-      type: "success",
-      icon: "success",
-      duration: 2000,
-    });
-  } catch (error) {
-    showMessage({
-      message: "Error",
-      description: "Email o contraseña incorrectos",
-      type: "danger",
-      icon: "danger",
-    });
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   // Maneja el registro de usuario
   const handleRegister = async () => {
@@ -138,138 +140,130 @@ const LoginScreen = () => {
   };
 
   // Calcula el alto mínimo del container
-  const minHeight = keyboardOpen
-    ? SCREEN_HEIGHT - (insets.bottom + 5)
-    : SCREEN_HEIGHT;
-
   return (
-    <KeyboardAwareLayout
-      contentContainerStyle={{ flexGrow: 1 }}
-      keyboardPadding={keyboardOpen ? Math.max(insets.bottom - 8, 0) : 0}
-      keyboardOpen={keyboardOpen}
-    >
-      <View style={[!keyboardOpen && { flex: 1, justifyContent: "center" }]}>
-        <View style={styles.container}>
-          {/* Logo y título */}
-          <View style={{ alignItems: "center" }}>
-            <Image
-              source={require("../../assets/logo-market.png")}
-              style={styles.logo}
-            />
-            <Text style={styles.title}>
-              {isLogin ? "Bienvenido" : "Crea tu cuenta"}
+    <View style={styles.component}>
+      <View style={styles.container}>
+        {/* Logo y título */}
+        <View style={{ alignItems: "center" }}>
+          <Image
+            source={require("../../assets/logo-market.png")}
+            style={styles.logo}
+          />
+          <Text style={styles.title}>
+            {isLogin ? "Bienvenido" : "Crea tu cuenta"}
+          </Text>
+        </View>
+
+        {/* Botones para alternar entre login y registro */}
+        <View style={styles.toggleContainer}>
+          <Pressable
+            style={[styles.toggleButton, isLogin && styles.activeToggle]}
+            onPress={() => setIsLogin(true)}
+          >
+            <Text style={[styles.toggleText, isLogin && styles.activeText]}>
+              Iniciar Sesión
             </Text>
-          </View>
+          </Pressable>
+          <Pressable
+            style={[styles.toggleButton, !isLogin && styles.activeToggle]}
+            onPress={() => setIsLogin(false)}
+          >
+            <Text style={[styles.toggleText, !isLogin && styles.activeText]}>
+              Registrarse
+            </Text>
+          </Pressable>
+        </View>
 
-          {/* Botones para alternar entre login y registro */}
-          <View style={styles.toggleContainer}>
-            <Pressable
-              style={[styles.toggleButton, isLogin && styles.activeToggle]}
-              onPress={() => setIsLogin(true)}
-            >
-              <Text style={[styles.toggleText, isLogin && styles.activeText]}>
-                Iniciar Sesión
-              </Text>
-            </Pressable>
-            <Pressable
-              style={[styles.toggleButton, !isLogin && styles.activeToggle]}
-              onPress={() => setIsLogin(false)}
-            >
-              <Text style={[styles.toggleText, !isLogin && styles.activeText]}>
-                Registrarse
-              </Text>
-            </Pressable>
-          </View>
-
-          {/* Formulario de login o registro */}
-          <View style={styles.form}>
-            {/* Campos adicionales solo para registro */}
-            {!isLogin && (
-              <>
-                <TextInput
-                  placeholder="Nombre completo"
-                  value={name}
-                  onChangeText={setName}
-                  style={styles.input}
-                />
-                <TextInput
-                  placeholder="Teléfono"
-                  keyboardType="phone-pad"
-                  value={phone}
-                  onChangeText={setPhone}
-                  style={styles.input}
-                />
-                <TextInput
-                  placeholder="Dirección"
-                  value={address}
-                  onChangeText={setAddress}
-                  style={styles.input}
-                />
-                <TextInput
-                  placeholder="Barrio"
-                  value={barrio}
-                  onChangeText={setBarrio}
-                  style={styles.input}
-                />
-              </>
-            )}
-
-            {/* Campo de email */}
-            <TextInput
-              placeholder="Email"
-              autoCapitalize="none"
-              value={email}
-              onChangeText={setemail}
-              style={styles.input}
-            />
-            {/* Campo de contraseña */}
-            <TextInput
-              placeholder="Contraseña"
-              secureTextEntry
-              value={password}
-              onChangeText={setPassword}
-              style={styles.input}
-              autoCapitalize="none"
-            />
-            {/* Confirmar contraseña solo en registro */}
-            {!isLogin && (
+        {/* Formulario de login o registro */}
+        <View style={styles.form}>
+          {/* Campos adicionales solo para registro */}
+          {!isLogin && (
+            <>
               <TextInput
-                placeholder="Confirmar Contraseña"
-                secureTextEntry
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
+                placeholder="Nombre completo"
+                value={name}
+                onChangeText={setName}
                 style={styles.input}
-                autoCapitalize="none"
               />
-            )}
+              <TextInput
+                placeholder="Teléfono"
+                keyboardType="phone-pad"
+                value={phone}
+                onChangeText={setPhone}
+                style={styles.input}
+              />
+              <TextInput
+                placeholder="Dirección"
+                value={address}
+                onChangeText={setAddress}
+                style={styles.input}
+              />
+              <TextInput
+                placeholder="Barrio"
+                value={barrio}
+                onChangeText={setBarrio}
+                style={styles.input}
+              />
+            </>
+          )}
 
-            {/* Botón principal para login o registro */}
-            <Pressable
-              style={[
-                styles.mainButton,
-                loading && { backgroundColor: "#90C3F9" }, // Color más claro si loading
-              ]}
-              onPress={isLogin ? handleLogin : handleRegister}
-              disabled={loading} // Desactiva el botón mientras carga
-            >
-              {loading && isLogin ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text style={styles.mainButtonText}>
-                  {isLogin ? "Entrar" : "Crear cuenta"}
-                </Text>
-              )}
-            </Pressable>
-          </View>
+          {/* Campo de email */}
+          <TextInput
+            placeholder="Email"
+            autoCapitalize="none"
+            value={email}
+            onChangeText={setemail}
+            style={styles.input}
+          />
+          {/* Campo de contraseña */}
+          <TextInput
+            placeholder="Contraseña"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+            style={styles.input}
+            autoCapitalize="none"
+          />
+          {/* Confirmar contraseña solo en registro */}
+          {!isLogin && (
+            <TextInput
+              placeholder="Confirmar Contraseña"
+              secureTextEntry
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              style={styles.input}
+              autoCapitalize="none"
+            />
+          )}
+
+          {/* Botón principal para login o registro */}
+          <Pressable
+            style={[
+              styles.mainButton,
+              loading && { backgroundColor: "#90C3F9" }, // Color más claro si loading
+            ]}
+            onPress={isLogin ? handleLogin : handleRegister}
+            disabled={loading} // Desactiva el botón mientras carga
+          >
+            {loading && isLogin ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.mainButtonText}>
+                {isLogin ? "Entrar" : "Crear cuenta"}
+              </Text>
+            )}
+          </Pressable>
         </View>
       </View>
-    </KeyboardAwareLayout>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  bg: {
+  component: {
     flex: 1,
+    justifyContent: "center",
+    backgroundColor: "#F6FDFF",
   },
   container: {
     backgroundColor: "#ffffff",
@@ -277,7 +271,7 @@ const styles = StyleSheet.create({
     padding: 25,
     alignItems: "center",
     elevation: 10,
-    shadowColor: "#000",
+    shadowColor: "#0288D1",
     shadowOpacity: 0.1,
     shadowRadius: 6,
     marginHorizontal: 20,

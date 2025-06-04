@@ -162,19 +162,19 @@ export default function ProductCard({ selectedCategory, searchQuery }) {
 const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 10,
+    paddingTop: 10,
   },
   card: {
     marginBottom: 10,
     width: "48%",
     backgroundColor: "#fff",
-    borderRadius: 25,
+    borderRadius: 30,
     marginRight: 15,
     padding: 15,
-    shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 5 },
     shadowRadius: 10,
-    elevation: 5,
+    elevation: 10,
   },
   cardPressed: {
     transform: [{ scale: 1.05 }],
