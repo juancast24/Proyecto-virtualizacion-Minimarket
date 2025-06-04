@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useAuth } from "../../context/AuthContext";
 import {
   getFirestore,
@@ -24,7 +24,7 @@ import {
 import { firebaseApp } from "../../firebase.config";
 import { showMessage } from "react-native-flash-message";
 import { useCart } from "../../context/CartContext";
-import { CommonActions } from '@react-navigation/native';
+import { CommonActions } from "@react-navigation/native";
 import KeyboardAwareLayout from "../../components/KeyboardAwareLayout";
 
 const db = getFirestore(firebaseApp);
@@ -78,8 +78,14 @@ const FormPay = () => {
 
   const handleConfirmOrder = async () => {
     if (
-      (!authState.user && (!form.nombre || !form.telefono || !form.correo || !form.barrio || !form.direccion)) ||
-      cartItems.length === 0 || !isChecked
+      (!authState.user &&
+        (!form.nombre ||
+          !form.telefono ||
+          !form.correo ||
+          !form.barrio ||
+          !form.direccion)) ||
+      cartItems.length === 0 ||
+      !isChecked
     ) {
       showMessage({
         message: "Todos los campos son obligatorios",
@@ -101,14 +107,14 @@ const FormPay = () => {
     try {
       const userData = authState.user
         ? {
-          uid: authState.user.uid,
-          nombre: authState.user.nombre,
-          telefono: authState.user.telefono,
-          correo: authState.user.correo,
-          barrio: authState.user.barrio || form.barrio,
-          direccion: authState.user.direccion || form.direccion,
-          metodoPago: form.metodoPago,
-        }
+            uid: authState.user.uid,
+            nombre: authState.user.nombre,
+            telefono: authState.user.telefono,
+            correo: authState.user.correo,
+            barrio: authState.user.barrio || form.barrio,
+            direccion: authState.user.direccion || form.direccion,
+            metodoPago: form.metodoPago,
+          }
         : { ...form };
 
       const orderData = {
@@ -116,15 +122,12 @@ const FormPay = () => {
         productos: cartItems,
         total: calcularTotalGeneral(),
         fecha: new Date().toISOString(),
-        estado: "Pendiente"
+        estado: "Pendiente",
       };
 
       // Guarda el pedido y obtén el ID
       const docRef = await addDoc(collection(db, "pedidos"), orderData);
       const pedidoId = docRef.id;
-      // Siempre usa addDoc para generar un ID único, tanto para usuarios logueados como no logueados
-      await addDoc(collection(db, "pedidos"), orderData);
-
 
       // Actualiza el stock de cada producto
       for (const item of cartItems) {
@@ -141,9 +144,7 @@ const FormPay = () => {
       navigation.dispatch(
         CommonActions.reset({
           index: 0,
-          routes: [
-            { name: 'SuccessScreen', params: { pedidoId } }
-          ],
+          routes: [{ name: "SuccessScreen", params: { pedidoId } }],
         })
       );
     } catch (error) {
@@ -191,12 +192,8 @@ const FormPay = () => {
         <View style={styles.sectionWrapper}>
           <Text style={styles.sectionTitle}>Datos de Envío</Text>
           <Text style={styles.deliveryInfo}>
-            <Icon
-              name="information-off-outline"
-              size={16}
-              color="#666"
-            />{" "}
-            Solo se realizan envíos a Santander de Quilichao.
+            <Icon name="information-off-outline" size={16} color="#666" /> Solo
+            se realizan envíos a Santander de Quilichao.
           </Text>
           <TextInput
             style={styles.input}
@@ -236,21 +233,43 @@ const FormPay = () => {
             onChangeText={(text) => handleChange("direccion", text)}
             value={authState.user ? authState.user.direccion : form.direccion}
           />
-          <Pressable onPress={() => setIsCheckedWhatsApp(!isCheckedWhatsApp)} style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Pressable
+            onPress={() => setIsCheckedWhatsApp(!isCheckedWhatsApp)}
+            style={{ flexDirection: "row", alignItems: "center" }}
+          >
             <Icon
-              name={isCheckedWhatsApp ? 'checkbox-marked-outline' : 'checkbox-blank-outline'}
+              name={
+                isCheckedWhatsApp
+                  ? "checkbox-marked-outline"
+                  : "checkbox-blank-outline"
+              }
               size={20}
-              color={isCheckedWhatsApp ? '#4A90E2' : '#aaa'}
+              color={isCheckedWhatsApp ? "#4A90E2" : "#aaa"}
             />
-            <Text style={isCheckedWhatsApp ? styles.textCheckDisabled : styles.textCheck}>{'Deseo recibir notificaciones al WhatsApp'}</Text>
+            <Text
+              style={
+                isCheckedWhatsApp ? styles.textCheckDisabled : styles.textCheck
+              }
+            >
+              {"Deseo recibir notificaciones al WhatsApp"}
+            </Text>
           </Pressable>
-          <Pressable onPress={() => setIsChecked(!isChecked)} style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Pressable
+            onPress={() => setIsChecked(!isChecked)}
+            style={{ flexDirection: "row", alignItems: "center" }}
+          >
             <Icon
-              name={isChecked ? 'checkbox-marked-outline' : 'checkbox-blank-outline'}
+              name={
+                isChecked ? "checkbox-marked-outline" : "checkbox-blank-outline"
+              }
               size={20}
-              color={isChecked ? '#4A90E2' : '#aaa'}
+              color={isChecked ? "#4A90E2" : "#aaa"}
             />
-            <Text style={isChecked ? styles.textCheckDisabled : styles.textCheck}>{'Acepto los términos y condiciones'}</Text>
+            <Text
+              style={isChecked ? styles.textCheckDisabled : styles.textCheck}
+            >
+              {"Acepto los términos y condiciones"}
+            </Text>
           </Pressable>
         </View>
 
@@ -332,7 +351,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#555",
     marginBottom: 15,
-
   },
 
   cartItemCard: {
@@ -468,13 +486,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#666",
     marginLeft: 10,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
   textCheckDisabled: {
     fontSize: 15,
     color: "#4A90E2",
     marginLeft: 10,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
 });
 
