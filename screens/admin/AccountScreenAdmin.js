@@ -52,7 +52,6 @@ const AccountScreen = ({ navigation }) => {
     try {
       const userRef = doc(db, "usuarios", authState.user.uid);
       await updateDoc(userRef, editData);
-      // Actualiza el usuario en el contexto si tienes setUser
       if (setUser) setUser({ ...authState.user, ...editData });
       alert("Información actualizada correctamente.");
       closeEditModal();
@@ -186,9 +185,7 @@ const AccountScreen = ({ navigation }) => {
           </View>
         </View>
       </Modal>
-      
       {/* FIN MODAL */}
-
       {/* MODAL PARA EDITAR INFORMACIÓN */}
       <Modal
         visible={editModalVisible}
@@ -308,8 +305,7 @@ const AccountScreen = ({ navigation }) => {
             </View>
           </View>
         </View>
-      </Modal>
-      
+      </Modal>  
       {/* FIN MODAL */}
       <BottomBarLayout>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>

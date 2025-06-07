@@ -9,6 +9,7 @@ import AdminDashboard from "../screens/admin/AdminDashboard";
 import UserManagementScreen from "../screens/admin/UserManagementScreen";
 import OrdersScreen from "../screens/admin/OrdersScreen";
 import AccountScreenAdmin from "../screens/admin/AccountScreenAdmin";
+import DeliveredOrders from "../screens/admin/DeliveredOrders";
 
 
 const Stack = createStackNavigator();
@@ -33,6 +34,7 @@ const AdminNavigator = () => {
         component={EditUserScreen}
         options={{ title: "Editar Usuario" }}
       />
+      <Stack.Screen name="DeliveredOrders" component={DeliveredOrders} />
     </Stack.Navigator>
   );
 };

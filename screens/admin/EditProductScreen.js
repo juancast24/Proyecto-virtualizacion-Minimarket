@@ -230,7 +230,7 @@ const EditProductScreen = ({ route, navigation }) => {
                   width: 140,
                 },
               ]}
-              onPress={() => navigation.navigate("Tabs" , { screen: "AdminDashboard" })}
+              onPress={() => navigation.navigate("AdminDashboard")}
             >
               <Text style={styles.buttonText}>Cancelar</Text>
             </Pressable>
