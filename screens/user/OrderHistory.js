@@ -19,9 +19,11 @@ import {
 import { firebaseApp } from "../../firebase.config";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { format } from "date-fns";
 import BottomBarLayout from "../../components/BottomBarLayout";
+import { Picker } from "@react-native-picker/picker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 const db = getFirestore(firebaseApp);
 
@@ -30,6 +32,11 @@ const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
+
+  // Estados para filtros
+  const [filterStatus, setFilterStatus] = useState(""); // "" = todos
+  const [filterDate, setFilterDate] = useState(null); // null = todas las fechas
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const fetchOrders = () => {
     if (!authState.user) return;
@@ -59,10 +66,10 @@ const OrderHistory = () => {
       estado === "Entregado"
         ? "#28a745"
         : estado === "Pendiente"
-          ? "#ffc107"
-          : estado === "Enviado"
-            ? "#009688"
-            : "#6c757d",
+        ? "#ffc107"
+        : estado === "Enviado"
+        ? "#009688"
+        : "#6c757d",
   });
   const getStatusIcon = (estado) => {
     switch (estado) {
@@ -77,6 +84,26 @@ const OrderHistory = () => {
     }
   };
 
+  // Filtrado de pedidos por estado y fecha
+  const filteredOrders = orders.filter((order) => {
+    let statusMatch = true;
+    let dateMatch = true;
+
+    if (filterStatus) {
+      statusMatch =
+        (order.estado || "").toLowerCase() === filterStatus.toLowerCase();
+    }
+    if (filterDate) {
+      // Compara solo la fecha (sin hora)
+      const orderDate = new Date(order.fecha);
+      const filterDateOnly = new Date(filterDate);
+      orderDate.setHours(0, 0, 0, 0);
+      filterDateOnly.setHours(0, 0, 0, 0);
+      dateMatch = orderDate.getTime() === filterDateOnly.getTime();
+    }
+    return statusMatch && dateMatch;
+  });
+
   if (loading) {
     return (
       <View style={styles.centered}>
@@ -90,7 +117,9 @@ const OrderHistory = () => {
       <BottomBarLayout>
         <View style={styles.centered}>
           <Text style={styles.emptyTitle}>¡Haz tu primera compra!</Text>
-          <Text style={styles.emptyText}>Aquí podrás ver tus compras y hacer seguimiento de tus pedidos.</Text>
+          <Text style={styles.emptyText}>
+            Aquí podrás ver tus compras y hacer seguimiento de tus pedidos.
+          </Text>
           <Pressable
             onPress={() => navigation.navigate("ProductsScreen")}
             style={({ pressed }) => [
@@ -110,15 +139,92 @@ const OrderHistory = () => {
       <View style={styles.header}>
         <Text style={styles.title}>Mis Pedidos</Text>
       </View>
+      {/* Filtros */}
+      <View
+        style={{
+          flexDirection: "row",
+          marginBottom: 10,
+          alignItems: "center",
+          gap: 10,
+        }}
+      >
+        {/* Filtro por estado */}
+        <View style={{ flex: 1 }}>
+          <Picker
+            selectedValue={filterStatus}
+            style={{ flex: 1, height: 50, backgroundColor: "#fff" }}
+            mode="dropdown"
+            dropdownIconColor="#4A90E2"
+            dropdownBackgroundColor="#fff"
+            dropdownElevation={6}
+            dropdownStyle={{ borderRadius: 12 }}
+            onValueChange={(value) => setFilterStatus(value)}
+          >
+            <Picker.Item label="Todos" value="" />
+            <Picker.Item label="Pendiente" value="Pendiente" />
+            <Picker.Item label="Enviado" value="Enviado" />
+            <Picker.Item label="Entregado" value="Entregado" />
+          </Picker>
+        </View>
+        {/* Filtro por fecha */}
+        <Pressable
+          style={{
+            backgroundColor: "#fff",
+            padding: 15,
+            borderColor: "#ccc",
+            shadowColor: "#ccc",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.25,
+            shadowRadius: 4,
+            elevation: 5,
+            borderRadius: 30,
+            flex: 1,
+            alignItems: "center",
+          }}
+          onPress={() => setShowDatePicker(true)}
+        >
+          <Text>
+            {filterDate
+              ? format(new Date(filterDate), "dd/MM/yyyy")
+              : "Todas las fechas"}
+          </Text>
+        </Pressable>
+        {filterDate && (
+          <Pressable onPress={() => setFilterDate(null)}>
+            <Icon name="close-circle" size={22} color="#e74c3c" />
+          </Pressable>
+        )}
+      </View>
+      {showDatePicker && (
+        <DateTimePicker
+          value={filterDate ? new Date(filterDate) : new Date()}
+          mode="date"
+          display="default"
+          onChange={(event, selectedDate) => {
+            setShowDatePicker(false);
+            if (event.type === "set" && selectedDate) {
+              setFilterDate(selectedDate);
+            }
+          }}
+        />
+      )}
       <FlatList
-        data={orders}
+        data={filteredOrders}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <Pressable onPress={() => navigation.navigate("OrdersScreen", { order: item })}>
+          <Pressable
+            onPress={() => navigation.navigate("OrdersScreen", { order: item })}
+          >
             <View style={styles.orderCard}>
               <View style={styles.orderHeaderRow}>
-                <Text style={styles.orderDate}><Icon name="calendar-month" size={20} color={"gray"} /> {format(new Date(item.fecha), "dd/MM/yyyy")}</Text>
-                <Text style={styles.orderTotal}><Icon name="cash-multiple" size={20} color={"gray"} /> ${item.total.toLocaleString("es-CL")}</Text>
+                <Text style={styles.orderDate}>
+                  <Icon name="calendar-month" size={20} color={"gray"} />{" "}
+                  {format(new Date(item.fecha), "dd/MM/yyyy")}
+                </Text>
+                <Text style={styles.orderTotal}>
+                  <Icon name="cash-multiple" size={20} color={"gray"} /> $
+                  {item.total.toLocaleString("es-CL")}
+                </Text>
               </View>
 
               <View style={styles.productsContainer}>
@@ -135,7 +241,9 @@ const OrderHistory = () => {
                   </View>
                 ))}
                 {item.productos.length > 2 && (
-                  <Text style={styles.moreItemsText}>+ {item.productos.length - 2} productos</Text>
+                  <Text style={styles.moreItemsText}>
+                    + {item.productos.length - 2} productos
+                  </Text>
                 )}
               </View>
 
@@ -152,13 +260,17 @@ const OrderHistory = () => {
                 )}
 
                 <Pressable
-                  onPress={() => navigation.navigate("OrdersScreen", { order: item })}
+                  onPress={() =>
+                    navigation.navigate("OrdersScreen", { order: item })
+                  }
                   style={({ pressed }) => [
                     styles.detailButton,
                     { backgroundColor: pressed ? "#2563EB" : "#4A90E2" },
                   ]}
                 >
-                  <Text style={styles.detailButtonText}><Icon name="details" size={16} color="#fff" /> Ver detalles</Text>
+                  <Text style={styles.detailButtonText}>
+                    <Icon name="details" size={16} color="#fff" /> Ver detalles
+                  </Text>
                 </Pressable>
               </View>
             </View>
@@ -177,7 +289,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 20,
-
   },
   title: {
     fontSize: 26,
@@ -289,9 +400,9 @@ const styles = StyleSheet.create({
     borderRadius: 30,
   },
   shopButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });
 

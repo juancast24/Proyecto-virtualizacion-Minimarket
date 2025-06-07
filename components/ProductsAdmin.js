@@ -35,7 +35,7 @@ const ProductsAdmin = () => {
   const navigation = useNavigation(); // Hook para navegación entre pantallas
   const [searchText, setSearchText] = useState(""); // Estado para el texto de búsqueda
   const [currentPage, setCurrentPage] = useState(1); // Página actual para la paginación
-  const [itemsPerPage, setItemsPerPage] = useState(3); // Cantidad de productos por página
+  const [itemsPerPage, setItemsPerPage] = useState(4); // Cantidad de productos por página
   const [products, setProducts] = useState([]); // Lista de productos obtenidos de Firestore
   const [loading, setLoading] = useState(true); // Estado de carga
   const [modalVisible, setModalVisible] = useState(false);
@@ -59,8 +59,6 @@ const ProductsAdmin = () => {
         setLoading(false);
       }
     );
-
-    // Limpia el listener al desmontar
     return () => unsubscribe();
   }, []);
 
@@ -448,12 +446,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 5,
     elevation: 3,
-    marginVertical: 10,
+    marginVertical: 5,
   },
   fila: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 14,
+    paddingVertical: 10,
     paddingHorizontal: 8,
     borderBottomWidth: 1,
     borderBottomColor: "#e0e0e0",

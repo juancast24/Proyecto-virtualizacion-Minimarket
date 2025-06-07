@@ -25,6 +25,8 @@ const EditUserScreen = ({ route, navigation }) => {
   const [correo, setCorreo] = useState("");     // Correo electrónico del usuario
   const [telefono, setTelefono] = useState(""); // Teléfono del usuario
   const [rol, setRol] = useState("");           // Rol del usuario (user/admin)
+  const [direccion, setDireccion] = useState(""); // Dirección del usuario
+  const [barrio, setBarrio] = useState(""); // Barrio del usuario
 
   // useFocusEffect para manejar el botón físico "Atrás" en Android
   useFocusEffect(
@@ -52,6 +54,8 @@ const EditUserScreen = ({ route, navigation }) => {
         setNombre(data.nombre || "");
         setCorreo(data.correo || "");
         setTelefono(data.telefono || "");
+        setDireccion(data.direccion || "");
+        setBarrio(data.barrio || "");
         setRol(data.rol || "user");
       }
     };
@@ -66,6 +70,8 @@ const EditUserScreen = ({ route, navigation }) => {
         nombre,
         correo,
         telefono,
+        direccion,
+        barrio,
         rol,
       });
       // Muestra alerta de éxito y regresa a la pantalla anterior
@@ -118,6 +124,28 @@ const EditUserScreen = ({ route, navigation }) => {
         />
       </View>
 
+      <View style={styles.fieldGroup}> 
+        <Text style={styles.label}>Dirección</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Dirección"
+          value={direccion}
+          onChangeText={setDireccion}
+          placeholderTextColor="#aaa"
+        />
+      </View>
+
+      <View style={styles.fieldGroup}>
+        <Text style={styles.label}>Barrio</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Barrio"
+          value={barrio}
+          onChangeText={setBarrio}
+          placeholderTextColor="#aaa"
+        />
+        </View>
+
       <View style={styles.fieldGroup}>
         <Text style={styles.label}>Rol</Text>
         <TextInput
@@ -143,7 +171,7 @@ const EditUserScreen = ({ route, navigation }) => {
           styles.cancelButton,
           pressed && { backgroundColor: "#b71c1c" },
         ]}
-        onPress={() => navigation.navigate("Tabs", { screen: "UserManagement" })}
+        onPress={() => navigation.navigate("UserManagement")}
       >
         <Text style={styles.cancelButtonText}>Cancelar</Text>
       </Pressable>

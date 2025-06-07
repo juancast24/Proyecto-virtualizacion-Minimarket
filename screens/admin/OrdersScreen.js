@@ -1,26 +1,9 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  Pressable,
-  Modal,
-  TextInput,
-  Image,
-  Linking,
-  Alert,
-} from "react-native";
+import {View, Text, StyleSheet, FlatList, Pressable, Modal, TextInput, Image, Linking, Alert} from "react-native";  
 import { useAuth } from "../../context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import { Feather, Ionicons, AntDesign } from "@expo/vector-icons";
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  doc,
-  updateDoc,
-} from "firebase/firestore";
+import { getFirestore, collection, doc, updateDoc, onSnapshot, query, where, orderBy } from "firebase/firestore";
 import { firebaseApp } from "../../firebase.config";
 import { Picker } from "@react-native-picker/picker";
 import BottomBarLayout from "../../components/BottomBarLayout";
@@ -50,49 +33,47 @@ const OrdersScreen = () => {
 
   // Estados para la paginación
   const [currentPage, setCurrentPage] = useState(1); // Página actual
-  const [itemsPerPage, setItemsPerPage] = useState(4); // Cantidad de pedidos por página
+  const [itemsPerPage, setItemsPerPage] = useState(5); // Cantidad de pedidos por página
 
   // useEffect para obtener los pedidos de Firestore al montar el componente
   useEffect(() => {
-    const fetchOrders = async () => {
-      setLoading(true);
-      try {
-        const querySnapshot = await getDocs(collection(db, "pedidos"));
-        const ordersArray = [];
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          ordersArray.push({
-            id: doc.id,
-            name: data.usuario?.nombre || data.name || "Sin nombre",
-            date: data.fecha || data.date || null,
-            status: data.estado || data.status || "pendiente",
-            address: data.direccion || data.address || "Sin dirección",
-            products: data.productos || data.products || [],
-            total: data.total || 0,
-            products: data.productos || data.products || [],
-            total: data.total || 0,
-            // Asegura que el teléfono sea string y sin espacios
-            telefono: (
-              data.telefono ||
-              data.phone ||
-              (data.usuario && data.usuario.telefono) ||
-              (Array.isArray(data.productos) && data.productos[0]?.telefono) ||
-              (Array.isArray(data.products) && data.products[0]?.telefono) ||
-              ""
-            )
-              .toString()
-              .replace(/\s+/g, ""),
-          });
-        });
-        setOrders(ordersArray);
-      } catch (error) {
-        console.error("Error al obtener pedidos:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchOrders();
-  }, []);
+  const ordersCollection = collection(db, "pedidos");
+  // Trae todos los pedidos cuyo estado sea diferente de "entregado"
+  const q = query(
+    ordersCollection,
+    where("estado", "!=", "entregado"),
+    orderBy("estado") // Firestore exige orderBy en el mismo campo del where "!="
+  );
+  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    const ordersArray = [];
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      ordersArray.push({
+        id: doc.id,
+        name: data.usuario?.nombre || data.name || "Sin nombre",
+        date: data.fecha || data.date || null,
+        status: data.estado || data.status || "pendiente",
+        address: data.direccion || data.address || "Sin dirección",
+        products: data.productos || data.products || [],
+        total: data.total || 0,
+        telefono: (
+          data.telefono ||
+          data.phone ||
+          (data.usuario && data.usuario.telefono) ||
+          (Array.isArray(data.productos) && data.productos[0]?.telefono) ||
+          (Array.isArray(data.products) && data.products[0]?.telefono) ||
+          ""
+        )
+          .toString()
+          .replace(/\s+/g, ""),
+      });
+    });
+    setOrders(ordersArray);
+  }, (error) => {
+    console.error("Error al obtener pedidos:", error);
+  });
+  return () => unsubscribe();
+}, []);
 
   const sendWhatsAppNotification = (order, newStatus) => {
     // Intenta obtener el teléfono del pedido
@@ -328,6 +309,13 @@ const OrdersScreen = () => {
                 </Pressable>
               </View>
             </View>
+            {/* Botón para ver pedidos entregados */}
+            <Pressable
+                style={styles.button}
+                onPress={() => navigation.navigate("DeliveredOrders")}
+              >
+                <Text style={styles.buttonText}>Pedidos Entregados</Text>
+              </Pressable>
             {/* Modal para mostrar detalles del pedido seleccionado */}
             {selectedOrder && (
               <Modal
@@ -546,7 +534,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   cell: {
-    fontSize: 11,
+    fontSize: 8,
     color: "#333",
     flex: 1,
     paddingVertical: 8,
@@ -744,8 +732,8 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: "#2980b9",
     padding: 12,
-    borderRadius: 8,
-    marginTop: 20,
+    borderRadius: 30,
+    marginTop: 10,
     marginBottom: 30,
     width: "50%",
     alignSelf: "center",

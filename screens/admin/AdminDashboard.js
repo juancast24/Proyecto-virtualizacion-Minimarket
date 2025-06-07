@@ -23,8 +23,6 @@ const AdminDashboard = () => {
 
   const { filteredData } = ProductsAdmin;
 
-
-
   const handleCreateProductPress = () => {
     navigation.navigate("CreateProduct"); // Navegar a la pantalla de creación de productos.
   };
@@ -52,17 +50,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
-    marginTop: 1,
     backgroundColor: "#F6FDFF",
     borderRadius: 5,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 8,
+    elevation: 4,
   },
   buttonContainer: {
-    marginTop: 10,
+    marginTop: 1,
     flexDirection: "row", // Alineación horizontal
     justifyContent: "space-between", // Espaciado entre los botones
     marginHorizontal: 10, // Margen horizontal para el contenedor
@@ -82,11 +78,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   title: {
-    fontSize: 20,
+    fontSize: 30,
     fontWeight: "bold",
     marginBottom: 5,
     textAlign: "center",
-    marginTop: 25,
+    marginTop: 1,
   },
   searchContainer: {
     flexDirection: "row",

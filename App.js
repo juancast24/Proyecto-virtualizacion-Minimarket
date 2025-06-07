@@ -38,13 +38,10 @@ const AppInner = () => {
 export default function App() {
   return (
     <SafeAreaProvider>
- 
     <AuthProvider>
-      {/* Proveedor de carrito envuelve la navegación y provee el contexto del carrito */}
       <CartProvider>
         <PedidosProvider>
-          <AppInner />
-          
+          <AppInner />  
         </PedidosProvider>
       </CartProvider>
     </AuthProvider>

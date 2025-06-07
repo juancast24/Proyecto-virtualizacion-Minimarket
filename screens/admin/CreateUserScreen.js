@@ -22,18 +22,20 @@ const CreateUserScreen = ({ navigation }) => {
   const [telefono, setTelefono] = useState(""); // Teléfono
   const [rol, setRol] = useState(""); // Rol del usuario (admin/user)
   const [password, setPassword] = useState(""); // Contraseña
+  const [direccion, setDireccion] = useState(""); // Dirección del usuario
+  const [barrio, setBarrio] = useState(""); // Barrio del usuario
 
   // Función que maneja la creación del usuario
   const handleCreate = async () => {
     // Valida que los campos obligatorios estén completos
-    if (!nombre || !correo || !password || !rol) {
+    if (!nombre || !correo || !password || !rol || !direccion || !barrio) {
       Alert.alert("Error", "Todos los campos son obligatorios.");
       return;
     }
     try {
       // Llama a la función de registro del contexto de autenticación
       // El último argumento ("") es para la foto, que aquí no se usa
-      const ok = await onRegister(correo, password, telefono, rol, nombre, "");
+      const ok = await onRegister(correo, password, telefono, rol, nombre, "", direccion, barrio);
       if (ok) {
         Alert.alert("Éxito", "Usuario creado correctamente.");
         navigation.navigate("UserManagement"); // Vuelve a la pantalla anterior si se crea el usuario
@@ -85,6 +87,22 @@ const CreateUserScreen = ({ navigation }) => {
           value={telefono}
           onChangeText={setTelefono}
         />
+        {/* Campo para la dirección */}
+        <Text style={styles.label}>Dirección</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Dirección"
+          value={direccion}
+          onChangeText={setDireccion}
+        />
+        {/* Campo para el barrio */}
+        <Text style={styles.label}>Barrio</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Barrio"
+          value={barrio}
+          onChangeText={setBarrio}
+        />
         {/* Selector de rol */}
         <Text style={styles.label}>Rol</Text>
         <Picker
@@ -105,7 +123,7 @@ const CreateUserScreen = ({ navigation }) => {
           style={[styles.button, { backgroundColor: "#e74c3c" }]}
           onPress={() => navigation.navigate("UserManagement")}
         >
-          <Text style={styles.buttonText}>Atras</Text>
+          <Text style={styles.buttonText}>Cancelar</Text>
         </Pressable>
       </View>
     </BottomBarLayout>
