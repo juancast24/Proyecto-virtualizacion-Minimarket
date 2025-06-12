@@ -489,7 +489,7 @@ const styles = StyleSheet.create({
   },
   paginationInfo: {
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 5,
   },
   paginationControls: {
     flexDirection: "row",

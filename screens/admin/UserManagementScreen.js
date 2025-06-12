@@ -36,7 +36,7 @@ const UserManagementScreen = () => {
 
   // Estados para paginación
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 4;
+  const itemsPerPage = 5;
 
   // Obtiene el estado de autenticación del usuario
   const { authState } = useAuth();

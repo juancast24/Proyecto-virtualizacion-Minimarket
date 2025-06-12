@@ -1,19 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
   TextInput,
   Pressable,
   StyleSheet,
-  Alert,
+  Animated,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useAuth } from "../../context/AuthContext";
 import BottomBarLayout from "../../components/BottomBarLayout";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { firebaseApp } from "../../firebase.config";
+import { showMessage } from "react-native-flash-message";
+
+const db = getFirestore(firebaseApp);
 
 // Pantalla para crear un nuevo usuario
 const CreateUserScreen = ({ navigation }) => {
-
   const { onRegister } = useAuth(); // Obtiene la función de registro del contexto de autenticación
 
   // Estados para los campos del formulario
@@ -24,27 +29,108 @@ const CreateUserScreen = ({ navigation }) => {
   const [password, setPassword] = useState(""); // Contraseña
   const [direccion, setDireccion] = useState(""); // Dirección del usuario
   const [barrio, setBarrio] = useState(""); // Barrio del usuario
+  const [loading, setLoading] = useState(false);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const registerUser = async (
+    correo,
+    password,
+    telefono,
+    rol,
+    nombre,
+    direccion,
+    barrio
+  ) => {
+    const auth = getAuth();
+    const db = getFirestore();
+    try {
+      // Crea el usuario en Auth
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        correo,
+        password
+      );
+      const user = userCredential.user;
+
+      // Guarda datos adicionales en Firestore
+      await setDoc(doc(db, "usuarios", user.uid), {
+        nombre,
+        correo,
+        telefono,
+        rol,
+        direccion,
+        barrio,
+        uid: user.uid,
+        creadoEn: new Date(),
+      });
+
+      return true;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const animateButton = () => {
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 0.95,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
 
   // Función que maneja la creación del usuario
   const handleCreate = async () => {
-    // Valida que los campos obligatorios estén completos
+    animateButton();
     if (!nombre || !correo || !password || !rol || !direccion || !barrio) {
-      Alert.alert("Error", "Todos los campos son obligatorios.");
+      showMessage({
+        message: "Todos los campos son obligatorios.",
+        type: "danger",
+        icon: "danger",
+      });
       return;
     }
+    setLoading(true);
     try {
-      // Llama a la función de registro del contexto de autenticación
-      // El último argumento ("") es para la foto, que aquí no se usa
-      const ok = await onRegister(correo, password, telefono, rol, nombre, "", direccion, barrio);
+      const ok = await registerUser(
+        correo,
+        password,
+        telefono,
+        rol,
+        nombre,
+        direccion,
+        barrio
+      );
       if (ok) {
-        Alert.alert("Éxito", "Usuario creado correctamente.");
-        navigation.navigate("UserManagement"); // Vuelve a la pantalla anterior si se crea el usuario
-      } else {
-        Alert.alert("Error", "No se pudo crear el usuario.");
+        showMessage({
+          message: "Usuario creado correctamente.",
+          type: "success",
+          icon: "success",
+        });
+        navigation.navigate("UserManagement");
       }
     } catch (error) {
-      Alert.alert("Error", "No se pudo crear el usuario.");
-      console.error(error);
+      if (error.code === "auth/email-already-in-use") {
+        showMessage({
+          message: "El correo electrónico ya está registrado. Intenta con otro.",
+          type: "warning",
+          icon: "warning",
+        });
+      } else {
+        showMessage({
+          message: "No se pudo crear el usuario.",
+          type: "danger",
+          icon: "danger",
+        });
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -115,25 +201,48 @@ const CreateUserScreen = ({ navigation }) => {
           <Picker.Item label="Administrador" value="admin" />
         </Picker>
         {/* Botón para crear el usuario */}
-        <Pressable style={styles.button} onPress={handleCreate}>
-          <Text style={styles.buttonText}>Crear</Text>
-        </Pressable>
-        {/* Botón para volver a la pantalla de gestión de usuarios */}
-        <Pressable
-          style={[styles.button, { backgroundColor: "#e74c3c" }]}
-          onPress={() => navigation.navigate("UserManagement")}
+         <View
+          style={{ flexDirection: "row", justifyContent: "center", gap: 10 }}
         >
-          <Text style={styles.buttonText}>Cancelar</Text>
-        </Pressable>
+          <Animated.View style={{ flex: 1, marginTop: 10, marginRight: 5, transform: [{ scale: scaleAnim }] }}>
+            <Pressable
+              style={styles.button}
+              onPress={handleCreate}
+              disabled={loading}
+            >
+              <Text style={styles.buttonText}>
+                {loading ? "Creando..." : "Crear"}
+              </Text>
+            </Pressable>
+          </Animated.View>
+          <Pressable
+            style={[
+              styles.button,
+              {
+                backgroundColor: "#e74c3c",
+                flex: 1,
+                marginTop: 20,
+                marginLeft: 5,
+              },
+            ]}
+            onPress={() => navigation.navigate("UserManagement")}
+            disabled={loading}
+          >
+            <Text style={styles.buttonText}>Cancelar</Text>
+          </Pressable>
+        </View>
       </View>
     </BottomBarLayout>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { padding: 20, backgroundColor: "#F6FDFF", marginTop: 20, height: "100%" },
-
-
+  container: {
+    padding: 20,
+    backgroundColor: "#F6FDFF",
+    marginTop: 20,
+    height: "100%",
+  },
   title: {
     fontSize: 22,
     fontWeight: "bold",
