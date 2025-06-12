@@ -4,7 +4,7 @@ import {
   Pressable,
   StyleSheet,
   BackHandler,
-  TextInput,  
+  TextInput,
   ScrollView,
 } from "react-native";
 import { useAuth } from "../../context/AuthContext";
@@ -30,14 +30,23 @@ const AdminDashboard = () => {
   return (
     <>
       <StatusBar backgroundColor="#F6FDFF" barStyle="dark-content" />
-      <BottomBarLayout> 
+      <BottomBarLayout>
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           <View style={styles.container}>
             <Text style={styles.title}>Productos</Text>
             <ProductsAdmin />
             <View style={styles.buttonContainer}>
-              <Pressable style={styles.button} onPress={handleCreateProductPress}>
+              <Pressable
+                style={styles.button}
+                onPress={handleCreateProductPress}
+              >
                 <Text style={styles.buttonText}>Crear Producto</Text>
+              </Pressable>
+              <Pressable
+                style={styles.button}
+                onPress={() => navigation.navigate("RankingProductos")}
+              >
+                <Text style={styles.buttonText}> Ventas de Productos</Text>
               </Pressable>
             </View>
           </View>
@@ -59,18 +68,18 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 1,
-    flexDirection: "row", // Alineación horizontal
-    justifyContent: "space-between", // Espaciado entre los botones
-    marginHorizontal: 10, // Margen horizontal para el contenedor
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginHorizontal: 0,
   },
   button: {
     backgroundColor: "#2980b9",
     padding: 10,
     borderRadius: 30,
-    marginVertical: 10,
+    marginVertical: 1,
     alignItems: "center",
-    flex: 1, // Para que ambos botones tengan el mismo ancho
-    marginHorizontal: 5, // Espaciado entre los botones
+    flex: 1,
+    marginHorizontal: 5,
   },
   buttonText: {
     color: "#fff",
@@ -78,7 +87,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   title: {
-    fontSize: 30,
+    fontSize: 25,
     fontWeight: "bold",
     marginBottom: 5,
     textAlign: "center",
@@ -104,7 +113,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#000",
   },
-  
 });
 
 export default AdminDashboard;
