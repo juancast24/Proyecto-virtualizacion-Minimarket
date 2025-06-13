@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
     let role = "user";
 
     if (userDoc.exists()) {
-      userData = { ...user, ...userDoc.data() }; // Mezcla datos de Auth + Firestore
+      userData = { ...user, ...userDoc.data() }; 
       role = userDoc.data().rol || "user";
     }
 
@@ -98,7 +98,7 @@ export const AuthProvider = ({ children }) => {
     const res = await signInWithEmailAndPassword(auth, email, password);
     const newState = await buildAuthState(res.user);
     setAuthState(newState);
-    return newState.user; // <-- Retorna el usuario
+    return newState.user; 
   } catch (error) {
     return false;
   }
