@@ -107,6 +107,7 @@ export default function ProductCard({ selectedCategory, searchQuery }) {
         <Pressable
           style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
           onPress={() => handlePressProduct(item)}
+          disabled={item.stock === 0}
         >
           <View style={styles.imageContainer}>
             <Image

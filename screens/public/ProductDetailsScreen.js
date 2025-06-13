@@ -5,6 +5,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { CartContext } from '../../context/CartContext';
 import BottomBarLayout from '../../components/BottomBarLayout';
+import { showMessage } from "react-native-flash-message";
 
 const isTablet = Dimensions.get('window').width >= 600;
 
@@ -30,7 +31,21 @@ const ProductDetails = () => {
     if (quantity < product.stock) {
       setQuantity(prev => prev + 1);
     } else {
-      alert('No hay más stock disponible.');
+      showMessage({
+        message: "No hay mas stock disponible",
+        type: "warning",
+        duration: 1500,
+        titleStyle: { fontSize: 20, fontWeight: "bold" },
+        style: {
+          marginTop: 25,
+          paddingVertical: 24,
+          paddingHorizontal: 32,
+          minWidth: 350,
+          alignSelf: "center",
+          borderRadius: 10,
+        },
+        icon: "warning",
+      });
     }
   };
 
@@ -41,14 +56,13 @@ const ProductDetails = () => {
   };
 
   const totalPrice = quantity * product.price;
-  console.log(navigation.getState());
   const handleAddToCart = () => {
     addToCart(product, quantity, totalPrice);
     navigation.navigate('CartScreen');
   };
 
   return (
-    <BottomBarLayout disableInsets>
+    <BottomBarLayout disableInsets={true}>
       {/* Header con SafeArea */}
       <View style={[styles.headerProductWrapper]}>
         <View style={styles.header}>
@@ -206,7 +220,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     shadowColor: "#0288D1",
     elevation: 12,
-    zIndex: 2, 
+    zIndex: 2,
   },
   quantityButton: {
     padding: 8,
@@ -223,18 +237,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     position: 'relative',
-    zIndex: 0, 
+    zIndex: 0,
   },
   sectionHeader: {
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
-    zIndex: 0, 
+    zIndex: 0,
   },
   imageSectionHeader: {
     width: 55,
     height: 45,
-    zIndex: 0, 
+    zIndex: 0,
   },
   infoContainer: {
     flex: 1,
@@ -262,12 +276,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: 'white',
     paddingHorizontal: 25,
-    paddingTop: 24,      // <-- Aumenta este valor para bajar el contenido
-    paddingBottom: 10,   // <-- Mantén o ajusta según lo necesites
+    paddingTop: 20, 
+    paddingBottom: 10,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     elevation: 10,
-    shadowColor: "",
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.08,
     shadowRadius: 4,

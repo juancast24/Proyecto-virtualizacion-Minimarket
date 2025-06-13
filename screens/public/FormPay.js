@@ -25,7 +25,6 @@ import { firebaseApp } from "../../firebase.config";
 import { showMessage } from "react-native-flash-message";
 import { useCart } from "../../context/CartContext";
 import { CommonActions } from "@react-navigation/native";
-import KeyboardAwareLayout from "../../components/KeyboardAwareLayout";
 
 const db = getFirestore(firebaseApp);
 const FormPay = () => {
@@ -158,7 +157,7 @@ const FormPay = () => {
     }
   };
   return (
-    <KeyboardAwareLayout>
+    <>
       <ScrollView
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
@@ -304,7 +303,7 @@ const FormPay = () => {
           <Text style={styles.confirmButtonText}>Confirmar pedido</Text>
         </Pressable>
       </ScrollView>
-    </KeyboardAwareLayout>
+    </>
   );
 };
 
