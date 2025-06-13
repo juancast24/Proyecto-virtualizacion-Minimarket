@@ -20,11 +20,6 @@ const ProductDetails = () => {
   const handlePressBack = () => {
     navigation.goBack();
   };
-
-  const handleCartPress = () => {
-    navigation.navigate('CartScreen');
-  };
-
   const [quantity, setQuantity] = useState(1);
 
   const increaseQuantity = () => {
@@ -69,10 +64,6 @@ const ProductDetails = () => {
           {/* Botón para volver atrás */}
           <Pressable onPress={handlePressBack} style={styles.headerButton}>
             <Ionicons name="chevron-back-outline" size={28} color="black" />
-          </Pressable>
-          {/* Botón para ir al carrito */}
-          <Pressable onPress={handleCartPress} style={styles.headerButton}>
-            <Ionicons name="cart-outline" size={28} color="black" />
           </Pressable>
         </View>
 
@@ -276,7 +267,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: 'white',
     paddingHorizontal: 25,
-    paddingTop: 20, 
+    paddingTop: 20,
     paddingBottom: 10,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,

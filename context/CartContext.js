@@ -8,7 +8,7 @@ const db = getFirestore(firebaseApp);
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-    const [cartItems, setCartItems] = useState(null); 
+    const [cartItems, setCartItems] = useState(null);
     const [loading, setLoading] = useState(true);
     const { authState } = useAuth();
 
@@ -76,7 +76,7 @@ export const CartProvider = ({ children }) => {
     // Actualizar la cantidad de un producto en el carrito
     const updateItemQuantity = (itemName, quantity) => {
         setCartItems(prevItems => {
-            return prevItems.map(item => 
+            return prevItems.map(item =>
                 item.name === itemName ? { ...item, quantity } : item
             );
         });
@@ -89,9 +89,14 @@ export const CartProvider = ({ children }) => {
         });
     };
 
+    const getCartTotal = () => {
+        if (!cartItems) return 0;
+        return cartItems.reduce((total, item) => total + item.quantity, 0);
+    };
+
     // Proveer el contexto a los hijos
     return (
-        <CartContext.Provider value={{ cartItems, addToCart, clearCart, loading, updateItemQuantity, removeItemFromCart }}>
+        <CartContext.Provider value={{ cartItems, addToCart, clearCart, loading, updateItemQuantity, removeItemFromCart,getCartTotal }}>
             {children}
         </CartContext.Provider>
     );

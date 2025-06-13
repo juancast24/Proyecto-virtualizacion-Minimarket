@@ -157,7 +157,7 @@ const FormPay = () => {
     }
   };
   return (
-    <>
+    <View style ={{paddingTop:"30", backgroundColor:"#F6FDFF"}}>
       <ScrollView
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
@@ -303,7 +303,7 @@ const FormPay = () => {
           <Text style={styles.confirmButtonText}>Confirmar pedido</Text>
         </Pressable>
       </ScrollView>
-    </>
+    </View>
   );
 };
 

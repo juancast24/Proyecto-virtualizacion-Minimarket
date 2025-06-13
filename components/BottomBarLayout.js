@@ -4,32 +4,40 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
 
-const TabButton = ({ label, icon, isActive, onPress }) => (
+const TabButton = ({ label, icon, isActive, onPress, cartCount }) => (
   <TouchableOpacity
     style={[styles.tabItem, isActive && styles.tabItemActive]}
     onPress={onPress}
   >
-    <Ionicons name={icon} size={28} color={isActive ? "#fff" : "#4A90E2"} />
+    <View style={{ position: 'relative' }}>
+      <Ionicons name={icon} size={28} color={isActive ? "#fff" : "#4A90E2"} />
+      {icon === "cart-outline" && cartCount > 0 && (
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{cartCount}</Text>
+        </View>
+      )}
+    </View>
     <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>
       {label}
     </Text>
   </TouchableOpacity>
 );
 
-const BottomBarLayout = ({ children,disableInsets = false }) => {
+const BottomBarLayout = ({ children, disableInsets = false }) => {
   const navigation = useNavigation();
   const route = useRoute();
   const insets = useSafeAreaInsets();
   const { authState } = useAuth();
+  const { getCartTotal } = useCart();
 
   const userRole = authState?.role || authState?.user?.role || "";
   const isAdmin = userRole?.toLowerCase() === "admin";
   const isGuest = !authState?.authenticated;
   const isUser = !isGuest && !isAdmin;
 
-  const goTo = (screen) => navigation.navigate( screen );
-
+  const goTo = (screen) => navigation.navigate(screen);
   const isActive = (screen) => route.name === screen;
 
   const tabsByRole = {
@@ -60,7 +68,7 @@ const BottomBarLayout = ({ children,disableInsets = false }) => {
       : tabsByRole.guest;
 
   return (
-    <View style={{ flex: 1, paddingTop: disableInsets ? 0 : insets.top, backgroundColor: '#F6FDFF', }}>
+    <View style={{ flex: 1, paddingTop: disableInsets ? 0 : insets.top, backgroundColor: '#F6FDFF' }}>
       <View style={{ flex: 1 }}>{children}</View>
       <View
         style={[
@@ -78,6 +86,7 @@ const BottomBarLayout = ({ children,disableInsets = false }) => {
             icon={icon}
             isActive={isActive(screen)}
             onPress={() => goTo(screen)}
+            cartCount={icon === "cart-outline" ? getCartTotal() : 0}
           />
         ))}
       </View>
@@ -113,6 +122,24 @@ const styles = StyleSheet.create({
   tabLabelActive: {
     color: "#fff",
     fontWeight: "bold",
+  },
+  badge: {
+    position: 'absolute',
+    top: -5,
+    right: -10,
+    backgroundColor: 'red',
+    borderRadius: 10,
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+    minWidth: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badgeText: {
+    color: 'white',
+    fontSize: 10,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 

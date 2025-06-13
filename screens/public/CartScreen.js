@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, Pressable, Platform, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, StyleSheet, FlatList, Image, Pressable } from 'react-native';
 import BottomBarLayout from '../../components/BottomBarLayout';
 import { useCart } from '../../context/CartContext';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext, useAuth } from '../../context/AuthContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { showMessage } from "react-native-flash-message";
 
 const CartScreen = () => {
   const { cartItems, clearCart, updateItemQuantity, removeItemFromCart, calculateCartTotal } = useCart();
@@ -14,10 +14,6 @@ const CartScreen = () => {
   const { authState } = useAuth();
   const insets = useSafeAreaInsets();
   const totalCartPrice = calculateCartTotal ? calculateCartTotal() : cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
-  useEffect(() => {
-    console.log("Renderizando carrito, productos:", cartItems);
-  }, [cartItems]);
 
   const renderItem = ({ item }) => {
     if (!item?.name) return null;
@@ -54,7 +50,21 @@ const CartScreen = () => {
                   if (item.quantity < item.stock) {
                     updateItemQuantity(item.name, item.quantity + 1);
                   } else {
-                    Alert.alert('Stock Insuficiente', 'No hay más stock disponible para este producto.');
+                    showMessage({
+                      message: "No hay mas stock disponible",
+                      type: "warning",
+                      duration: 1500,
+                      titleStyle: { fontSize: 20, fontWeight: "bold" },
+                      style: {
+                        marginTop: 25,
+                        paddingVertical: 24,
+                        paddingHorizontal: 32,
+                        minWidth: 350,
+                        alignSelf: "center",
+                        borderRadius: 10,
+                      },
+                      icon: "warning",
+                    });
                   }
                 }}
                 style={styles.quantityButton}
@@ -82,55 +92,55 @@ const CartScreen = () => {
   };
 
   return (
-    <BottomBarLayout>   
-        <Text style={styles.title}>Mi Carrito</Text>
-        {cartItems.length > 0 ? (
-          <FlatList
-            data={cartItems}
-            renderItem={renderItem}
-            showsVerticalScrollIndicator={false}
-            keyExtractor={(item, index) => item?.name ? item.name + index : index.toString()}
-            contentContainerStyle={{ ...styles.list, paddingBottom: 160 + insets.bottom }}
-          />
-        ) : (
-          <View style={styles.emptyCartContainer}>
-            <Image source={{ uri: 'https://i.imgur.com/kRhJKyd.png' }} style={styles.emptyCartImage} />
-            <Text style={styles.emptyCartText}>Tu carrito está vacío.</Text>
-            <Pressable onPress={() => authState.authenticated ? navigation.navigate('ProductsScreen') : navigation.navigate('Home')} style={styles.shopButton}>
-              <Text style={styles.shopButtonText}>Ir a la tienda</Text>
+    <BottomBarLayout>
+      <Text style={styles.title}>Mi Carrito</Text>
+      {cartItems.length > 0 ? (
+        <FlatList
+          data={cartItems}
+          renderItem={renderItem}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item, index) => item?.name ? item.name + index : index.toString()}
+          contentContainerStyle={{ ...styles.list, paddingBottom: 160 + insets.bottom }}
+        />
+      ) : (
+        <View style={styles.emptyCartContainer}>
+          <Image source={{ uri: 'https://i.imgur.com/kRhJKyd.png' }} style={styles.emptyCartImage} />
+          <Text style={styles.emptyCartText}>Tu carrito está vacío.</Text>
+          <Pressable onPress={() => authState.authenticated ? navigation.navigate('ProductsScreen') : navigation.navigate('Home')} style={styles.shopButton}>
+            <Text style={styles.shopButtonText}>Ir a la tienda</Text>
+          </Pressable>
+        </View>
+      )}
+
+      {cartItems.length > 0 && (
+        <View style={[styles.containerBottomFixed]}>
+          <View style={styles.summaryContainer}>
+            <Text style={styles.summaryText}>Total:</Text>
+            <Text style={styles.summaryPrice}>${totalCartPrice.toLocaleString('es-CL')}</Text>
+          </View>
+          <View style={styles.buttonGroup}>
+            <Pressable
+              onPress={clearCart}
+              style={({ pressed }) => [
+                styles.clearCartButton,
+                { backgroundColor: pressed ? '#C62828' : '#EF5350' }
+              ]}
+            >
+              <Text style={styles.buttonText}>Limpiar carrito</Text>
+            </Pressable>
+            <Pressable
+              onPress={handleCheckout}
+              style={({ pressed }) => [
+                styles.checkoutButton,
+                { backgroundColor: pressed ? '#388E3C' : '#4CAF50' }
+              ]}
+            >
+              <Text style={styles.buttonText}>Finalizar compra</Text>
             </Pressable>
           </View>
-        )}
-
-        {cartItems.length > 0 && (
-          <View style={[styles.containerBottomFixed]}>
-            <View style={styles.summaryContainer}>
-              <Text style={styles.summaryText}>Total:</Text>
-              <Text style={styles.summaryPrice}>${totalCartPrice.toLocaleString('es-CL')}</Text>
-            </View>
-            <View style={styles.buttonGroup}>
-              <Pressable
-                onPress={clearCart}
-                style={({ pressed }) => [
-                  styles.clearCartButton,
-                  { backgroundColor: pressed ? '#C62828' : '#EF5350' }
-                ]}
-              >
-                <Text style={styles.buttonText}>Limpiar carrito</Text>
-              </Pressable>
-              <Pressable
-                onPress={handleCheckout}
-                style={({ pressed }) => [
-                  styles.checkoutButton,
-                  { backgroundColor: pressed ? '#388E3C' : '#4CAF50' }
-                ]}
-              >
-                <Text style={styles.buttonText}>Finalizar compra</Text>
-              </Pressable>
-            </View>
-          </View>
-        )}
-    </BottomBarLayout>  
+        </View>
+      )}
+    </BottomBarLayout>
   );
 };
 
